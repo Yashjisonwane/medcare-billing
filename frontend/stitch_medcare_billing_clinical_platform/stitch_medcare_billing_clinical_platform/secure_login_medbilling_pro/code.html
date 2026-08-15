@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedPractice Pro - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#081b3a",
+                        "primary-container": "#1a2b4b",
+                        "on-primary-container": "#8293b8",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed": "#dce3f0",
+                        "surface-bright": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#213145",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#b6c6ef",
+                        "on-secondary-fixed-variant": "#0035bd",
+                        "tertiary": "#101820",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed-variant": "#404751",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#b8c3ff",
+                        "outline": "#75777f",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-fixed": "#001355",
+                        "surface-variant": "#d3e4fe",
+                        "primary": "#031635",
+                        "on-tertiary-fixed": "#151c25",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#dde1ff",
+                        "secondary": "#0040df",
+                        "surface-container": "#e5eeff",
+                        "secondary-container": "#2d5bff",
+                        "tertiary-container": "#252c36",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#c0c7d3",
+                        "outline-variant": "#c5c6cf",
+                        "background": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "inverse-primary": "#b6c6ef",
+                        "on-secondary-container": "#efefff",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-container": "#8c939f",
+                        "surface-dim": "#cbdbf5",
+                        "on-error-container": "#93000a",
+                        "on-background": "#0b1c30",
+                        "surface-tint": "#4e5e81",
+                        "on-surface-variant": "#44474e",
+                        "on-primary-fixed-variant": "#364768"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "tabular-nums": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 2px theme('colors.secondary'), 0 0 8px rgba(0, 64, 223, 0.3);
+            border-color: theme('colors.secondary');
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased h-screen w-screen overflow-hidden flex">
+<!-- Left Panel: Branding & Trust -->
+<div class="hidden lg:flex w-5/12 bg-primary flex-col justify-between p-xl relative overflow-hidden">
+<!-- Abstract Graphic Background -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<pattern height="10" id="grid" patternunits="userSpaceOnUse" width="10">
+<path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid)" height="100" width="100"></rect>
+</svg>
+</div>
+<!-- Top Section -->
+<div class="z-10 mt-lg">
+<div class="flex items-center gap-sm mb-xl">
+<span class="material-symbols-outlined text-display-lg text-on-primary">local_hospital</span>
+<h1 class="font-headline-lg text-headline-lg text-on-primary">MedPractice Pro</h1>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-primary mb-md leading-tight">
+                Medical Billing &amp;<br/>Clinical Care Platform
+            </h2>
+<p class="font-body-lg text-body-lg text-on-primary-container max-w-md">
+                Manage patients, appointments, clinical notes, AI-assisted documentation, medical bills and CMS-1500 forms securely.
+            </p>
+</div>
+<!-- Bottom Section: Trust -->
+<div class="z-10 mb-lg">
+<div class="glass-panel p-md rounded-lg flex items-start gap-md max-w-sm">
+<div class="bg-secondary-container/20 p-sm rounded-full flex items-center justify-center h-10 w-10 shrink-0">
+<span class="material-symbols-outlined text-on-primary text-headline-md">shield_locked</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-xs">Secure Access</h3>
+<p class="font-body-md text-body-md text-on-primary-container">
+                        HIPAA-aligned infrastructure with strict role-based access control and multi-factor authentication.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Login Form -->
+<div class="w-full lg:w-7/12 bg-surface-bright flex flex-col justify-center items-center p-md sm:p-xl relative">
+<!-- Mobile Logo (Hidden on Desktop) -->
+<div class="lg:hidden absolute top-xl left-xl flex items-center gap-sm">
+<span class="material-symbols-outlined text-headline-md text-primary">local_hospital</span>
+<span class="font-headline-md text-headline-md text-primary">MedPractice Pro</span>
+</div>
+<div class="w-full max-w-md">
+<div class="mb-xl">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-sm">Welcome Back</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Please sign in to access your dashboard.</p>
+</div>
+<form class="space-y-lg mb-xl">
+<!-- Work Email -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-sm" for="email">Work Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">mail</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant/50 outline-none input-glow transition-all" id="email" placeholder="name@clinic.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-sm" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">lock</span>
+<input class="w-full pl-10 pr-10 py-2 border border-outline-variant rounded-lg bg-surface font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant/50 outline-none input-glow transition-all" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors focus:outline-none" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" id="visibilityIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me & Forgot Password -->
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary/50 focus:ring-2" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface-variant">Remember me</span>
+</label>
+<a class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant transition-colors" href="#">Forgot Password?</a>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-md text-label-md py-3 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 h-10" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Roles Badges -->
+<div class="mb-xl">
+<p class="font-label-md text-label-md text-on-surface-variant mb-sm">Supported Roles:</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label-md text-[10px] rounded-full border border-outline-variant/30">Super Admin</span>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label-md text-[10px] rounded-full border border-outline-variant/30">Clinic Admin</span>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label-md text-[10px] rounded-full border border-outline-variant/30">Doctor</span>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label-md text-[10px] rounded-full border border-outline-variant/30">Therapist</span>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label-md text-[10px] rounded-full border border-outline-variant/30">Billing Staff</span>
+</div>
+</div>
+<!-- Footer Notes -->
+<div class="text-center space-y-xs pt-lg border-t border-outline-variant/30">
+<div class="flex items-center justify-center gap-1 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">phonelink_lock</span>
+                    MFA is required for all access.
+                </div>
+<div class="font-body-md text-[12px] text-on-surface-variant/70">
+<a class="hover:text-primary transition-colors underline decoration-on-surface-variant/30" href="#">Privacy Policy</a> • 
+                    <a class="hover:text-primary transition-colors underline decoration-on-surface-variant/30" href="#">Security Details</a>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const visibilityIcon = document.getElementById('visibilityIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                visibilityIcon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                visibilityIcon.textContent = 'visibility';
+            }
+        }
+    </script>
+</body></html>

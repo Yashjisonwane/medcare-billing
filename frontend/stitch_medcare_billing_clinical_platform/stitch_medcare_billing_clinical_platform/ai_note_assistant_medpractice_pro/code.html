@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Note Assistant - MedPractice Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#eff4ff",
+                        "on-error": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#0035bd",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b6c6ef",
+                        "outline": "#75777f",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#d3e4fe",
+                        "on-surface-variant": "#44474e",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-container": "#2d5bff",
+                        "tertiary-fixed": "#dce3f0",
+                        "on-tertiary-fixed": "#151c25",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#efefff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dde1ff",
+                        "on-tertiary-container": "#8c939f",
+                        "surface": "#f8f9ff",
+                        "surface-tint": "#4e5e81",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed-dim": "#b6c6ef",
+                        "on-secondary-fixed": "#001355",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#364768",
+                        "primary-container": "#1a2b4b",
+                        "secondary": "#0040df",
+                        "primary": "#031635",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed-dim": "#c0c7d3",
+                        "on-tertiary-fixed-variant": "#404751",
+                        "tertiary": "#101820",
+                        "tertiary-container": "#252c36",
+                        "outline-variant": "#c5c6cf",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-fixed": "#081b3a",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#b8c3ff",
+                        "on-surface": "#0b1c30",
+                        "surface-bright": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "on-primary-container": "#8293b8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "container-max": "1440px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "tabular-nums": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .input-border-glow:focus-within { border-color: #0040df; box-shadow: 0 0 0 1px #0040df; outline: none; }
+        .ai-draft-bg { background-image: linear-gradient(to right, #eff4ff, #ffffff); }
+        .ambient-shadow-low { box-shadow: 0px 2px 4px rgba(26, 43, 75, 0.05); }
+        .ambient-shadow-mid { box-shadow: 0px 10px 15px -3px rgba(26, 43, 75, 0.1); }
+        
+        /* Custom scrollbar for dense areas */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #c5c6cf; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-60 bg-primary shadow-lg flex flex-col z-40 hidden md:flex transition-transform duration-300">
+<div class="p-lg border-b border-white/10 flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface flex items-center justify-center shrink-0">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist, highly professional clinical logo icon for JOSMIC Clinic, featuring a stylized medical cross integrated with a geometric letter J. The icon uses a deep navy and clinical blue color palette on a pure white background, embodying trust and precision in a modern healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjyneweAt0KjoHhFTtiW8PDqXY6Brqqulxck_xNzXhiCxuO1DAvatMxJ_etuQuRv2xiGflTYU8N4ZOBoUQTzEte5FFLr6GQ0g-gvgKBjpDxhvvvaeM_d2e8gMkjWIV7fOnHggzhXoYr7neqn4TopT8CWSGiTOUqpvOrzgqujWv35ZnwVRkgpms-R1gsqKKO-bhJbp2VOZ-dUTnCOwDuI3Au4B0q2q2bWRMZekwtwe7g1zKWl1BLFQH"/>
+</div>
+<div>
+<h1 class="text-on-primary font-headline-md text-headline-md truncate">JOSMIC Clinic</h1>
+<p class="text-on-primary-container font-label-md text-label-md">Provider Selection</p>
+</div>
+</div>
+<div class="p-md pb-xs">
+<button class="w-full bg-secondary text-on-secondary font-label-md text-label-md py-sm px-md rounded flex items-center justify-center gap-xs hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Case
+            </button>
+</div>
+<nav class="flex-1 overflow-y-auto p-md flex flex-col gap-xs custom-scrollbar">
+<!-- Tabs -->
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">group</span>
+<span class="font-body-md text-body-md">Patients</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">medical_services</span>
+<span class="font-body-md text-body-md">Accident Cases</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">event</span>
+<span class="font-body-md text-body-md">Appointments</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">description</span>
+<span class="font-body-md text-body-md">Clinical Notes</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-sm px-sm py-[6px] rounded bg-secondary-container text-on-secondary-container font-semibold" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+<span class="font-body-md text-body-md">AI Note Assistant</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">healing</span>
+<span class="font-body-md text-body-md">Treatments</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">payments</span>
+<span class="font-body-md text-body-md">Billing</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">receipt_long</span>
+<span class="font-body-md text-body-md">CMS-1500 Claims</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">folder_open</span>
+<span class="font-body-md text-body-md">Documents</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">chat</span>
+<span class="font-body-md text-body-md">Communications</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">assessment</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">badge</span>
+<span class="font-body-md text-body-md">Staff &amp; Roles</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">history</span>
+<span class="font-body-md text-body-md">Audit Logs</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-[6px] rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined text-[20px] opacity-70 group-hover:opacity-100">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-60 h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="bg-surface-bright flex justify-between items-center w-full px-lg py-sm sticky top-0 z-30 border-b border-outline-variant shadow-sm h-[64px] shrink-0">
+<div class="flex items-center gap-md">
+<!-- Mobile Menu Toggle (hidden on desktop) -->
+<button class="md:hidden text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-md text-headline-md text-primary hidden md:block">
+                    MedPractice Pro
+                </div>
+</div>
+<!-- Search Bar -->
+<div class="flex-1 max-w-md mx-md">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-sm text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant text-body-md font-body-md rounded pl-xl pr-sm py-[6px] placeholder-outline focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search patients, codes, or notes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="bg-secondary text-on-secondary font-label-md text-label-md py-[6px] px-md rounded flex items-center gap-xs hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Quick Add
+                </button>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-xs rounded-full hover:bg-surface-container-high transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-[4px] right-[6px] w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Workspace Split -->
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden p-md lg:p-lg gap-lg">
+<!-- LEFT COLUMN: Structured Clinical Inputs -->
+<section class="flex-1 lg:w-1/2 flex flex-col gap-lg overflow-y-auto pr-sm custom-scrollbar pb-24">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Clinical Input Workspace</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Structured data collection for AI synthesis.</p>
+</div>
+<button class="text-secondary font-label-md text-label-md hover:underline flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                        Load Template
+                    </button>
+</div>
+<!-- Patient & Encounter Block -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md ambient-shadow-low">
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm mb-md">
+<h3 class="font-label-md text-label-md text-primary-container uppercase tracking-wider flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                            Encounter Details
+                        </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Patient</label>
+<div class="flex items-center px-xs pb-xs">
+<input class="w-full bg-transparent border-none p-0 text-body-md font-body-md text-on-surface focus:ring-0" readonly="" type="text" value="Doe, Jane (DOB: 05/12/1980)"/>
+<span class="material-symbols-outlined text-outline text-[18px]">open_in_new</span>
+</div>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Provider</label>
+<input class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0" type="text" value="Dr. Smith, A."/>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Chief Complaint</label>
+<input class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0" placeholder="e.g., Lower back pain radiating to left leg" type="text"/>
+</div>
+</div>
+</div>
+<!-- Clinical Details Block -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md ambient-shadow-low">
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm mb-md">
+<h3 class="font-label-md text-label-md text-primary-container uppercase tracking-wider flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">stethoscope</span>
+                            Clinical Findings
+                        </h3>
+</div>
+<div class="space-y-md">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="md:col-span-2 input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Pain Location</label>
+<select class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 appearance-none">
+<option>Lumbar Spine</option>
+<option>Cervical Spine</option>
+<option>Left Shoulder</option>
+<option>Right Knee</option>
+</select>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Severity (1-10)</label>
+<input class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0" max="10" min="1" type="number" value="7"/>
+</div>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Symptoms &amp; Onset</label>
+<textarea class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 resize-none" placeholder="Describe symptoms, duration, and exacerbating factors..." rows="2"></textarea>
+</div>
+<div class="input-border-glow border-error rounded p-xs flex flex-col bg-error-container/10">
+<label class="font-label-md text-label-md text-error mb-[2px] px-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                                Examination Findings (Required)
+                            </label>
+<textarea class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 resize-none" placeholder="Objective physical exam details..." rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Coding & Plan Block -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md ambient-shadow-low">
+<div class="flex items-center justify-between border-b border-outline-variant pb-sm mb-md">
+<h3 class="font-label-md text-label-md text-primary-container uppercase tracking-wider flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">medical_information</span>
+                            Assessment &amp; Plan
+                        </h3>
+</div>
+<div class="space-y-md">
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface relative">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Diagnosis Codes (ICD-10)</label>
+<div class="flex items-center px-xs pb-xs">
+<span class="material-symbols-outlined text-outline text-[18px] mr-xs">search</span>
+<input class="w-full bg-transparent border-none p-0 text-body-md font-body-md text-on-surface focus:ring-0" placeholder="Search ICD-10..." type="text"/>
+</div>
+<!-- Tags representation -->
+<div class="flex flex-wrap gap-xs px-xs pb-xs mt-1">
+<span class="bg-surface-variant text-on-surface-variant text-[11px] font-semibold px-2 py-1 rounded flex items-center gap-1">
+                                    M54.5 <button class="hover:text-error"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Treatment Response</label>
+<select class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 appearance-none">
+<option>Improving</option>
+<option>Unchanged</option>
+<option>Worsening</option>
+</select>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Follow-Up</label>
+<select class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 appearance-none">
+<option>1 Week</option>
+<option>2 Weeks</option>
+<option>1 Month</option>
+<option>PRN</option>
+</select>
+</div>
+</div>
+<div class="input-border-glow border border-outline-variant rounded p-xs flex flex-col bg-surface">
+<label class="font-label-md text-label-md text-on-surface-variant mb-[2px] px-xs">Medical Recommendations</label>
+<textarea class="w-full bg-transparent border-none px-xs pb-xs pt-0 text-body-md font-body-md text-on-surface focus:ring-0 resize-none" placeholder="Therapy, medication changes, referrals..." rows="2"></textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: AI Assistant -->
+<section class="flex-1 lg:w-1/2 flex flex-col h-full bg-surface-container-lowest rounded-xl border border-outline-variant ambient-shadow-mid overflow-hidden relative">
+<!-- AI Header -->
+<div class="bg-primary-container text-on-primary-container p-md flex items-center justify-between shrink-0">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-inverse-primary animate-pulse">psychology</span>
+<h2 class="font-headline-md text-[18px] text-on-primary">AI Draft Generation</h2>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-surface-variant/20 text-on-primary text-[11px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span> Review Required
+                        </span>
+</div>
+</div>
+<!-- Missing Info Alert -->
+<div class="bg-error-container/30 border-l-4 border-error p-sm m-md rounded-r flex items-start gap-sm shrink-0">
+<span class="material-symbols-outlined text-error mt-[2px]">warning</span>
+<div>
+<p class="font-label-md text-label-md text-on-error-container font-bold">Missing Critical Information</p>
+<p class="font-body-md text-body-md text-on-surface mt-1 text-sm">Examination Findings are incomplete. The AI requires objective physical data to generate a compliant SOAP note.</p>
+</div>
+</div>
+<!-- Draft Area -->
+<div class="flex-1 overflow-y-auto p-md custom-scrollbar ai-draft-bg relative group">
+<!-- Toolbar (appears on hover or active) -->
+<div class="absolute top-2 right-4 flex bg-surface border border-outline-variant rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10">
+<button class="p-1 hover:bg-surface-variant text-on-surface-variant hover:text-secondary rounded-l" title="Edit text">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1 border-l border-outline-variant hover:bg-surface-variant text-on-surface-variant hover:text-secondary" title="Improve wording">
+<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+</button>
+<button class="p-1 border-l border-outline-variant hover:bg-surface-variant text-on-surface-variant hover:text-secondary rounded-r" title="Regenerate">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+</div>
+<div class="prose prose-sm max-w-none font-body-md text-on-surface">
+<p class="text-on-surface-variant italic mb-4">Draft generated based on structured inputs. Awaiting complete examination data...</p>
+<h4 class="font-bold text-primary-container uppercase text-xs tracking-wider mb-2">Subjective</h4>
+<p class="mb-4 bg-white/50 p-2 rounded border border-transparent hover:border-outline-variant transition-colors cursor-text">
+                            Patient is a 44-year-old female presenting with a chief complaint of lower back pain radiating to the left leg. Patient reports the severity is 7/10. <span class="bg-error-container/20 border-b border-error text-error px-1">Details regarding onset and exacerbating factors are omitted.</span>
+</p>
+<h4 class="font-bold text-primary-container uppercase text-xs tracking-wider mb-2">Objective</h4>
+<p class="mb-4 bg-white/50 p-2 rounded border border-transparent hover:border-outline-variant transition-colors cursor-text">
+<span class="italic text-outline">[Awaiting Examination Findings input to generate objective narrative...]</span>
+</p>
+<h4 class="font-bold text-primary-container uppercase text-xs tracking-wider mb-2">Assessment</h4>
+<p class="mb-4 bg-white/50 p-2 rounded border border-transparent hover:border-outline-variant transition-colors cursor-text">
+                            1. Low back pain (M54.5). Symptoms are currently reported as improving based on clinical input.
+                        </p>
+<h4 class="font-bold text-primary-container uppercase text-xs tracking-wider mb-2">Plan</h4>
+<p class="mb-4 bg-white/50 p-2 rounded border border-transparent hover:border-outline-variant transition-colors cursor-text">
+                            Patient advised to follow up in 1 Week. <span class="italic text-outline">[Awaiting Medical Recommendations to complete treatment plan...]</span>
+</p>
+</div>
+</div>
+<!-- Footer Warning -->
+<div class="bg-surface-dim p-sm border-t border-outline-variant text-center shrink-0">
+<p class="font-body-md text-[11px] text-on-surface-variant flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        AI-generated content is a draft and must be reviewed and approved by an authorized provider.
+                    </p>
+</div>
+<!-- Overlay while generating (Hidden by default, shown for structure) -->
+<!-- 
+                <div class="absolute inset-0 bg-surface/80 backdrop-blur-sm flex flex-col items-center justify-center z-20">
+                    <span class="material-symbols-outlined text-secondary text-[40px] animate-spin mb-4">progress_activity</span>
+                    <p class="font-headline-md text-on-surface">Synthesizing Clinical Note...</p>
+                </div>
+                -->
+</section>
+</div>
+<!-- Fixed Bottom Action Bar -->
+<div class="bg-surface-bright border-t border-outline-variant p-md flex items-center justify-between z-20 shrink-0">
+<div class="flex items-center gap-sm">
+<button class="px-md py-[8px] rounded border border-primary text-primary font-label-md text-label-md hover:bg-surface-variant transition-colors">
+                    Save Draft
+                </button>
+<button class="px-md py-[8px] rounded text-on-surface-variant font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                    Version History
+                </button>
+</div>
+<div class="flex items-center gap-sm">
+<button class="px-md py-[8px] rounded border border-primary text-primary font-label-md text-label-md hover:bg-surface-variant transition-colors opacity-50 cursor-not-allowed">
+                    Submit for Review
+                </button>
+<button class="px-md py-[8px] rounded border border-primary text-primary font-label-md text-label-md hover:bg-surface-variant transition-colors opacity-50 cursor-not-allowed">
+                    Approve &amp; Sign
+                </button>
+<!-- Primary Action -->
+<button class="px-xl py-[8px] rounded bg-secondary text-on-secondary font-label-md text-label-md flex items-center gap-sm hover:bg-secondary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">magic_button</span>
+                    Generate AI Note
+                </button>
+</div>
+</div>
+</main>
+</body></html>

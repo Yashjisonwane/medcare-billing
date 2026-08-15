@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Staff &amp; Role Management - MedPractice Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#001355",
+                        "primary": "#031635",
+                        "outline-variant": "#c5c6cf",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary-fixed-variant": "#364768",
+                        "error": "#ba1a1a",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "primary-container": "#1a2b4b",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed-dim": "#c0c7d3",
+                        "on-background": "#0b1c30",
+                        "on-secondary-container": "#efefff",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed": "#081b3a",
+                        "on-surface-variant": "#44474e",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#151c25",
+                        "on-primary-container": "#8293b8",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-container": "#2d5bff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "surface-tint": "#4e5e81",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "tertiary": "#101820",
+                        "tertiary-fixed": "#dce3f0",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline": "#75777f",
+                        "secondary": "#0040df",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b6c6ef",
+                        "on-secondary-fixed-variant": "#0035bd",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-primary": "#b6c6ef",
+                        "tertiary-container": "#252c36",
+                        "surface-variant": "#d3e4fe",
+                        "secondary-fixed": "#dde1ff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#404751",
+                        "secondary-fixed-dim": "#b8c3ff",
+                        "on-tertiary-container": "#8c939f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "tabular-nums": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "tabular-nums": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .table-row-hover:hover { background-color: #eff4ff; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen py-lg bg-primary border-r border-outline-variant fixed h-full w-[240px] left-0 top-0 shadow-sm z-50">
+<div class="px-md mb-lg flex items-center gap-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary fill text-[20px]">medical_services</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary">MedPractice Pro</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Clinical Operations</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto scrollbar-hide py-sm">
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary hover:bg-on-primary-fixed-variant rounded-lg mx-2 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary hover:bg-on-primary-fixed-variant rounded-lg mx-2 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary hover:bg-on-primary-fixed-variant rounded-lg mx-2 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary hover:bg-on-primary-fixed-variant rounded-lg mx-2 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
+<span class="font-label-md text-label-md">CMS-1500</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary hover:bg-on-primary-fixed-variant rounded-lg mx-2 transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg mx-2 opacity-90 scale-[0.99] group mt-auto mb-2" href="#">
+<span class="material-symbols-outlined fill group-hover:scale-110 transition-transform">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[240px] flex flex-col min-h-screen bg-background">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-lg h-16 z-40 bg-surface-container-lowest border-b border-outline-variant shadow-sm sticky top-0">
+<div class="flex items-center gap-md">
+<!-- Mobile Menu Button -->
+<button class="md:hidden text-primary p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface rounded-full border border-outline-variant focus:border-secondary focus:ring-1 focus:ring-secondary text-sm w-64 transition-shadow outline-none placeholder:text-outline font-body-md text-body-md" placeholder="Search staff, roles..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-all p-2 rounded-full relative group">
+<span class="material-symbols-outlined group-active:scale-95 duration-150">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-all p-2 rounded-full group hidden sm:block">
+<span class="material-symbols-outlined group-active:scale-95 duration-150">help</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-all p-2 rounded-full group hidden sm:block">
+<span class="material-symbols-outlined group-active:scale-95 duration-150">apps</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2 hidden sm:block"></div>
+<button class="flex items-center gap-2 hover:bg-surface-container p-1 pr-3 rounded-full transition-colors border border-transparent hover:border-outline-variant">
+<img alt="Dr. Julian Vance" class="w-8 h-8 rounded-full object-cover border border-outline-variant shadow-sm" data-alt="Professional headshot of Dr. Julian Vance, male doctor in his 40s, warm smile, wearing a white coat over a light blue shirt, clean white background, high resolution, soft studio lighting, clinical environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmerVHTJj26kECy3RDcVGIngVeKqQILhXhDsJTETeyJPqWCVmvPCKXK_xS1sCtkOeXzsrTBjzVJmZlOaXWdZ2JCcmIRNy-u1RblemMTmSy7PkB2f8C48uTouPEL7dbEJ8S1qkxheacy6_IDptsPkxxmdou60pUj-mYer0VMlLnvmkLVOrZ1e-zxsiYjDcg_wjvNtCWGC2z-8dKKxWlkp84JqRRZ5Y9ZKa3I-OhI9fkyLx0m_aDjxsO"/>
+<div class="hidden md:flex flex-col items-start">
+<span class="font-label-md text-label-md text-on-surface leading-tight">Dr. Julian Vance</span>
+<span class="font-label-md text-[10px] text-outline leading-tight">Super Admin</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] hidden md:block">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-md md:p-xl overflow-y-auto">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-lg">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Staff &amp; Role Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage organizational structure, user access, and security policies.</p>
+</div>
+<div class="flex items-center gap-sm w-full sm:w-auto">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 h-10 border border-primary text-primary hover:bg-surface-container rounded-lg font-label-md text-label-md transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                        Invite Staff
+                    </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 h-10 bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant rounded-lg font-label-md text-label-md transition-colors shadow-sm whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                        Create User
+                    </button>
+</div>
+</div>
+<!-- Summary Cards (Bento style) -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-sm md:gap-md mb-lg">
+<!-- Total Staff -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-surface-container rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Total Staff</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">24</span>
+<span class="material-symbols-outlined text-outline mb-1">groups</span>
+</div>
+</div>
+<!-- Active Users -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-surface-container rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Active Users</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface text-[#059669]">22</span>
+<span class="material-symbols-outlined text-[#059669] mb-1">check_circle</span>
+</div>
+</div>
+<!-- Doctors -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-surface-container rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Doctors</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">8</span>
+<span class="material-symbols-outlined text-secondary mb-1">stethoscope</span>
+</div>
+</div>
+<!-- Counselors -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-surface-container rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Counselors</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">4</span>
+<span class="material-symbols-outlined text-secondary mb-1">psychology</span>
+</div>
+</div>
+<!-- Billing Staff -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-surface-container rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Billing Staff</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">6</span>
+<span class="material-symbols-outlined text-secondary mb-1">payments</span>
+</div>
+</div>
+<!-- Pending Invites -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col justify-between h-24 hover:border-secondary transition-colors group cursor-default relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-error-container rounded-full opacity-30 group-hover:scale-150 transition-transform duration-500"></div>
+<p class="font-label-md text-label-md text-on-surface-variant relative z-10">Pending Invites</p>
+<div class="flex items-end justify-between relative z-10">
+<span class="font-display-lg text-display-lg text-on-surface">2</span>
+<span class="material-symbols-outlined text-outline mb-1">schedule_send</span>
+</div>
+</div>
+</div>
+<!-- Main Layout: Table + Permissions Sidebar -->
+<div class="flex flex-col xl:flex-row gap-lg items-start">
+<!-- Staff Table Section -->
+<div class="flex-1 w-full bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] overflow-hidden">
+<!-- Table Header Actions -->
+<div class="px-md py-3 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-3 bg-surface-container-lowest">
+<div class="flex items-center gap-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Directory</h3>
+<span class="bg-surface-container text-on-surface-variant font-label-md text-[10px] px-2 py-0.5 rounded-full">24 Users</span>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative flex-1 sm:flex-none">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">filter_list</span>
+<select class="w-full sm:w-36 pl-9 pr-8 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-sm text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary appearance-none cursor-pointer">
+<option>All Roles</option>
+<option>Super Admin</option>
+<option>Doctor</option>
+<option>Billing</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<div class="absolute right-8 top-12 w-48 bg-surface-container-lowest rounded-lg shadow-[0_10px_15px_-3px_rgba(26,43,75,0.1)] border border-outline-variant py-1 z-20 hidden md:block opacity-0 pointer-events-none">
+<button class="w-full text-left px-4 py-2 font-body-md text-sm hover:bg-surface-container text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">edit</span> Edit Role
+                                    </button>
+<button class="w-full text-left px-4 py-2 font-body-md text-sm hover:bg-surface-container text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">key</span> Reset Password
+                                    </button>
+<button class="w-full text-left px-4 py-2 font-body-md text-sm hover:bg-surface-container text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">phonelink_lock</span> Require MFA
+                                    </button>
+<button class="w-full text-left px-4 py-2 font-body-md text-sm hover:bg-surface-container text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span> View Activity
+                                    </button>
+<div class="h-px bg-outline-variant my-1"></div>
+<button class="w-full text-left px-4 py-2 font-body-md text-sm hover:bg-error-container hover:text-error text-error flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">person_off</span> Deactivate User
+                                    </button>
+</div><table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Staff Member</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Assigned Role</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Provider ID</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Status</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Security</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant whitespace-nowrap">Last Login</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant text-right whitespace-nowrap">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-body-md text-on-surface">
+<!-- Row 1 (Selected/Active State Demo) -->
+<tr class="table-row-hover bg-surface cursor-pointer border-l-4 border-l-secondary relative">
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-3">
+<img alt="Dr. Julian Vance" class="w-8 h-8 rounded-full object-cover border border-outline-variant shadow-sm" data-alt="Professional headshot of Dr. Julian Vance, male doctor in his 40s, warm smile, wearing a white coat over a light blue shirt, clean white background, high resolution, soft studio lighting, clinical environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Yff7uBTd1k1T33OXDyav4I0L5r22dat037egKWoD8tmsiTyfeMT29Pf3t1r8qyxuw8OJp_IxemXZtOxY8etVZ44P0oRFDYxVWgq34yTCWyvwV9HlgNacxR94atYvP-xCEJTZ_jEhYlCGvFAHecAqsSIN84TB5Pnf3-F-jzDccI_ATgxhjO9DZx8XqTK4xcwE18bx33WcrfbvobaFJWVMVLXzeRMh966T6Qg4ZibEePYGl1X5uNNv"/>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Dr. Julian Vance</span>
+<span class="text-outline text-xs">jvance@medpractice.com</span>
+</div>
+</div>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="material-symbols-outlined text-[14px]">shield_person</span>
+                                            Super Admin
+                                        </span>
+</td>
+<td class="px-md py-sm text-on-surface-variant whitespace-nowrap">PRV-001</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-[#d1fae5] text-[#065f46] px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> Active
+                                        </span>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-1 text-[#059669]">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="text-xs font-medium">Enabled</span>
+</div>
+</td>
+<td class="px-md py-sm text-on-surface-variant text-xs whitespace-nowrap">Today, 08:42 AM</td>
+<td class="px-md py-sm text-right whitespace-nowrap">
+<button class="text-outline hover:text-secondary p-1 rounded transition-colors group relative">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+<!-- Tooltip hint (hidden in raw HTML, just styling) -->
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover border border-outline-variant shadow-sm" data-alt="Professional headshot of Sarah Jenkins, female therapist in her 30s, approachable expression, wearing a navy blazer over a light blouse, modern clinic background slightly blurred, high resolution, soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP5jA5sUQn4q07seEEZc9uCzcbomcRhFAJT6koVKkdUbNKVRyjvkDVdaFNEPl_uJ-Rf9bLz0glz_2bTYFIqDhTF1VzNtJMehrfAT8po0Oi8U795fLdEqsEgfg-cf-zeT4jrkLO5wUpFB0gt7i6tqyXCUxerzMRL2FYCNXqhUrx5G7J0JG9XTu2dLDDgHFilrWynxqcEZ8k1DG3ICf9TAuhJ_83vuDX7k8XKX3YHAYYp9xz7H8qZDrt"/>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Sarah Jenkins, LCSW</span>
+<span class="text-outline text-xs">sjenkins@medpractice.com</span>
+</div>
+</div>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+                                            Therapist
+                                        </span>
+</td>
+<td class="px-md py-sm text-on-surface-variant whitespace-nowrap">PRV-042</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-[#d1fae5] text-[#065f46] px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> Active
+                                        </span>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-1 text-[#059669]">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="text-xs font-medium">Enabled</span>
+</div>
+</td>
+<td class="px-md py-sm text-on-surface-variant text-xs whitespace-nowrap">Yesterday, 4:15 PM</td>
+<td class="px-md py-sm text-right whitespace-nowrap">
+<button class="text-outline hover:text-secondary p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-md text-sm shadow-sm border border-outline-variant">
+                                                MR
+                                            </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Marcus Reed</span>
+<span class="text-outline text-xs">mreed@medpractice.com</span>
+</div>
+</div>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="material-symbols-outlined text-[14px]">payments</span>
+                                            Billing Staff
+                                        </span>
+</td>
+<td class="px-md py-sm text-on-surface-variant whitespace-nowrap italic text-xs">Unassigned</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-[#d1fae5] text-[#065f46] px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> Active
+                                        </span>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[16px]">no_encryption</span>
+<span class="text-xs">Disabled</span>
+</div>
+</td>
+<td class="px-md py-sm text-on-surface-variant text-xs whitespace-nowrap">Oct 24, 09:12 AM</td>
+<td class="px-md py-sm text-right whitespace-nowrap">
+<button class="text-outline hover:text-secondary p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="table-row-hover transition-colors opacity-75 bg-surface-container-lowest">
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-label-md text-sm shadow-sm border border-outline-variant">
+                                                ET
+                                            </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface-variant">Elena Torres</span>
+<span class="text-outline text-xs">etorres@medpractice.com</span>
+</div>
+</div>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="material-symbols-outlined text-[14px]">edit_document</span>
+                                            Clinic Admin
+                                        </span>
+</td>
+<td class="px-md py-sm text-on-surface-variant whitespace-nowrap italic text-xs">N/A</td>
+<td class="px-md py-sm whitespace-nowrap">
+<span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full font-label-md text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Inactive
+                                        </span>
+</td>
+<td class="px-md py-sm whitespace-nowrap">
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="text-xs">Enabled</span>
+</div>
+</td>
+<td class="px-md py-sm text-on-surface-variant text-xs whitespace-nowrap">Sep 12, 11:45 AM</td>
+<td class="px-md py-sm text-right whitespace-nowrap">
+<button class="text-outline hover:text-secondary p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Example Action Menu Overlay (Positioned relatively to row 1 for demo) -->
+<!-- In a real app this would be appended to body and positioned via JS, placing inline for static visual -->
+</tbody>
+</table>
+</div>
+<!-- Table Pagination -->
+<div class="px-md py-3 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<span class="font-body-md text-sm text-on-surface-variant">Showing 1 to 4 of 24 entries</span>
+<div class="flex gap-1">
+<button class="p-1 rounded text-outline hover:bg-surface-container disabled:opacity-50"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="w-7 h-7 rounded bg-secondary text-on-secondary font-body-md text-sm flex items-center justify-center">1</button>
+<button class="w-7 h-7 rounded text-on-surface hover:bg-surface-container font-body-md text-sm flex items-center justify-center">2</button>
+<button class="w-7 h-7 rounded text-on-surface hover:bg-surface-container font-body-md text-sm flex items-center justify-center">...</button>
+<button class="w-7 h-7 rounded text-on-surface hover:bg-surface-container font-body-md text-sm flex items-center justify-center">6</button>
+<button class="p-1 rounded text-on-surface hover:bg-surface-container"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Permissions Matrix Panel (Side) -->
+<div class="w-full xl:w-[400px] 2xl:w-[480px] bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(26,43,75,0.05)] flex flex-col sticky top-[88px] max-h-[calc(100vh-120px)] overflow-hidden">
+<!-- Panel Header -->
+<div class="p-md border-b border-outline-variant bg-surface-container-low flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1 flex items-center gap-2">
+                                Role Permissions
+                                <span class="material-symbols-outlined text-[18px] text-secondary cursor-help" title="Permissions define module access">info</span>
+</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded font-label-md text-xs inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">shield_person</span>
+                                    Super Admin
+                                </span>
+<span class="font-body-md text-xs text-outline italic">Read-only view</span>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Matrix Scrollable Area -->
+<div class="flex-1 overflow-y-auto p-0 scrollbar-hide">
+<table class="w-full text-left border-collapse text-sm">
+<thead class="sticky top-0 bg-surface-container-lowest z-10 shadow-sm">
+<tr>
+<th class="px-4 py-2 font-label-md text-[11px] text-on-surface-variant uppercase tracking-wider bg-surface-container-lowest">Module</th>
+<th class="px-2 py-2 font-label-md text-[11px] text-on-surface-variant text-center" title="View"><span class="material-symbols-outlined text-[16px]">visibility</span></th>
+<th class="px-2 py-2 font-label-md text-[11px] text-on-surface-variant text-center" title="Create"><span class="material-symbols-outlined text-[16px]">add_circle</span></th>
+<th class="px-2 py-2 font-label-md text-[11px] text-on-surface-variant text-center" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></th>
+<th class="px-2 py-2 font-label-md text-[11px] text-on-surface-variant text-center" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md">
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">groups</span>
+                                        Patients
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+</tr>
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">calendar_month</span>
+                                        Appointments
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+</tr>
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">stethoscope</span>
+                                        Clinical Notes
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-40 bg-surface-container" disabled="" type="checkbox"/></td>
+</tr>
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#8b5cf6]">smart_toy</span>
+                                        AI Assistant
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><span class="text-outline text-xs">-</span></td>
+<td class="px-2 py-3 text-center"><span class="text-outline text-xs">-</span></td>
+<td class="px-2 py-3 text-center"><span class="text-outline text-xs">-</span></td>
+</tr>
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">payments</span>
+                                        Billing
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-40 bg-surface-container" disabled="" type="checkbox"/></td>
+</tr>
+<!-- Module Row -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-4 py-3 font-medium text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">admin_panel_settings</span>
+                                        Settings &amp; Roles
+                                    </td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+<td class="px-2 py-3 text-center"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-not-allowed opacity-70" disabled="" type="checkbox"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Panel Footer Actions -->
+<div class="p-md border-t border-outline-variant bg-surface-container-lowest flex justify-end gap-sm">
+<button class="px-4 h-8 border border-primary text-primary hover:bg-surface-container rounded font-label-md text-xs transition-colors">Duplicate Role</button>
+<button class="px-4 h-8 bg-surface-container-high text-on-surface-variant hover:bg-outline-variant rounded font-label-md text-xs transition-colors" disabled="">Edit Policy</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── Base Reset for mobile ── */
+  html {
+    height: 100%;
+    /* Prevent horizontal scroll on ALL viewports */
+    overflow-x: hidden;
+    /* Smooth scroll */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    height: 100%;
+    overflow-x: hidden;
+    @apply bg-surface text-on-surface font-sans antialiased selection:bg-teal-500 selection:text-white;
+  }
+
+  #root {
+    height: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   App Shell — Mobile-safe full-height layout
+   Uses 100dvh (dynamic viewport height) so Android Chrome URL bar
+   doesn't eat into layout. Falls back to 100vh for older browsers.
+   ───────────────────────────────────────────────────────────────── */
+.app-shell {
+  height: 100vh;          /* Fallback for browsers without dvh */
+  height: 100dvh;         /* Dynamic viewport: excludes browser chrome (URL bar) */
+  width: 100%;
+  overflow: hidden;       /* Root must NOT scroll — only <main> scrolls */
+  position: relative;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Touch Scroll — Smooth momentum scrolling on Android & iOS
+   ───────────────────────────────────────────────────────────────── */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Tabular numbers for financial / dosage data
+   ───────────────────────────────────────────────────────────────── */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Scrollbars — hide on mobile touch devices, thin on desktop
+   ───────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+@media (max-width: 1023px) {
+  /* Hide scrollbar on mobile — touch devices don't need it */
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Mobile Tables — make them horizontally scrollable
+   Wrap any table in .table-mobile-scroll to enable this
+   ───────────────────────────────────────────────────────────────── */
+.table-mobile-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Show a faint scroll hint shadow on right edge */
+  background:
+    linear-gradient(to right, white 30%, rgba(255,255,255,0)),
+    linear-gradient(to right, rgba(255,255,255,0), white 70%) 0 100%,
+    radial-gradient(farthest-side at 0% 50%, rgba(0,0,0,.08), rgba(0,0,0,0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.08), rgba(0,0,0,0)) 0 100%;
+  background-repeat: no-repeat;
+  background-color: white;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Prevent tap highlight flash on buttons (Android Chrome)
+   ───────────────────────────────────────────────────────────────── */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Medical Card Hover Glow
+   ───────────────────────────────────────────────────────────────── */
+.medical-card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:border-teal-500/40;
+}

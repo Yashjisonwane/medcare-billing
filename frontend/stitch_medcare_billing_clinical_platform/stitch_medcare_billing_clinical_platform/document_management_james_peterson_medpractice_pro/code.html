@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareOps Pro - Document Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#404751",
+                      "secondary-fixed-dim": "#b8c3ff",
+                      "on-tertiary-fixed": "#151c25",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#efefff",
+                      "on-tertiary-container": "#8c939f",
+                      "inverse-primary": "#b6c6ef",
+                      "inverse-surface": "#213145",
+                      "tertiary-fixed": "#dce3f0",
+                      "tertiary-container": "#252c36",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-dim": "#cbdbf5",
+                      "on-surface": "#0b1c30",
+                      "surface-tint": "#4e5e81",
+                      "tertiary": "#101820",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-fixed": "#001355",
+                      "on-primary-fixed": "#081b3a",
+                      "background": "#f8f9ff",
+                      "primary": "#031635",
+                      "primary-fixed": "#d8e2ff",
+                      "tertiary-fixed-dim": "#c0c7d3",
+                      "outline-variant": "#c5c6cf",
+                      "on-primary-fixed-variant": "#364768",
+                      "primary-fixed-dim": "#b6c6ef",
+                      "surface-container": "#e5eeff",
+                      "outline": "#75777f",
+                      "secondary-container": "#2d5bff",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed-variant": "#0035bd",
+                      "on-error": "#ffffff",
+                      "primary-container": "#1a2b4b",
+                      "surface": "#f8f9ff",
+                      "on-primary-container": "#8293b8",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-variant": "#d3e4fe",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed": "#dde1ff",
+                      "secondary": "#0040df",
+                      "on-surface-variant": "#44474e",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "md": "16px",
+                      "gutter": "16px",
+                      "xl": "32px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "container-max": "1440px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "tabular-nums": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "tabular-nums": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      }
+              }
+            },
+          }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .table-row-selected {
+            background-color: theme('colors.surface-container-high');
+        }
+      </style>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen">
+<!-- Side Navigation -->
+<nav class="w-[240px] h-screen fixed left-0 top-0 bg-primary shadow-md z-40 hidden md:flex flex-col py-lg font-body-md text-body-md font-label-md text-label-md">
+<div class="px-lg mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="medical_services" data-weight="fill">medical_services</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary">CareOps Pro</h1>
+<p class="text-on-primary-container text-[10px] uppercase tracking-wider mt-1">Multi-Provider Clinic</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto hide-scrollbar space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Patients
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                Billing
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                CMS-1500
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="folder" data-weight="fill">folder</span>
+                Documents
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container hover:bg-on-primary-fixed-variant/10 rounded-lg mx-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</div>
+<div class="px-4 mt-auto pt-4 border-t border-on-primary-fixed-variant/20">
+<button class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary h-10 rounded-lg font-label-md text-label-md hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                New Patient
+            </button>
+</div>
+</nav>
+<!-- Top Navigation -->
+<header class="h-16 fixed top-0 right-0 left-0 md:left-[240px] z-30 bg-surface-container-lowest border-b border-outline-variant shadow-sm flex justify-between items-center px-lg font-body-md text-body-md font-label-md text-label-md">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant hover:text-secondary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">Clinical Portal</span>
+</div>
+<div class="flex items-center gap-4 flex-1 justify-end">
+<div class="relative hidden sm:block max-w-md w-full ml-8 mr-auto">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface rounded-full border border-outline-variant focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all text-body-md text-on-surface placeholder:text-outline" placeholder="Search patients, documents..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-secondary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-secondary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-secondary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<button class="ml-2 hidden sm:flex items-center gap-2 bg-secondary text-on-secondary h-[32px] px-4 rounded font-label-md text-label-md hover:bg-secondary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="upload_file">upload_file</span>
+                    Add Entry
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[88px] pb-24 md:pl-[272px] pr-4 md:pr-xl min-h-screen">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-lg">
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_back">arrow_back</span>
+<a class="font-body-md text-body-md hover:text-secondary transition-colors" href="#">Back to Patient Profile</a>
+</div>
+<h2 class="font-display-lg text-display-lg text-primary">Document Management</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1">James Peterson • ID: PT-88204</p>
+</div>
+<button class="flex items-center justify-center gap-2 bg-secondary text-on-secondary h-10 px-6 rounded-lg font-label-md text-label-md hover:bg-secondary/90 transition-colors shadow-md active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="picture_as_pdf">picture_as_pdf</span>
+                Generate Complete Patient Packet
+            </button>
+</div>
+<!-- Filter Tabs -->
+<div class="w-full overflow-x-auto hide-scrollbar mb-lg border-b border-outline-variant">
+<div class="flex gap-6 min-w-max pb-1">
+<button class="font-label-md text-label-md text-secondary font-bold border-b-2 border-secondary pb-2 px-1 whitespace-nowrap">All Documents</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">Billing Statements</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">CMS-1500 Claims</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">Progress Notes</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">Signed Clinical Notes</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">Final Narrative Reports</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors pb-2 px-1 whitespace-nowrap">Uploaded Files</button>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_2px_4px_rgba(26,43,75,0.05)] overflow-hidden">
+<!-- Table Controls -->
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md text-on-surface-variant">24 Documents Total</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]" data-icon="search">search</span>
+<input class="h-8 pl-9 pr-3 rounded border border-outline-variant text-body-md w-48 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none" placeholder="Filter documents..." type="text"/>
+</div>
+<button class="h-8 px-3 flex items-center gap-2 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]" data-icon="filter_list">filter_list</span>
+                         Filter
+                     </button>
+</div>
+</div>
+<!-- Table Wrapper -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-3 w-12 text-center">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary" id="selectAll" type="checkbox"/>
+</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant">Document Name</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant">Date</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant">Created By</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant">Status</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant">Signature</th>
+<th class="p-3 font-label-md text-label-md text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors group cursor-pointer">
+<td class="p-3 text-center">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary row-checkbox" type="checkbox"/>
+</td>
+<td class="p-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="description">description</span>
+<div>
+<div class="font-semibold text-primary">Progress Note - Weekly Checkin</div>
+<div class="text-[12px] text-on-surface-variant">v2.1 • ID: DOC-9921</div>
+</div>
+</div>
+</td>
+<td class="p-3 font-tabular-nums text-on-surface-variant">Oct 24, 2023</td>
+<td class="p-3">Dr. Sarah Jenkins</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#dcfce7] text-[#166534] font-label-md text-[11px] uppercase tracking-wider">Final</span>
+</td>
+<td class="p-3">
+<span class="inline-flex items-center gap-1 text-[#166534]">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                                    Signed
+                                </span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center tooltip-trigger" title="Preview">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors group cursor-pointer">
+<td class="p-3 text-center">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary row-checkbox" type="checkbox"/>
+</td>
+<td class="p-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="assignment">assignment</span>
+<div>
+<div class="font-semibold text-primary">CMS-1500 Claim Form</div>
+<div class="text-[12px] text-on-surface-variant">v1.0 • ID: CLM-4420</div>
+</div>
+</div>
+</td>
+<td class="p-3 font-tabular-nums text-on-surface-variant">Oct 24, 2023</td>
+<td class="p-3">System Generated</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-1 rounded bg-error-container text-on-error-container font-label-md text-[11px] uppercase tracking-wider">Draft</span>
+</td>
+<td class="p-3">
+<span class="inline-flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                                    Pending
+                                </span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center tooltip-trigger" title="Preview">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors group cursor-pointer">
+<td class="p-3 text-center">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary row-checkbox" type="checkbox"/>
+</td>
+<td class="p-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="receipt_long">receipt_long</span>
+<div>
+<div class="font-semibold text-primary">Patient Billing Statement</div>
+<div class="text-[12px] text-on-surface-variant">v1.0 • ID: INV-1102</div>
+</div>
+</div>
+</td>
+<td class="p-3 font-tabular-nums text-on-surface-variant">Oct 20, 2023</td>
+<td class="p-3">Billing Dept</td>
+<td class="p-3">
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#dcfce7] text-[#166534] font-label-md text-[11px] uppercase tracking-wider">Final</span>
+</td>
+<td class="p-3">
+<span class="inline-flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="horizontal_rule">horizontal_rule</span>
+                                    N/A
+                                </span>
+</td>
+<td class="p-3 text-right">
+<div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center tooltip-trigger" title="Preview">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant flex items-center justify-center" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<span class="text-[12px] text-on-surface-variant">Showing 1-3 of 24 documents</span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-secondary text-on-secondary flex items-center justify-center text-[12px] font-semibold">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[12px]">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface flex items-center justify-center text-[12px]">3</button>
+<button class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Selection Bar -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-8 bg-tertiary text-on-tertiary px-6 py-4 rounded-xl shadow-[0px_10px_15px_-3px_rgba(26,43,75,0.1)] flex items-center gap-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none" id="selectionBar">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[12px] font-bold" id="selectedCount">0</span>
+<span class="font-label-md text-label-md">Documents Selected</span>
+</div>
+<div class="h-6 w-px bg-on-tertiary-fixed-variant"></div>
+<div class="flex items-center gap-3">
+<button class="text-on-tertiary hover:text-secondary-fixed transition-colors text-[14px]">Cancel</button>
+<button class="flex items-center gap-2 bg-secondary text-on-secondary h-9 px-4 rounded font-label-md text-label-md hover:bg-secondary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="picture_as_pdf">picture_as_pdf</span>
+                Generate Packet
+            </button>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectAll = document.getElementById('selectAll');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const selectionBar = document.getElementById('selectionBar');
+            const selectedCountSpan = document.getElementById('selectedCount');
+
+            function updateSelectionState() {
+                const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+                const count = checkedBoxes.length;
+
+                // Update select all indeterminate state
+                selectAll.checked = count === rowCheckboxes.length && count > 0;
+                selectAll.indeterminate = count > 0 && count < rowCheckboxes.length;
+
+                // Highlight rows
+                rowCheckboxes.forEach(box => {
+                    const row = box.closest('tr');
+                    if (box.checked) {
+                        row.classList.add('table-row-selected');
+                    } else {
+                        row.classList.remove('table-row-selected');
+                    }
+                });
+
+                // Toggle Selection Bar
+                if (count > 0) {
+                    selectedCountSpan.textContent = count;
+                    selectionBar.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+                    selectionBar.classList.add('translate-y-0', 'opacity-100');
+                } else {
+                    selectionBar.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+                    selectionBar.classList.remove('translate-y-0', 'opacity-100');
+                }
+            }
+
+            selectAll.addEventListener('change', (e) => {
+                rowCheckboxes.forEach(box => {
+                    box.checked = e.target.checked;
+                });
+                updateSelectionState();
+            });
+
+            rowCheckboxes.forEach(box => {
+                box.addEventListener('change', updateSelectionState);
+            });
+            
+            // Allow clicking row to select (excluding action buttons)
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                row.addEventListener('click', (e) => {
+                    if(e.target.closest('button') || e.target.closest('input[type="checkbox"]')) return;
+                    const checkbox = row.querySelector('.row-checkbox');
+                    checkbox.checked = !checkbox.checked;
+                    updateSelectionState();
+                });
+            });
+        });
+    </script>
+</body></html>

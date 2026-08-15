@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Profile - MedPractice Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#eff4ff",
+                    "on-tertiary-fixed": "#151c25",
+                    "surface-dim": "#cbdbf5",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed": "#dce3f0",
+                    "inverse-surface": "#213145",
+                    "secondary": "#0040df",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#c0c7d3",
+                    "secondary-fixed-dim": "#b8c3ff",
+                    "on-secondary-fixed": "#001355",
+                    "error": "#ba1a1a",
+                    "surface": "#f8f9ff",
+                    "on-secondary-fixed-variant": "#0035bd",
+                    "tertiary": "#101820",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#1a2b4b",
+                    "on-primary-container": "#8293b8",
+                    "secondary-fixed": "#dde1ff",
+                    "tertiary-container": "#252c36",
+                    "surface-container": "#e5eeff",
+                    "outline-variant": "#c5c6cf",
+                    "surface-tint": "#4e5e81",
+                    "secondary-container": "#2d5bff",
+                    "on-tertiary-container": "#8c939f",
+                    "inverse-primary": "#b6c6ef",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-container": "#efefff",
+                    "background": "#f8f9ff",
+                    "on-primary-fixed-variant": "#364768",
+                    "primary-fixed-dim": "#b6c6ef",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#44474e",
+                    "on-surface": "#0b1c30",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary-fixed": "#081b3a",
+                    "outline": "#75777f",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary": "#031635",
+                    "on-tertiary-fixed-variant": "#404751",
+                    "on-background": "#0b1c30",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "unit": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "tabular-nums": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "tabular-nums": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "36px",
+                            {
+                                    "lineHeight": "44px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface-bright text-on-surface font-body-md antialiased overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- SideNavBar -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full w-[240px] bg-primary flex-col overflow-y-auto p-md gap-xs shadow-lg z-50">
+<div class="flex items-center gap-sm mb-lg px-sm">
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary text-[20px]">medical_services</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-md font-headline-md text-on-primary">JOSMIC Clinic</span>
+<span class="text-[10px] text-on-primary-container uppercase tracking-wider">Provider Selection</span>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary h-10 rounded mb-md font-label-md text-label-md flex items-center justify-center gap-sm hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Case
+            </button>
+<nav class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded bg-secondary-container text-on-secondary-container font-semibold scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-body-md font-body-md">Patients</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">medical_services</span>
+<span class="text-body-md font-body-md">Accident Cases</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">event</span>
+<span class="text-body-md font-body-md">Appointments</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-body-md font-body-md">Clinical Notes</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+<span class="text-body-md font-body-md">AI Note Assistant</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">healing</span>
+<span class="text-body-md font-body-md">Treatments</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="text-body-md font-body-md">Billing</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<span class="text-body-md font-body-md">CMS-1500 Claims</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="text-body-md font-body-md">Documents</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span class="text-body-md font-body-md">Communications</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+<span class="text-body-md font-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+<span class="text-body-md font-body-md">Staff &amp; Roles</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="text-body-md font-body-md">Audit Logs</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 rounded text-on-primary-container hover:text-on-primary hover:bg-primary-container/20 transition-all duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-[240px] h-full overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-lg py-sm sticky top-0 z-40 bg-surface-bright border-b border-outline-variant shadow-sm h-16">
+<div class="flex items-center gap-md w-1/2">
+<span class="font-headline-md text-headline-md text-primary md:hidden">MedPractice Pro</span>
+<div class="hidden md:flex relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary text-body-md transition-colors" placeholder="Search patients..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<select class="hidden lg:block bg-surface-container-low border border-outline-variant rounded px-3 py-1.5 text-body-md text-on-surface focus:outline-none focus:border-secondary">
+<option>All Providers</option>
+<option>Dr. Smith</option>
+<option>Dr. Davis</option>
+</select>
+<button class="bg-secondary text-on-secondary h-8 px-4 rounded text-label-md font-label-md hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">
+                        Quick Add
+                    </button>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-1.5 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-1.5 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-md lg:p-lg">
+<div class="max-w-container-max mx-auto space-y-lg">
+<!-- Patient Header Card -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm p-lg">
+<div class="flex flex-col md:flex-row justify-between items-start gap-lg">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-headline-lg text-headline-lg">
+                                    JP
+                                </div>
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface flex items-center gap-sm">
+                                        James Peterson
+                                        <span class="px-2 py-0.5 rounded text-[12px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
+</h1>
+<div class="flex flex-wrap gap-x-lg gap-y-sm mt-2 text-body-md text-on-surface-variant">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">badge</span> PID-8842</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">cake</span> 05/12/1980 (43)</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">call</span> (555) 012-3456</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:items-end gap-sm md:border-l border-outline-variant md:pl-lg">
+<div class="text-label-md font-label-md text-on-surface-variant uppercase">Outstanding Balance</div>
+<div class="text-headline-md font-headline-md text-error">$1,250.00</div>
+<div class="text-[12px] text-on-surface-variant flex items-center gap-xs mt-1">
+<span class="material-symbols-outlined text-[14px]">event_busy</span> Accident Date: 08/15/2023
+                                </div>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-outline-variant flex items-center gap-sm text-body-md">
+<span class="text-on-surface-variant font-semibold">Assigned Providers:</span>
+<span class="bg-surface-container px-2 py-1 rounded text-on-surface">Dr. Smith</span>
+<span class="bg-surface-container px-2 py-1 rounded text-on-surface">Dr. Davis</span>
+</div>
+</div>
+<!-- Layout Container for Tabs/Content & Action Toolbar -->
+<div class="flex flex-col xl:flex-row gap-lg">
+<!-- Main Panel -->
+<div class="flex-1 min-w-0 flex flex-col gap-lg">
+<!-- Tabs -->
+<div class="border-b border-outline-variant overflow-x-auto no-scrollbar">
+<div class="flex gap-lg min-w-max">
+<button class="text-secondary font-bold border-b-2 border-secondary pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Overview</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Accident Case</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Appointments</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Clinical Notes</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Treatments</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Bills</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">CMS-1500</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2 px-1 text-label-md font-label-md uppercase tracking-wider">Documents</button>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Patient Info -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1">
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Patient Information</h3>
+<button class="text-secondary hover:bg-surface-container px-2 py-1 rounded text-[12px] font-semibold">Edit</button>
+</div>
+<div class="space-y-xs text-body-md">
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Gender</span><span class="col-span-2 text-on-surface">Male</span></div>
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">SSN</span><span class="col-span-2 text-on-surface">***-**-4567</span></div>
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Email</span><span class="col-span-2 text-on-surface truncate">james.peterson@email.com</span></div>
+<div class="grid grid-cols-3 gap-xs items-start"><span class="text-on-surface-variant">Address</span><span class="col-span-2 text-on-surface">123 Maple Street, Apt 4B<br/>Springfield, IL 62701</span></div>
+</div>
+</div>
+<!-- Accident Info -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1">
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Accident Info</h3>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">car_crash</span>
+</div>
+<div class="space-y-xs text-body-md">
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Type</span><span class="col-span-2 text-on-surface font-semibold">MVA</span></div>
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Role</span><span class="col-span-2 text-on-surface">Driver (Not at fault)</span></div>
+<div class="grid grid-cols-3 gap-xs items-start"><span class="text-on-surface-variant">Location</span><span class="col-span-2 text-on-surface">Intersection of 5th &amp; Main, Springfield</span></div>
+<div class="grid grid-cols-3 gap-xs items-start"><span class="text-on-surface-variant">Desc</span><span class="col-span-2 text-on-surface text-[12px] leading-tight">Rear-ended while stopped at red light. Approx 35mph impact.</span></div>
+</div>
+</div>
+<!-- Diagnosis Codes -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1">
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Diagnosis (ICD-10)</h3>
+<button class="text-secondary hover:bg-surface-container px-2 py-1 rounded text-[12px] font-semibold">Manage</button>
+</div>
+<div class="space-y-sm text-body-md">
+<div class="bg-surface-container-low p-2 rounded border border-outline-variant/50">
+<div class="font-semibold text-primary">M54.5</div>
+<div class="text-[12px] text-on-surface-variant">Low back pain</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded border border-outline-variant/50">
+<div class="font-semibold text-primary">S13.4XXA</div>
+<div class="text-[12px] text-on-surface-variant">Sprain of ligaments of cervical spine, init encntr</div>
+</div>
+</div>
+</div>
+<!-- Insurance Details -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1 md:col-span-2 lg:col-span-1">
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Insurance</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending Auth</span>
+</div>
+<div class="space-y-xs text-body-md">
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Carrier</span><span class="col-span-2 text-on-surface font-semibold">State Farm Auto</span></div>
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Policy #</span><span class="col-span-2 text-on-surface font-tabular-nums">POL-9938-22</span></div>
+<div class="grid grid-cols-3 gap-xs"><span class="text-on-surface-variant">Claim #</span><span class="col-span-2 text-on-surface font-tabular-nums">CLM-2023-0815-A</span></div>
+<div class="mt-2 pt-2 border-t border-outline-variant/50">
+<div class="text-[12px] text-on-surface-variant mb-1">Adjuster Info</div>
+<div class="text-on-surface text-[13px]">Sarah Jenkins • (555) 999-1122 x44</div>
+</div>
+</div>
+</div>
+<!-- Next Appointment -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1 relative overflow-hidden group">
+<div class="absolute inset-y-0 left-0 w-1 bg-secondary"></div>
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between pl-2">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Next Appointment</h3>
+<span class="material-symbols-outlined text-[16px] text-secondary">calendar_today</span>
+</div>
+<div class="pl-2 flex flex-col items-center justify-center py-2">
+<div class="text-headline-lg font-headline-lg text-primary text-center">Oct 12</div>
+<div class="text-body-md font-semibold text-secondary text-center mb-2">10:30 AM</div>
+<div class="w-full flex items-center justify-center gap-xs text-[12px] text-on-surface-variant bg-surface-container-low py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">stethoscope</span> Dr. Smith (Chiro)
+                                        </div>
+</div>
+</div>
+<!-- Billing Summary -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-md shadow-sm col-span-1">
+<div class="border-b border-outline-variant pb-xs mb-sm flex items-center justify-between">
+<h3 class="text-label-md font-label-md text-on-surface-variant uppercase">Billing Summary</h3>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">account_balance_wallet</span>
+</div>
+<div class="space-y-2 text-body-md">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Total Billed</span>
+<span class="text-on-surface font-tabular-nums">$4,500.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Total Paid</span>
+<span class="text-emerald-600 font-tabular-nums">-$3,250.00</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-outline-variant/50 font-semibold text-[16px]">
+<span class="text-on-surface">Balance</span>
+<span class="text-error font-tabular-nums">$1,250.00</span>
+</div>
+<div class="text-[10px] text-on-surface-variant text-right mt-1">Last Pmt: 09/20/2023</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Toolbar (Right side on XL desktop, bottom on smaller) -->
+<div class="w-full xl:w-64 flex flex-row xl:flex-col gap-sm shrink-0 overflow-x-auto xl:overflow-visible pb-4 xl:pb-0">
+<h3 class="hidden xl:block text-label-md font-label-md text-on-surface-variant uppercase mb-2">Quick Actions</h3>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-secondary text-on-secondary rounded font-label-md text-label-md hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+                                Book Appointment
+                            </button>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary rounded font-label-md text-label-md hover:border-secondary hover:text-secondary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                                Create Note
+                            </button>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary rounded font-label-md text-label-md hover:border-secondary hover:text-secondary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">vaccines</span>
+                                Add Treatment
+                            </button>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary rounded font-label-md text-label-md hover:border-secondary hover:text-secondary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">request_quote</span>
+                                Generate Bill
+                            </button>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-surface-container-lowest border border-outline-variant text-primary rounded font-label-md text-label-md hover:border-secondary hover:text-secondary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                                Upload Document
+                            </button>
+<hr class="hidden xl:block border-outline-variant my-2"/>
+<button class="whitespace-nowrap xl:whitespace-normal flex-1 xl:flex-none flex items-center justify-center xl:justify-start gap-sm px-4 py-2.5 bg-tertiary text-on-tertiary rounded font-label-md text-label-md hover:bg-tertiary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">archive</span>
+                                Gen Complete Packet
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

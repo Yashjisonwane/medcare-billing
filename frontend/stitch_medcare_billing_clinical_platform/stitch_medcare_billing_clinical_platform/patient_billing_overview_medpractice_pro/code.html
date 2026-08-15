@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedPractice Pro - Patient Billing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#8c939f",
+                      "secondary": "#0040df",
+                      "surface-container-high": "#dce9ff",
+                      "inverse-surface": "#213145",
+                      "background": "#f8f9ff",
+                      "on-tertiary-fixed": "#151c25",
+                      "surface-container": "#e5eeff",
+                      "primary-fixed": "#d8e2ff",
+                      "secondary-fixed-dim": "#b8c3ff",
+                      "on-error": "#ffffff",
+                      "on-primary-fixed": "#081b3a",
+                      "tertiary-container": "#252c36",
+                      "secondary-fixed": "#dde1ff",
+                      "surface-container-low": "#eff4ff",
+                      "surface": "#f8f9ff",
+                      "on-primary": "#ffffff",
+                      "on-background": "#0b1c30",
+                      "on-secondary-container": "#efefff",
+                      "on-tertiary-fixed-variant": "#404751",
+                      "surface-bright": "#f8f9ff",
+                      "inverse-primary": "#b6c6ef",
+                      "tertiary": "#101820",
+                      "outline": "#75777f",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#c5c6cf",
+                      "on-error-container": "#93000a",
+                      "secondary-container": "#2d5bff",
+                      "tertiary-fixed-dim": "#c0c7d3",
+                      "primary-container": "#1a2b4b",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#0035bd",
+                      "surface-variant": "#d3e4fe",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-primary-container": "#8293b8",
+                      "error": "#ba1a1a",
+                      "on-surface": "#0b1c30",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed": "#001355",
+                      "on-primary-fixed-variant": "#364768",
+                      "primary-fixed-dim": "#b6c6ef",
+                      "tertiary-fixed": "#dce3f0",
+                      "on-surface-variant": "#44474e",
+                      "primary": "#031635",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#4e5e81",
+                      "surface-dim": "#cbdbf5",
+                      "inverse-on-surface": "#eaf1ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "xs": "4px",
+                      "unit": "4px",
+                      "container-max": "1440px",
+                      "gutter": "16px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "tabular-nums": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "tabular-nums": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Subtle glow on focus for inputs as requested */
+        input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: none;
+            border-color: #0040df;
+            box-shadow: 0 0 0 2px rgba(0, 64, 223, 0.2);
+        }
+        
+        /* Custom scrollbar for tables */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f8f9ff;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c5c6cf;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #8293b8;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Shell Container -->
+<div class="flex h-screen w-full">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-[240px] fixed left-0 top-0 bg-primary dark:bg-primary-container z-20 shadow-sm">
+<div class="px-md py-lg border-b border-primary-fixed-dim/20 flex flex-col items-center justify-center gap-xs">
+<div class="h-12 w-12 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm mb-2">
+<span class="material-symbols-outlined text-2xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-surface-container-lowest text-center">MedPractice Pro</h1>
+<p class="font-label-md text-label-md text-on-primary-container">Clinical Portal</p>
+</div>
+<div class="flex-1 py-lg overflow-y-auto">
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary-container hover:bg-primary-fixed-dim/10 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed bg-secondary-container/10 border-r-4 border-secondary font-label-md text-label-md active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person</span>
+<span>Patients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary-container hover:bg-primary-fixed-dim/10 transition-colors duration-200 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+</div>
+</div>
+<div class="p-md mt-auto border-t border-primary-fixed-dim/20">
+<button class="w-full bg-secondary text-on-secondary font-label-md text-label-md h-10 rounded-DEFAULT flex items-center justify-center gap-2 hover:bg-secondary/90 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-sm">add</span>
+                    New Record
+                </button>
+</div>
+</nav>
+<!-- Main Content Area Wrapper -->
+<div class="flex flex-col flex-1 w-full md:pl-[240px] relative">
+<!-- TopNavBar -->
+<header class="h-16 w-full fixed top-0 right-0 md:left-[240px] md:w-[calc(100%-240px)] bg-surface-container-lowest dark:bg-surface border-b border-outline-variant dark:border-tertiary-container z-10 flex justify-between items-center px-xl">
+<!-- Mobile Menu Button (Hidden on Desktop) -->
+<button class="md:hidden text-primary p-2 -ml-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Search (on_left) -->
+<div class="hidden sm:flex items-center flex-1 max-w-md relative mr-4">
+<span class="material-symbols-outlined absolute left-3 text-outline">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-full border border-outline-variant bg-surface text-on-surface font-body-md text-body-md focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search patients, records, or billing..." type="text"/>
+</div>
+<!-- Spacer for mobile when search is hidden -->
+<div class="sm:hidden flex-1"></div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-variant transition-colors active:opacity-80">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-variant transition-colors active:opacity-80 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-variant transition-colors active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<button class="flex items-center gap-2 hover:bg-surface-variant p-1 pr-3 rounded-full transition-colors active:opacity-80">
+<img alt="Dr. Julian Vance" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small circular profile picture of a male doctor in a professional white coat against a light blue hospital background. The lighting is bright and clinical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa7DbN3zeWfZqT1plG7MaoydJuBNvynKLvWGtaR3uzG0Mo5HdMfvyXPSJp1nKnFRu5ybcEz2k2OK45gsCxYb_jUfVZi7R1zF3V4MuukjGj8SvGw9tPgtiwcOFuqZ6wXiuKvWRILMdQou-Hc8-cJeTnBq6b0p3svRdVx0vYfGIvQCbIrCFy9aTlk8pB8P3Nrnpa8LxeVh24726NeJaqCKLyygzxFEd3BoncT7LgcDeSsC3TeDuh83lw"/>
+<div class="hidden lg:flex flex-col items-start">
+<span class="font-label-md text-label-md text-on-surface">Dr. Vance</span>
+</div>
+</button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<main class="flex-1 mt-16 overflow-y-auto bg-surface p-md md:p-xl custom-scrollbar relative z-0">
+<div class="max-w-container-max mx-auto flex flex-col gap-lg pb-xl">
+<!-- Page Header & Patient Summary -->
+<div class="flex flex-col gap-sm">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-on-surface-variant font-body-md text-sm">
+<a class="hover:text-secondary transition-colors" href="#">Patients</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-secondary transition-colors" href="#">James Peterson</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Billing</span>
+</nav>
+<!-- Patient Mini Summary -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full bg-surface-container-high text-primary flex items-center justify-center font-headline-md text-headline-md">
+                                    JP
+                                </div>
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface m-0">James Peterson</h2>
+<div class="flex items-center gap-3 text-on-surface-variant mt-1">
+<span class="flex items-center gap-1 font-tabular-nums text-tabular-nums"><span class="material-symbols-outlined text-[16px]">badge</span> PID-8842</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="flex items-center gap-1 font-label-md text-label-md"><span class="material-symbols-outlined text-[16px]">male</span> 45 yrs</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant shadow-sm flex items-center gap-lg">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total Balance</span>
+<span class="font-display-lg text-headline-lg md:text-display-lg text-error m-0">$5,250.00</span>
+</div>
+<button class="h-10 px-4 bg-secondary text-on-secondary rounded-DEFAULT font-label-md text-label-md hover:bg-secondary/90 transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payment</span> Collect Payment
+                                </button>
+</div>
+</div>
+</div>
+<!-- Tabs (Simulated) -->
+<div class="flex border-b border-outline-variant">
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Overview</button>
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Clinical Notes</button>
+<button class="px-4 py-3 font-label-md text-label-md text-secondary font-bold border-b-2 border-secondary transition-colors">Billing</button>
+<button class="px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Documents</button>
+</div>
+<!-- 1. Combined Case Billing Summary (Glassmorphism inspired card) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg shadow-sm relative overflow-hidden">
+<!-- Decorative subtle gradient accent -->
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary rounded-l-xl"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface m-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">account_balance</span>
+                                    Combined Case Billing Summary
+                                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Aggregated totals across all provider services.</p>
+</div>
+<div class="flex gap-2">
+<button class="h-8 px-3 border border-outline border-secondary text-secondary rounded-DEFAULT font-label-md text-label-md hover:bg-secondary/10 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">download</span> Export Summary
+                                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+<!-- Totals -->
+<div class="lg:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-surface rounded-lg p-4 border border-outline-variant/50">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant mb-1">Total Billed</span>
+<span class="font-tabular-nums text-headline-md text-on-surface">$8,400.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant mb-1">Total Payments</span>
+<span class="font-tabular-nums text-headline-md text-primary-fixed-variant" style="color: #059669;">$2,500.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant mb-1">Adjustments</span>
+<span class="font-tabular-nums text-headline-md text-on-surface-variant">$650.00</span>
+</div>
+<div class="flex flex-col border-l pl-4 border-outline-variant">
+<span class="font-label-md text-label-md text-on-surface-variant mb-1">Remaining</span>
+<span class="font-tabular-nums text-headline-md text-error">$5,250.00</span>
+</div>
+</div>
+<!-- Aging -->
+<div class="lg:col-span-2 bg-surface-container-low rounded-lg p-4 border border-outline-variant/50">
+<span class="font-label-md text-label-md text-on-surface-variant mb-3 block">Aging Summary</span>
+<div class="flex justify-between items-end gap-2 h-full pb-1">
+<div class="flex flex-col items-center gap-1 flex-1">
+<span class="font-tabular-nums text-body-md text-on-surface">$4,000</span>
+<div class="w-full bg-surface-variant rounded-t-sm relative h-12">
+<div class="absolute bottom-0 left-0 w-full bg-secondary rounded-t-sm" style="height: 76%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant text-[10px]">0-30</span>
+</div>
+<div class="flex flex-col items-center gap-1 flex-1">
+<span class="font-tabular-nums text-body-md text-on-surface">$1,250</span>
+<div class="w-full bg-surface-variant rounded-t-sm relative h-12">
+<div class="absolute bottom-0 left-0 w-full bg-secondary/70 rounded-t-sm" style="height: 24%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant text-[10px]">31-60</span>
+</div>
+<div class="flex flex-col items-center gap-1 flex-1 opacity-50">
+<span class="font-tabular-nums text-body-md text-on-surface">$0</span>
+<div class="w-full bg-surface-variant rounded-t-sm relative h-12">
+<div class="absolute bottom-0 left-0 w-full bg-secondary/40 rounded-t-sm" style="height: 0%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant text-[10px]">61+</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section Header for Grid -->
+<div class="flex items-center justify-between mt-4">
+<h3 class="font-headline-md text-headline-md text-on-surface m-0">Provider Service Bills</h3>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Filter:</span>
+<select class="h-8 rounded-DEFAULT border-outline-variant bg-surface-container-lowest text-on-surface font-body-md text-sm focus:border-secondary focus:ring-1 focus:ring-secondary py-1 pl-2 pr-8">
+<option>All Providers</option>
+<option>Active Only</option>
+<option>Pending Only</option>
+</select>
+</div>
+</div>
+<!-- 2. Grid of 4 Provider Billing Cards (Bento-style layout) -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-lg">
+<!-- Card 1: JOSMIC Wellness Center -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-[0px_4px_10px_rgba(26,43,75,0.05)] transition-shadow duration-300 flex flex-col overflow-hidden group">
+<!-- Card Header -->
+<div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-start">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[16px] leading-snug text-on-surface font-semibold m-0 group-hover:text-secondary transition-colors">JOSMIC Wellness Center</h4>
+<p class="font-body-md text-body-md text-on-surface-variant m-0">Pain Consultation</p>
+</div>
+</div>
+<div class="px-2 py-1 bg-surface-container-low border border-primary-fixed-dim/30 rounded text-primary font-label-md text-[10px] tracking-wider uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Active
+                                </div>
+</div>
+<!-- Card Body -->
+<div class="p-md flex-1 grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-2">
+<div class="col-span-2 sm:col-span-4 flex justify-between items-center bg-surface p-2 rounded text-sm mb-2">
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">receipt_long</span> ST-2023-089</span>
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">list_alt</span> 4 Lines</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Charges</span>
+<span class="font-tabular-nums text-body-md text-on-surface">$2,200.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Payments</span>
+<span class="font-tabular-nums text-body-md text-on-surface" style="color: #059669;">-$1,000.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Adjustments</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">-$200.00</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-2">
+<span class="font-label-md text-[11px] text-on-surface-variant font-bold">Balance</span>
+<span class="font-tabular-nums text-body-md text-error font-semibold">$1,000.00</span>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="p-3 bg-surface-container border-t border-outline-variant flex flex-wrap gap-2 justify-end">
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1" title="Generate CMS-1500">
+<span class="material-symbols-outlined text-[16px]">description</span> CMS-1500
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Add Service
+                                </button>
+<button class="h-8 px-4 bg-surface-container-lowest border border-outline-variant text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors shadow-sm ml-auto sm:ml-0">
+                                    Open Bill
+                                </button>
+</div>
+</div>
+<!-- Card 2: DAV'S Anatomy -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-[0px_4px_10px_rgba(26,43,75,0.05)] transition-shadow duration-300 flex flex-col overflow-hidden group">
+<!-- Card Header -->
+<div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-start">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">moving</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[16px] leading-snug text-on-surface font-semibold m-0 group-hover:text-secondary transition-colors">DAV'S Anatomy</h4>
+<p class="font-body-md text-body-md text-on-surface-variant m-0">Shockwave Therapy</p>
+</div>
+</div>
+<div class="px-2 py-1 bg-[#fff8e1] border border-[#ffc107]/30 rounded text-[#b28900] font-label-md text-[10px] tracking-wider uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">pending_actions</span> Pending Review
+                                </div>
+</div>
+<!-- Card Body -->
+<div class="p-md flex-1 grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-2">
+<div class="col-span-2 sm:col-span-4 flex justify-between items-center bg-surface p-2 rounded text-sm mb-2">
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">receipt_long</span> ST-2023-094</span>
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">list_alt</span> 6 Lines</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Charges</span>
+<span class="font-tabular-nums text-body-md text-on-surface">$3,400.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Payments</span>
+<span class="font-tabular-nums text-body-md text-on-surface" style="color: #059669;">-$800.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Adjustments</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">-$150.00</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-2">
+<span class="font-label-md text-[11px] text-on-surface-variant font-bold">Balance</span>
+<span class="font-tabular-nums text-body-md text-error font-semibold">$2,450.00</span>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="p-3 bg-surface-container border-t border-outline-variant flex flex-wrap gap-2 justify-end">
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">description</span> CMS-1500
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Add Service
+                                </button>
+<button class="h-8 px-4 bg-surface-container-lowest border border-outline-variant text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors shadow-sm ml-auto sm:ml-0">
+                                    Open Bill
+                                </button>
+</div>
+</div>
+<!-- Card 3: ANIK Laser Therapy -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm hover:shadow-[0px_4px_10px_rgba(26,43,75,0.05)] transition-shadow duration-300 flex flex-col overflow-hidden group">
+<!-- Card Header -->
+<div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-start">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">flare</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[16px] leading-snug text-on-surface font-semibold m-0 group-hover:text-secondary transition-colors">ANIK Laser Therapy</h4>
+<p class="font-body-md text-body-md text-on-surface-variant m-0">Laser Therapy</p>
+</div>
+</div>
+<div class="px-2 py-1 bg-[#e0f2f1] border border-[#009688]/30 rounded text-[#00695c] font-label-md text-[10px] tracking-wider uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">donut_large</span> Partially Paid
+                                </div>
+</div>
+<!-- Card Body -->
+<div class="p-md flex-1 grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-2">
+<div class="col-span-2 sm:col-span-4 flex justify-between items-center bg-surface p-2 rounded text-sm mb-2">
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">receipt_long</span> ST-2023-102</span>
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">list_alt</span> 3 Lines</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Charges</span>
+<span class="font-tabular-nums text-body-md text-on-surface">$1,800.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Payments</span>
+<span class="font-tabular-nums text-body-md text-on-surface" style="color: #059669;">-$700.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Adjustments</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">-$300.00</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-2">
+<span class="font-label-md text-[11px] text-on-surface-variant font-bold">Balance</span>
+<span class="font-tabular-nums text-body-md text-error font-semibold">$800.00</span>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="p-3 bg-surface-container border-t border-outline-variant flex flex-wrap gap-2 justify-end">
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">description</span> CMS-1500
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                                </button>
+<button class="h-8 px-3 text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Add Service
+                                </button>
+<button class="h-8 px-4 bg-surface-container-lowest border border-outline-variant text-primary hover:bg-surface-variant rounded font-label-md text-xs transition-colors shadow-sm ml-auto sm:ml-0">
+                                    Open Bill
+                                </button>
+</div>
+</div>
+<!-- Card 4: Counselor Practice (Error State) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col overflow-hidden relative grayscale-[20%]">
+<!-- Overlay for disabled state feel, but keeping info readable -->
+<!-- Card Header -->
+<div class="p-md border-b border-outline-variant bg-surface-bright flex justify-between items-start">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[16px] leading-snug text-on-surface-variant font-semibold m-0">Counselor Practice</h4>
+<p class="font-body-md text-body-md text-on-surface-variant m-0">Counseling</p>
+</div>
+</div>
+<div class="px-2 py-1 bg-error-container/30 border border-error/30 rounded text-error font-label-md text-[10px] tracking-wider uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span> Config Pending
+                                </div>
+</div>
+<!-- Warning Message Banner -->
+<div class="bg-error-container/20 px-md py-2 border-b border-error/10 flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-[18px] mt-0.5">error_outline</span>
+<span class="font-body-md text-sm text-error">Final bill template not provided. Billing initialization suspended.</span>
+</div>
+<!-- Card Body -->
+<div class="p-md flex-1 grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-2 opacity-70">
+<div class="col-span-2 sm:col-span-4 flex justify-between items-center bg-surface p-2 rounded text-sm mb-2">
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">receipt_long</span> N/A</span>
+<span class="font-body-md text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">list_alt</span> 5 Lines</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Charges</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">$1,000.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Payments</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">$0.00</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[11px] text-on-surface-variant">Adjustments</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant">$0.00</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-2">
+<span class="font-label-md text-[11px] text-on-surface-variant font-bold">Balance</span>
+<span class="font-tabular-nums text-body-md text-on-surface-variant font-semibold">$1,000.00</span>
+</div>
+</div>
+<!-- Card Actions (Disabled/Secondary) -->
+<div class="p-3 bg-surface border-t border-outline-variant flex flex-wrap gap-2 justify-end">
+<button class="h-8 px-3 text-on-surface-variant hover:bg-surface-variant rounded font-label-md text-xs transition-colors flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-[16px]">download</span> Download Documents
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>
