@@ -108,10 +108,10 @@ export const CmsPreviewPage = () => {
           </button>
 
           <button 
-            onClick={() => navigate('/billing/four-bills')} 
+            onClick={() => navigate('/billing/provider-bills')} 
             className="px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition cursor-pointer hidden md:inline-block"
           >
-            Four Bills Ledger
+            Provider Bills Ledger
           </button>
         </div>
 

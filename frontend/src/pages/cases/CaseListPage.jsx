@@ -105,10 +105,10 @@ export const CaseListPage = () => {
                       <Eye className="w-3.5 h-3.5 text-teal-600" /> View Case
                     </button>
                     <button 
-                      onClick={() => navigate('/billing/four-bills')} 
+                      onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
                       className="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow-xs"
                     >
-                      4-Bills <ChevronRight className="w-3.5 h-3.5" />
+                      Bills Ledger <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -170,10 +170,10 @@ export const CaseListPage = () => {
                             <Eye className="w-3 h-3 text-teal-600" /> View Case
                           </button>
                           <button 
-                            onClick={() => navigate('/billing/four-bills')} 
+                            onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
                             className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer shadow-xs"
                           >
-                            4-Bills <ChevronRight className="w-3 h-3" />
+                            Bills Ledger <ChevronRight className="w-3 h-3" />
                           </button>
                         </div>
                       </td>

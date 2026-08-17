@@ -51,8 +51,8 @@ export const BillDetailsPage = () => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <button onClick={() => navigate('/billing/four-bills')} className="flex items-center gap-1 text-xs font-bold text-teal-600 hover:underline">
-        <ArrowLeft className="w-4 h-4" /> Back to 4-Bill Ledger
+      <button onClick={() => navigate('/billing/provider-bills')} className="flex items-center gap-1 text-xs font-bold text-teal-600 hover:underline cursor-pointer">
+        <ArrowLeft className="w-4 h-4" /> Back to Provider Bills Ledger
       </button>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

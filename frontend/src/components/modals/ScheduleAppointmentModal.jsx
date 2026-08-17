@@ -1,7 +1,9 @@
 // src/components/modals/ScheduleAppointmentModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+import { mockPatientService } from '../../services/mock/mockPatientService';
+import { mockCaseService } from '../../services/mock/mockCaseService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { createDefaultServiceLine } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../common/MultiLineCptTable';
@@ -12,9 +14,19 @@ import { Calendar, Clock, User, Save, AlertCircle, Phone, Stethoscope } from 'lu
 const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-800 mb-1';
 
-export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
+export const ScheduleAppointmentModal = ({
+  isOpen,
+  onClose,
+  onAppointmentBooked,
+  prefillPatientId = '',
+  prefillPatientName = '',
+  prefillPhone = '',
+  prefillCaseId = ''
+}) => {
   const { addToast } = useUIStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [patients, setPatients] = useState([]);
+  const [cases, setCases] = useState([]);
 
   const [serviceLines, setServiceLines] = useState([
     createDefaultServiceLine(1, '99204', 'Initial Comprehensive Pain Management Consultation', 450.00),
@@ -22,26 +34,69 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
   ]);
 
   const [formData, setFormData] = useState({
-    patientId: 'pat-001',
-    patientName: 'SAMPLE TESTING (Demo Patient 001)',
-    patientPhone: '713-555-0100',
-    caseId: 'CASE-2025-1227',
+    patientId: prefillPatientId || 'pat-001',
+    patientName: prefillPatientName || '',
+    patientPhone: prefillPhone || '',
+    caseId: prefillCaseId || '',
     providerId: 'prov-josmic',
     visitType: 'INITIAL',
     appointmentType: 'Pain Consult',
-    cptCode: '99204, 97039',
-    date: '2026-08-11',
+    date: new Date().toISOString().split('T')[0],
     startTime: '09:00 AM',
     endTime: '10:00 AM',
     duration: '60',
-    reasonForVisit: 'Post-MVA pain management & initial clinical evaluation',
+    reasonForVisit: 'Post-MVA pain management & clinical evaluation',
     reminderPreference: 'SMS',
     holidayOverride: false,
   });
 
+  // Load patients and cases
+  useEffect(() => {
+    if (isOpen) {
+      mockPatientService.getPatients().then(res => {
+        if (res && res.length > 0) {
+          setPatients(res);
+          if (!prefillPatientName) {
+            const found = res.find(p => p.id === prefillPatientId) || res[0];
+            setFormData(prev => ({
+              ...prev,
+              patientId: found.id,
+              patientName: `${found.firstName} ${found.lastName}`.trim(),
+              patientPhone: found.phone || found.mobilePhone || prev.patientPhone
+            }));
+          }
+        }
+      }).catch(() => {});
+
+      mockCaseService.getCases().then(res => {
+        if (res && res.length > 0) {
+          setCases(res);
+          if (!prefillCaseId) {
+            setFormData(prev => ({
+              ...prev,
+              caseId: res[0].caseId || res[0].id
+            }));
+          }
+        }
+      }).catch(() => {});
+    }
+  }, [isOpen, prefillPatientId, prefillPatientName, prefillPhone, prefillCaseId]);
+
   const set = (field, val) => setFormData(p => ({ ...p, [field]: val }));
 
   const closedCheck = isClinicClosed(formData.date);
+
+  const handlePatientSelect = (pId) => {
+    const p = patients.find(x => x.id === pId);
+    if (p) {
+      setFormData(prev => ({
+        ...prev,
+        patientId: p.id,
+        patientName: `${p.firstName} ${p.lastName}`.trim(),
+        patientPhone: p.phone || p.mobilePhone || ''
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,7 +117,7 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
         modifiers: serviceLines.map(l => [l.modifier1, l.modifier2, l.modifier3, l.modifier4].filter(Boolean).join('-')).filter(Boolean).join(', '),
         providerName: selectedProv?.name || 'JOSMIC Wellness Center'
       });
-      addToast(`Appointment scheduled for ${created.patientName}! ${serviceLines.length} CPT code(s) recorded.`, 'success');
+      addToast(`Appointment scheduled for ${created.patientName}!`, 'success');
       if (onAppointmentBooked) onAppointmentBooked(created);
       onClose();
     } catch {
@@ -76,7 +131,7 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Book New Patient Visit"
+      title="Book Patient Visit"
       subtitle="Select practice provider, appointment time & multi-code CPT billing lines"
       icon={Calendar}
       size="xl"
@@ -95,7 +150,7 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Save className="w-4 h-4" /> {isLoading ? 'Booking...' : 'Confirm Appointment'}
           </button>
@@ -103,26 +158,57 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Patient & Case */}
+        {/* Dynamic Patient & Linked Case Selection */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Patient Name *</label>
-            <input required className={inputCls} value={formData.patientName} onChange={e => set('patientName', e.target.value)} />
+            <label className={labelCls}>Select Patient *</label>
+            {patients.length > 0 ? (
+              <select
+                value={formData.patientId}
+                onChange={e => handlePatientSelect(e.target.value)}
+                className={inputCls}
+              >
+                {patients.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.firstName} {p.lastName} ({p.patientId || p.mrn || p.id})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input required className={inputCls} value={formData.patientName} onChange={e => set('patientName', e.target.value)} placeholder="Patient Name" />
+            )}
           </div>
+
           <div>
-            <label className={labelCls}>Patient Phone (for SMS)</label>
-            <input type="tel" className={inputCls} value={formData.patientPhone} onChange={e => set('patientPhone', e.target.value)} />
+            <label className={labelCls}>Patient Mobile (for SMS Reminders)</label>
+            <input type="tel" className={inputCls} value={formData.patientPhone} onChange={e => set('patientPhone', e.target.value)} placeholder="713-555-0100" />
           </div>
+
           <div>
             <label className={labelCls}>Linked Accident Case</label>
-            <input className={inputCls} value={formData.caseId} onChange={e => set('caseId', e.target.value)} />
+            {cases.length > 0 ? (
+              <select
+                value={formData.caseId}
+                onChange={e => set('caseId', e.target.value)}
+                className={inputCls}
+              >
+                <option value="">-- No Case / General Visit --</option>
+                {cases.map(c => (
+                  <option key={c.id} value={c.caseId || c.id}>
+                    {c.caseId || c.id} — {c.patientName}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input className={inputCls} value={formData.caseId} onChange={e => set('caseId', e.target.value)} placeholder="CASE-2025-1227" />
+            )}
           </div>
         </div>
 
-        {/* Provider & Visit Encounter Type Selection */}
+        {/* Provider & Encounter Type Selection */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>Select Practice Care Provider</label>
+            <label className={labelCls}>Select Practice Care Provider *</label>
             <select
               value={formData.providerId}
               onChange={e => {
@@ -237,10 +323,10 @@ export const ScheduleAppointmentModal = ({ isOpen, onClose, onAppointmentBooked 
             className={inputCls}
             value={formData.reasonForVisit}
             onChange={e => set('reasonForVisit', e.target.value)}
+            placeholder="Clinical chief complaint and visit goals"
           />
         </div>
       </form>
     </Modal>
   );
 };
-
