@@ -77,8 +77,8 @@ export const BillingOverviewPage = () => {
           <h2 className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-2">
             <Layers className="w-4 h-4 text-teal-500" /> Provider Billing Summary
           </h2>
-          <button onClick={() => navigate('/billing/four-bills')} className="text-xs font-bold text-teal-600 hover:underline">
-            Open Full Ledger →
+          <button onClick={() => navigate('/billing/provider-bills')} className="text-xs font-bold text-teal-600 hover:underline cursor-pointer">
+            Open Provider Bills Ledger →
           </button>
         </div>
         <div className="overflow-x-auto">

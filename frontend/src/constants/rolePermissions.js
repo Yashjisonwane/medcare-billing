@@ -99,6 +99,7 @@ export const ROLE_ROUTE_PERMISSIONS = {
     '/appointments/*',
     '/clinical-notes',
     '/clinical-notes/ai-assistant',
+    '/billing/provider-bills',
     '/billing/four-bills',
     '/documents',
   ],
@@ -212,7 +213,7 @@ export const ROLE_SIDEBAR_NAV = {
     {
       title: 'BILLING (VIEW ONLY)',
       items: [
-        { label: 'Six Provider Bills', path: '/billing/four-bills', icon: 'Layers' },
+        { label: 'Provider Bills Ledger', path: '/billing/provider-bills', icon: 'Layers' },
       ],
     },
     {
@@ -236,7 +237,7 @@ export const ROLE_SIDEBAR_NAV = {
       title: 'FINANCIAL & BILLING',
       items: [
         { label: 'Billing Overview', path: '/billing/overview', icon: 'Receipt' },
-        { label: 'Six Provider Bills', path: '/billing/four-bills', icon: 'Layers' },
+        { label: 'Provider Bills Ledger', path: '/billing/provider-bills', icon: 'Layers' },
         { label: 'CMS-1500 Claims', path: '/cms-1500', icon: 'FileText' },
         { label: 'Payments & Adjustments', path: '/billing/payments', icon: 'CreditCard' },
         { label: 'Account Aging', path: '/billing/aging', icon: 'PieChart' },

@@ -45,7 +45,7 @@ const ALL_SECTIONS = (dashboardPath) => [
     title: 'FINANCIAL & BILLING',
     items: [
       { label: 'Billing Overview', path: '/billing/overview', icon: 'Receipt' },
-      { label: 'Four Bills Ledger', path: '/billing/four-bills', icon: 'Layers' },
+      { label: 'Provider Bills Ledger', path: '/billing/provider-bills', icon: 'Layers' },
       { label: 'CMS-1500 Claims', path: '/cms-1500', icon: 'FileText' },
       { label: 'Payments & Adjustments', path: '/billing/payments', icon: 'CreditCard' },
       { label: 'Accounts Aging', path: '/billing/aging', icon: 'PieChart' },

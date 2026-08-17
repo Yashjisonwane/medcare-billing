@@ -73,9 +73,9 @@ export const BillingStaffDashboard = () => {
       {/* 6-Bill Ledger Overview Cards */}
       <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-on-surface">Case CASE-2025-1227 — Six Provider Bills Overview</h2>
-          <button onClick={() => navigate('/billing/four-bills')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1">
-            Open 6-Bill Overview Grid <ChevronRight className="w-4 h-4" />
+          <h2 className="text-base font-bold text-on-surface">Case CASE-2025-1227 — Provider Bills Overview</h2>
+          <button onClick={() => navigate('/billing/provider-bills')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1 cursor-pointer">
+            Open Provider Bills Ledger <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 

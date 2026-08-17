@@ -131,8 +131,9 @@ export const AppRoutes = () => {
 
         {/* Billing & CMS-1500 */}
         <Route path="billing/overview" element={<BillingOverviewPage />} />
-        <Route path="billing/four-bills" element={<FourBillsPage />} />
-        <Route path="billing/six-bills" element={<Navigate to="/billing/four-bills" replace />} />
+        <Route path="billing/provider-bills" element={<FourBillsPage />} />
+        <Route path="billing/four-bills" element={<Navigate to="/billing/provider-bills" replace />} />
+        <Route path="billing/six-bills" element={<Navigate to="/billing/provider-bills" replace />} />
         <Route path="billing/payments" element={<PaymentsAndAdjustmentsPage />} />
         <Route path="billing/create" element={<CreateBillPage />} />
         <Route path="billing/bills/:id" element={<BillDetailsPage />} />

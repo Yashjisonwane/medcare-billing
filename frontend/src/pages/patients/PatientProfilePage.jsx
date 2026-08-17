@@ -423,14 +423,14 @@ export const PatientProfilePage = () => {
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 animate-in fade-in-50 duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Four Provider Bills Ledger</h2>
-              <p className="text-xs text-slate-500">Connected billing statements for JOSMIC, DAV'S Anatomy, ANIK Laser &amp; Counselor Practice</p>
+              <h2 className="text-base font-bold text-slate-900">Provider Bills Ledger</h2>
+              <p className="text-xs text-slate-500">Connected practice provider billing statements &amp; itemized clinical ledgers</p>
             </div>
             <button
-              onClick={() => navigate('/billing/four-bills')}
+              onClick={() => navigate(`/billing/provider-bills?caseId=${activeCase?.id || ''}`)}
               className="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer self-start sm:self-auto"
             >
-              Open Unified 4-Bills Page
+              Open Provider Bills Ledger
             </button>
           </div>
 

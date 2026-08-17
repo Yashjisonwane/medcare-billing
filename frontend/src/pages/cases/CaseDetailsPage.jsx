@@ -39,8 +39,8 @@ export const CaseDetailsPage = () => {
           </p>
         </div>
 
-        <button onClick={() => navigate('/billing/four-bills')} className="px-4 py-2 bg-secondary-container text-white text-xs font-bold rounded-lg shadow hover:bg-secondary flex items-center gap-1.5">
-          <Receipt className="w-4 h-4" /> Open 6-Bill Ledger
+        <button onClick={() => navigate(`/billing/provider-bills?caseId=${caseData.id || id}`)} className="px-4 py-2 bg-secondary-container text-white text-xs font-bold rounded-lg shadow hover:bg-secondary flex items-center gap-1.5 cursor-pointer">
+          <Receipt className="w-4 h-4" /> Open Provider Bills Ledger
         </button>
       </div>
 

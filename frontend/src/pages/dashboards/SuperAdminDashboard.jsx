@@ -126,8 +126,8 @@ export const SuperAdminDashboard = () => {
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900">Provider Status &amp; 6 Service Modality Profiles</h2>
-          <button onClick={() => navigate('/billing/four-bills')} className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1">
-            Open 6-Bill Ledger <ChevronRight className="w-4 h-4" />
+          <button onClick={() => navigate('/billing/provider-bills')} className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1 cursor-pointer">
+            Open Provider Bills Ledger <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
