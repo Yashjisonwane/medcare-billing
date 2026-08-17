@@ -1,75 +1,50 @@
-// src/services/mock/mockCaseService.js
-import { INITIAL_CASES } from './mockDataFixtures';
-
-const STORAGE_KEY = 'medpractice_cases';
-
-const getStoredCases = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_CASES));
-    return INITIAL_CASES;
-  }
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    return INITIAL_CASES;
-  }
-};
-
-const saveCases = (cases) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
-};
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
 export const mockCaseService = {
   async getCases(filters = {}) {
-    await new Promise(res => setTimeout(res, 200));
-    let cases = getStoredCases();
+    const params = new URLSearchParams();
+    if (filters.patientId) params.append('patientId', filters.patientId);
+    if (filters.search) params.append('search', filters.search);
 
-    if (filters.patientId) {
-      cases = cases.filter(c => c.patientId === filters.patientId);
+    const res = await fetch(`${API_BASE}/cases?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error('Failed to retrieve cases list.');
     }
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      cases = cases.filter(c => 
-        c.caseId.toLowerCase().includes(q) ||
-        c.patientName.toLowerCase().includes(q) ||
-        c.attorneyName.toLowerCase().includes(q)
-      );
-    }
-
-    return cases;
+    return res.json();
   },
 
   async getCaseById(id) {
-    await new Promise(res => setTimeout(res, 150));
-    const cases = getStoredCases();
-    return cases.find(c => c.id === id || c.caseId === id) || cases[0];
+    const res = await fetch(`${API_BASE}/cases/${id}`);
+    if (!res.ok) {
+      throw new Error('Failed to retrieve case details.');
+    }
+    return res.json();
   },
 
   async createCase(caseData) {
-    await new Promise(res => setTimeout(res, 300));
-    const cases = getStoredCases();
-    const newCase = {
-      id: `case-${Date.now()}`,
-      caseId: `CASE-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
-      status: 'ACTIVE',
-      assignedProviderIds: ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'],
-      ...caseData
-    };
-    cases.unshift(newCase);
-    saveCases(cases);
-    return newCase;
+    // If patientId is missing (e.g. from a form wrapper), let's ensure it is parsed correctly
+    const res = await fetch(`${API_BASE}/cases`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(caseData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to register patient case.');
+    }
+    return res.json();
   },
 
   async updateAssignedProviders(caseId, providerIds) {
-    await new Promise(res => setTimeout(res, 200));
-    const cases = getStoredCases();
-    const index = cases.findIndex(c => c.id === caseId || c.caseId === caseId);
-    if (index !== -1) {
-      cases[index].assignedProviderIds = providerIds;
-      saveCases(cases);
-      return cases[index];
+    const res = await fetch(`${API_BASE}/cases/${caseId}/providers`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ providerIds })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to update case providers.');
     }
-    throw new Error('Case not found');
+    return res.json();
   }
 };

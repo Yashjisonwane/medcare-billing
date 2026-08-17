@@ -8,13 +8,9 @@ import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 
 export const AppLayout = () => {
-  const { initSession } = useAuthStore();
   const { sidebarCollapsed, setSidebarCollapsed } = useUIStore();
   const location = useLocation();
 
-  useEffect(() => {
-    initSession();
-  }, [initSession]);
 
   // Auto close sidebar on mobile navigation
   useEffect(() => {

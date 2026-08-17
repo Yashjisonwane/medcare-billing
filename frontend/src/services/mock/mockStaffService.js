@@ -1,26 +1,24 @@
-// src/services/mock/mockStaffService.js
-import { DEMO_ACCOUNTS } from '../../constants/rolePermissions';
-
-const STORAGE_KEY = 'medpractice_staff';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
 export const mockStaffService = {
   async getStaff() {
-    await new Promise(res => setTimeout(res, 200));
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : DEMO_ACCOUNTS;
+    const res = await fetch(`${API_BASE}/staff`);
+    if (!res.ok) {
+      throw new Error('Failed to retrieve staff directory.');
+    }
+    return res.json();
   },
 
   async createStaff(staffData) {
-    await new Promise(res => setTimeout(res, 300));
-    const staff = await this.getStaff();
-    const newMember = {
-      id: `usr-${Date.now()}`,
-      status: 'ACTIVE',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120',
-      ...staffData
-    };
-    staff.push(newMember);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(staff));
-    return newMember;
+    const res = await fetch(`${API_BASE}/staff`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(staffData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to create staff account.');
+    }
+    return res.json();
   }
 };

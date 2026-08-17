@@ -1,82 +1,108 @@
-// src/services/mock/mockPatientService.js
-import { INITIAL_PATIENTS } from './mockDataFixtures';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+const TOKEN_KEY = 'medpractice_auth_token';
 
-const STORAGE_KEY = 'medpractice_patients';
-
-const getStoredPatients = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PATIENTS));
-    return INITIAL_PATIENTS;
+const getHeaders = () => {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    return INITIAL_PATIENTS;
-  }
-};
-
-const savePatients = (patients) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
+  return headers;
 };
 
 export const mockPatientService = {
   async getPatients(filters = {}) {
-    await new Promise(res => setTimeout(res, 200));
-    let patients = getStoredPatients();
+    const params = new URLSearchParams();
+    if (filters.search) params.append('search', filters.search);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.providerId) params.append('providerId', filters.providerId);
 
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      patients = patients.filter(p => 
-        p.firstName.toLowerCase().includes(q) ||
-        p.lastName.toLowerCase().includes(q) ||
-        p.patientId.includes(q) ||
-        p.email.toLowerCase().includes(q)
-      );
+    try {
+      const res = await fetch(`${API_BASE}/patients?${params.toString()}`, {
+        headers: getHeaders()
+      });
+      if (!res.ok) {
+        throw new Error('Failed to retrieve patients list.');
+      }
+      return await res.json();
+    } catch (err) {
+      console.warn('[mockPatientService] API fetch failed, checking local fixtures fallback:', err.message);
+      // Fallback
+      const localPts = JSON.parse(localStorage.getItem('medcare_patients_cache') || '[]');
+      return localPts;
     }
-
-    if (filters.status) {
-      patients = patients.filter(p => p.status === filters.status);
-    }
-
-    if (filters.providerId) {
-      patients = patients.filter(p => p.assignedProviderIds.includes(filters.providerId));
-    }
-
-    return patients;
   },
 
   async getPatientById(id) {
-    await new Promise(res => setTimeout(res, 150));
-    const patients = getStoredPatients();
-    return patients.find(p => p.id === id || p.patientId === id) || patients[0];
+    const res = await fetch(`${API_BASE}/patients/${id}`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve patient profile details.');
+    }
+    return res.json();
   },
 
   async createPatient(patientData) {
-    await new Promise(res => setTimeout(res, 300));
-    const patients = getStoredPatients();
-    const newPatient = {
-      id: `pat-${Date.now()}`,
-      patientId: `${Math.floor(100000000 + Math.random() * 900000000)}`,
-      createdAt: new Date().toISOString().split('T')[0],
-      status: 'ACTIVE',
-      assignedProviderIds: patientData.assignedProviderIds || ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'],
-      ...patientData
-    };
-    patients.unshift(newPatient);
-    savePatients(patients);
-    return newPatient;
+    try {
+      const res = await fetch(`${API_BASE}/patients`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(patientData)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to create patient profile.');
+    } catch (error) {
+      console.warn('[mockPatientService] Backend create error, fallback local storage:', error.message);
+      // Fallback local patient creation if backend unavailable
+      const newId = `pat-${Date.now()}`;
+      const newMrn = `${Math.floor(100000000 + Math.random() * 900000000)}`;
+      const newPatient = {
+        id: newId,
+        patientId: newMrn,
+        firstName: patientData.firstName,
+        middleName: patientData.middleName || '',
+        lastName: patientData.lastName,
+        dob: patientData.dob || '',
+        sex: patientData.sex || 'M',
+        phone: patientData.phone || '',
+        email: patientData.email || '',
+        ssn: patientData.ssn || '',
+        address: patientData.address || {
+          street: patientData.street || '',
+          suite: patientData.suite || '',
+          city: patientData.city || '',
+          state: patientData.state || '',
+          zipCode: patientData.zipCode || ''
+        },
+        communicationPref: patientData.communicationPref || 'SMS',
+        consentStatus: patientData.consentStatus || 'SIGNED',
+        assignedProviderIds: patientData.assignedProviderIds || ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+      
+      const cached = JSON.parse(localStorage.getItem('medcare_patients_cache') || '[]');
+      cached.unshift(newPatient);
+      localStorage.setItem('medcare_patients_cache', JSON.stringify(cached));
+      
+      return newPatient;
+    }
   },
 
   async updatePatient(id, updates) {
-    await new Promise(res => setTimeout(res, 250));
-    const patients = getStoredPatients();
-    const index = patients.findIndex(p => p.id === id || p.patientId === id);
-    if (index !== -1) {
-      patients[index] = { ...patients[index], ...updates };
-      savePatients(patients);
-      return patients[index];
+    const res = await fetch(`${API_BASE}/patients/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(updates)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to update patient profile.');
     }
-    throw new Error('Patient not found');
+    return res.json();
   }
 };

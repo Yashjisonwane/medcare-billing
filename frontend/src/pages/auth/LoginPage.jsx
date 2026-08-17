@@ -1,5 +1,5 @@
 // src/pages/auth/LoginPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
@@ -22,44 +22,57 @@ const ROLE_COLORS = {
 };
 
 export const LoginPage = () => {
-  // Navigation & View Mode: 'login' | 'forgot'
   const [viewMode, setViewMode] = useState('login');
 
   // Login Form States
   const [email, setEmail] = useState('admin@example.test');
-  const [password, setPassword] = useState('demo123');
+  const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Forgot Password States
   const [forgotEmail, setForgotEmail] = useState('admin@example.test');
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
 
-  const { login, switchRole, isLoading } = useAuthStore();
+  const { login, switchRole } = useAuthStore();
   const { addToast } = useUIStore();
   const navigate = useNavigate();
+
+  // Ensure loading state is clean on mount
+  useEffect(() => {
+    useAuthStore.setState({ isLoading: false });
+  }, []);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
     try {
       const user = await login(email, password);
-      addToast(`Welcome back, ${user.name}!`, 'success');
-      navigate(`/dashboard/${user.role.toLowerCase().replace(/\s+/g, '-')}`);
-    } catch {
+      addToast(`Welcome back, ${user.name || 'Staff User'}!`, 'success');
+      navigate(`/dashboard/${(user.role || 'super-admin').toLowerCase().replace(/\s+/g, '-')}`);
+    } catch (err) {
+      console.error('Login error:', err);
       setError('Invalid login credentials for staff account.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleQuickRoleSelect = async (account) => {
     setError('');
+    setIsSubmitting(true);
     try {
       const user = await switchRole(account.role);
       addToast(`Authenticated as ${user.name} (${user.role})`, 'success');
-      navigate(`/dashboard/${user.role.toLowerCase().replace(/\s+/g, '-')}`);
-    } catch {
+      navigate(`/dashboard/${(user.role || 'super-admin').toLowerCase().replace(/\s+/g, '-')}`);
+    } catch (err) {
+      console.error('Quick role switch error:', err);
       setError('Failed to log in as selected role.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -243,11 +256,11 @@ export const LoginPage = () => {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                   className="w-full py-2 sm:py-2.5 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-60 cursor-pointer"
                 >
-                  {isLoading ? 'Authenticating...' : 'Sign In to Practice Dashboard'}
-                  {!isLoading && <ArrowRight className="w-3.5 h-3.5" />}
+                  {isSubmitting ? 'Authenticating...' : 'Sign In to Practice Dashboard'}
+                  {!isSubmitting && <ArrowRight className="w-3.5 h-3.5" />}
                 </button>
               </form>
 
@@ -266,7 +279,7 @@ export const LoginPage = () => {
                   <button
                     key={acc.id}
                     type="button"
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     onClick={() => handleQuickRoleSelect(acc)}
                     className="flex flex-col sm:flex-row items-center sm:items-start gap-2 p-2 bg-slate-50/60 hover:bg-teal-50/70 border border-slate-200 hover:border-teal-400 rounded-xl transition-all shadow-2xs text-center sm:text-left group active:scale-98 disabled:opacity-60 cursor-pointer w-full"
                   >

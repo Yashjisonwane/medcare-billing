@@ -1,61 +1,41 @@
-// src/services/mock/mockDocumentService.js
-import { INITIAL_DOCUMENTS } from './mockDataFixtures';
-
-const STORAGE_KEY = 'medpractice_documents';
-
-const getStoredDocuments = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DOCUMENTS));
-    return INITIAL_DOCUMENTS;
-  }
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    return INITIAL_DOCUMENTS;
-  }
-};
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
 export const mockDocumentService = {
   async getDocuments(filters = {}) {
-    await new Promise(res => setTimeout(res, 200));
-    let docs = getStoredDocuments();
-    if (filters.providerName) {
-      docs = docs.filter(d => d.providerName === filters.providerName);
+    const params = new URLSearchParams();
+    if (filters.providerName) params.append('providerName', filters.providerName);
+    if (filters.type) params.append('type', filters.type);
+
+    const res = await fetch(`${API_BASE}/documents?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error('Failed to retrieve case documents.');
     }
-    if (filters.type) {
-      docs = docs.filter(d => d.type === filters.type);
-    }
-    return docs;
+    return res.json();
   },
 
   async uploadDocument(docData) {
-    await new Promise(res => setTimeout(res, 400));
-    const docs = getStoredDocuments();
-    const newDoc = {
-      id: `doc-${Date.now()}`,
-      date: new Date().toLocaleDateString('en-US'),
-      status: 'UPLOADED_DEMO',
-      size: '1.2 MB',
-      ...docData
-    };
-    docs.unshift(newDoc);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
-    return newDoc;
+    const res = await fetch(`${API_BASE}/documents`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(docData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to upload document.');
+    }
+    return res.json();
   },
 
   async buildPatientPacket(selectedDocIds, caseId) {
-    await new Promise(res => setTimeout(res, 600)); // Simulate bundle compilation
-    const docs = getStoredDocuments();
-    const selectedDocs = docs.filter(d => selectedDocIds.includes(d.id));
-    return {
-      packetId: `PKT-${Date.now()}`,
-      caseId,
-      docCount: selectedDocs.length,
-      estimatedPages: selectedDocs.length * 4,
-      generatedAt: new Date().toLocaleString(),
-      status: 'GENERATED_DEMO',
-      downloadUrl: '#demo-packet-download'
-    };
+    const res = await fetch(`${API_BASE}/documents/packet`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ selectedDocIds, caseId })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to bundle patient packet.');
+    }
+    return res.json();
   }
 };

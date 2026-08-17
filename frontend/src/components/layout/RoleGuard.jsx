@@ -9,10 +9,10 @@ export const RoleGuard = ({ children }) => {
   const location = useLocation();
 
   React.useEffect(() => {
-    if (!currentUser && isLoading) {
-      initSession();
-    }
-  }, [currentUser, isLoading, initSession]);
+    initSession();
+  }, []); // Verify token with backend on mount
+
+
 
   if (isLoading) {
     return (
