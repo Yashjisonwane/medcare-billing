@@ -116,12 +116,14 @@ export const AppRoutes = () => {
 
         {/* Clinical Documentation & AI Assistant */}
         <Route path="clinical-notes" element={<ClinicalNotesListPage />} />
+        <Route path="clinical-notes/new" element={<ClinicalNoteEditorPage />} />
         <Route path="clinical-notes/ai-assistant" element={<AiAssistantPage />} />
         <Route path="clinical-notes/assessments" element={<AssessmentsAndFormsPage />} />
         <Route path="clinical-notes/josmic-pain" element={<JosmicPainFormPage />} />
         <Route path="clinical-notes/davs-eswt" element={<DavsEswtFormPage />} />
         <Route path="clinical-notes/anik-laser" element={<AnikLaserFormPage />} />
         <Route path="clinical-notes/counselor-session" element={<CounselorSessionPage />} />
+        <Route path="clinical-notes/:id" element={<ClinicalNoteEditorPage />} />
         <Route path="clinical-notes/:id/edit" element={<ClinicalNoteEditorPage />} />
 
         {/* Treatments & Sessions */}

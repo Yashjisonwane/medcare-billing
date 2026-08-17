@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { mockProviderService } from '../../services/mock/mockProviderService';
-import { Search, Bell, Shield, LogOut, ChevronDown, User, Activity, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Bell, Shield, LogOut, ChevronDown, User, Activity, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
 import { FMLogo } from '../common/FMLogo';
 
 export const TopHeader = () => {
@@ -19,13 +18,11 @@ export const TopHeader = () => {
   const loadProviders = () => {
     mockProviderService.getProviders().then(data => {
       setProvidersList(Object.values(data));
-    });
+    }).catch(() => {});
   };
 
   useEffect(() => {
     loadProviders();
-    
-    // Listen for custom 'providers-updated' event to refresh list in real-time
     window.addEventListener('providers-updated', loadProviders);
     return () => window.removeEventListener('providers-updated', loadProviders);
   }, []);
@@ -43,119 +40,142 @@ export const TopHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-slate-900 text-white h-16 sm:h-20 px-4 sm:px-6 flex items-center justify-between shadow-md border-b border-slate-800">
-      {/* Left section: Arrow Sidebar Toggle & Branding */}
-      <div className="flex items-center gap-3 sm:gap-4">
-        {/* Arrow Sidebar Toggle Button */}
+    <div className="w-full h-full px-3 sm:px-6 flex items-center justify-between text-white select-none gap-4">
+      {/* ── Left section: Sidebar Toggle & Full Branding Title ── */}
+      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+        {/* Toggle Button */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             toggleSidebar();
           }}
-          className="p-2 sm:p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white transition flex items-center justify-center border border-slate-700 shadow-sm cursor-pointer flex-shrink-0"
+          className="p-2 sm:p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white transition flex items-center justify-center border border-slate-700 shadow-sm cursor-pointer shrink-0"
           title={sidebarCollapsed ? "Expand sidebar menu" : "Collapse sidebar menu"}
           aria-label="Toggle Navigation Sidebar"
         >
           {sidebarCollapsed ? (
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 hidden lg:block" />
           ) : (
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 hidden lg:block" />
           )}
+          <Menu className="w-5 h-5 lg:hidden" />
         </button>
 
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/dashboard/${currentUser?.role?.toLowerCase()?.replace(/\s+/g, '-') || 'super-admin'}`)}>
-          <FMLogo className="w-12 h-12 sm:w-16 sm:h-16" fit="contain" shape="rounded-xl" />
-          <div className="hidden sm:block">
-            <h1 className="text-base sm:text-lg font-serif font-black tracking-wide text-white leading-none">F&amp;M HEALTH &amp; WELLNESS</h1>
-            <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold tracking-wider mt-1 uppercase">Billing &amp; Clinical Platform</p>
+        {/* Branding Logo & Title */}
+        <div
+          className="flex items-center gap-3 cursor-pointer shrink-0"
+          onClick={() => navigate(`/dashboard/${currentUser?.role?.toLowerCase()?.replace(/\s+/g, '-') || 'super-admin'}`)}
+        >
+          <FMLogo className="w-11 h-11 sm:w-14 sm:h-14 shrink-0" fit="contain" shape="rounded-xl" />
+          <div className="flex flex-col justify-center">
+            <h1 className="text-sm sm:text-base md:text-lg font-serif font-black tracking-wide text-white leading-tight whitespace-nowrap">
+              F&amp;M HEALTH &amp; WELLNESS
+            </h1>
+            <p className="text-[10px] sm:text-[11px] text-amber-300 font-bold tracking-wider uppercase whitespace-nowrap leading-tight mt-1">
+              Billing &amp; Clinical Platform
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Center Section: Provider Selector & Global Search */}
-      <div className="hidden md:flex items-center gap-3 max-w-xl w-full mx-4">
-        {/* Provider Dropdown Filter (Available to non-receptionists) */}
-        {currentUser?.role !== 'Receptionist' && (
-          <div className="relative min-w-[200px]">
-            <select
-              value={activeProviderFilter}
-              onChange={(e) => setProviderFilter(e.target.value)}
-              className="w-full bg-slate-800 text-white text-xs font-semibold rounded-xl px-3.5 py-2 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 appearance-none pr-8 cursor-pointer"
-            >
-              <option value="ALL">All Practice Providers ({providersList.length + 2} Modalities)</option>
-              {providersList.map((prov) => (
-                <option key={prov.id} value={prov.id}>
-                  {prov.name} {prov.isPlaceholder ? '(Pending Docs)' : ''}
-                </option>
-              ))}
-              <option value="srv-trigger-point">Trigger Point Injection (Pending Config)</option>
-              <option value="srv-tecar-therapy">TECAR Therapy (Pending Config)</option>
-            </select>
-            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
-          </div>
-        )}
+      {/* ── Center Section: Provider Filter & Global Search ── */}
+      <div className="hidden lg:flex items-center justify-center flex-1 max-w-xl mx-4 min-w-0">
+        <div className="flex items-center gap-3 w-full">
+          {/* Provider Dropdown */}
+          {currentUser?.role !== 'Receptionist' && (
+            <div className="relative shrink-0 min-w-[210px]">
+              <select
+                value={activeProviderFilter}
+                onChange={(e) => setProviderFilter(e.target.value)}
+                className="w-full bg-slate-800 text-white text-xs font-semibold rounded-xl px-3.5 py-2 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 appearance-none pr-8 cursor-pointer outline-none"
+              >
+                <option value="ALL">All Practice Providers ({providersList.length + 2} Modalities)</option>
+                {providersList.map((prov) => (
+                  <option key={prov.id} value={prov.id}>
+                    {prov.name} {prov.isPlaceholder ? '(Pending Docs)' : ''}
+                  </option>
+                ))}
+                <option value="srv-trigger-point">Trigger Point Injection (Pending Config)</option>
+                <option value="srv-tecar-therapy">TECAR Therapy (Pending Config)</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          )}
 
-        {/* Global Patient Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search patients, patient IDs, case IDs, or attorneys."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-800 text-white text-xs rounded-xl pl-9 pr-3 py-2 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 placeholder-slate-400"
-          />
-        </form>
+          {/* Global Search Input */}
+          <form onSubmit={handleSearchSubmit} className="relative flex-1 min-w-0">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search patients, MRN, accident cases, or attorneys..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-800/90 text-white text-xs rounded-xl pl-9 pr-3 py-2 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 placeholder-slate-400 outline-none transition"
+            />
+          </form>
+        </div>
       </div>
 
-      {/* Right Section: Notifications, Role Badge & User Profile */}
-      <div className="flex items-center gap-2 sm:gap-4">
-        {/* Read-Only Role Badge Pill (No Quick Switcher) */}
-        <div className="hidden sm:flex items-center gap-1.5 bg-slate-800 border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full text-teal-300">
-          <Shield className="w-3.5 h-3.5 text-teal-400" />
+      {/* ── Right Section: Role Pill + Notification Bell + User Profile ── */}
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        {/* Role Badge Pill */}
+        <div className="hidden md:flex items-center gap-1.5 bg-slate-800 border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full text-teal-300 shrink-0">
+          <Shield className="w-3.5 h-3.5 text-teal-400 shrink-0" />
           <span>Role: {currentUser?.role || 'Super Admin'}</span>
         </div>
 
-        {/* Notifications Popover Trigger */}
-        <button className="relative p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition">
+        {/* Notifications Trigger */}
+        <button
+          type="button"
+          onClick={() => navigate('/appointments/calendar')}
+          className="relative p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer shrink-0"
+          title="Notifications"
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
         </button>
 
         {/* User Profile Dropdown */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-800 transition"
+            className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-800 transition cursor-pointer"
           >
             <img
               src={currentUser?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'}
               alt={currentUser?.name || 'User'}
-              className="w-8 h-8 rounded-full object-cover border-2 border-teal-500"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border-2 border-teal-500 shrink-0 shadow-xs"
             />
-            <span className="hidden lg:block text-xs font-medium text-white">{currentUser?.name?.split(' ')[0]}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-bold text-white leading-tight">
+                {currentUser?.name || 'Sarah Connor'}
+              </p>
+              <p className="text-[10px] text-teal-400 font-semibold">
+                {currentUser?.role || 'Super Admin'}
+              </p>
+            </div>
+            <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block shrink-0" />
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-200 py-2 z-50">
-              <div className="px-4 py-2 border-b border-slate-100">
-                <p className="text-sm font-bold text-slate-900">{currentUser?.name}</p>
-                <p className="text-xs text-teal-600 font-semibold">{currentUser?.role}</p>
-                <p className="text-[11px] text-slate-500">{currentUser?.email}</p>
+            <div className="absolute right-0 mt-2 w-60 bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-2.5 border-b border-slate-100">
+                <p className="text-sm font-extrabold text-slate-900">{currentUser?.name || 'Staff User'}</p>
+                <p className="text-xs text-teal-600 font-bold">{currentUser?.role || 'Super Admin'}</p>
+                <p className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">{currentUser?.email}</p>
               </div>
               <button
-                onClick={() => { setUserMenuOpen(false); navigate('/settings/security'); }}
-                className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2"
+                onClick={() => { setUserMenuOpen(false); navigate('/settings/general'); }}
+                className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer font-medium"
               >
-                <User className="w-4 h-4 text-slate-500" />
-                Profile & Settings
+                <User className="w-4 h-4 text-slate-400" />
+                Clinic Settings &amp; Profile
               </button>
               <div className="border-t border-slate-100 my-1"></div>
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-semibold"
+                className="w-full text-left px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold cursor-pointer"
               >
                 <LogOut className="w-4 h-4 text-rose-600" />
                 Sign Out
@@ -164,6 +184,6 @@ export const TopHeader = () => {
           )}
         </div>
       </div>
-    </header>
+    </div>
   );
 };
