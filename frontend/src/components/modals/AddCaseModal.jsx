@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockCaseService } from '../../services/mock/mockCaseService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
+import { mockAttorneyService } from '../../services/mock/mockAttorneyService';
 import { DynamicDiagnosisPicker } from '../common/DynamicDiagnosisPicker';
+import { AddAttorneyModal } from './AddAttorneyModal';
 import { useUIStore } from '../../store/uiStore';
 import { 
   FileSpreadsheet, Save, Shield, User, Stethoscope, Scale, 
@@ -65,13 +67,20 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState(INITIAL_CASE_DATA);
+  const [attorneys, setAttorneys] = useState([]);
+  const [showAddAttorneyModal, setShowAddAttorneyModal] = useState(false);
 
-  // Load patients list for dropdown
+  const loadAttorneys = () => {
+    mockAttorneyService.getAttorneys().then(data => setAttorneys(data || [])).catch(() => {});
+  };
+
+  // Load patients and attorneys list for dropdown
   useEffect(() => {
     if (isOpen) {
       mockPatientService.getPatients().then(data => {
         setPatients(data || []);
       }).catch(() => {});
+      loadAttorneys();
     }
   }, [isOpen]);
 
@@ -99,6 +108,7 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
         : (patientObj.injuryBodyParts || prev.injuryBodyParts || ''),
       chiefComplaint: patientObj.chiefComplaint || patientObj.patientNotes || prev.chiefComplaint || '',
       attorneyName: patientObj.referringAttorney || patientObj.attorneyName || prev.attorneyName || '',
+      lawFirm: patientObj.lawFirm || patientObj.attorneyLawFirm || (patientObj.referringAttorney ? `${patientObj.referringAttorney}` : prev.lawFirm || ''),
       insuranceCompany: patientObj.primaryInsuranceCompany || prev.insuranceCompany || '',
       insurancePolicyNumber: patientObj.primaryPolicyNumber || prev.insurancePolicyNumber || '',
       insuranceClaimNumber: patientObj.primaryPolicyNumber || prev.insuranceClaimNumber || '',
@@ -451,9 +461,52 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
           <div className="space-y-3.5 text-xs animate-in fade-in-50 duration-150">
             {/* Attorney & Law Firm */}
             <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-3">
-              <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                <Scale className="w-4 h-4 text-teal-600" /> Attorney Lien &amp; Representation
-              </span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-200">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <Scale className="w-4 h-4 text-teal-600" /> Attorney Lien &amp; Representation
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAddAttorneyModal(true)}
+                  className="text-xs font-bold text-teal-700 hover:text-teal-900 flex items-center gap-1 cursor-pointer underline"
+                >
+                  + Register New Law Firm
+                </button>
+              </div>
+
+              {/* Dynamic Law Firm Quick Selector */}
+              <div>
+                <label className={labelCls}>Select from Registered Law Firms</label>
+                <select
+                  className={inputCls()}
+                  onChange={(e) => {
+                    if (e.target.value === '__NEW__') {
+                      setShowAddAttorneyModal(true);
+                      return;
+                    }
+                    const selected = attorneys.find(a => a.id === e.target.value);
+                    if (selected) {
+                      setFormData(p => ({
+                        ...p,
+                        attorneyName: selected.name,
+                        lawFirm: selected.firm,
+                        attorneyPhone: selected.phone,
+                        attorneyEmail: selected.email,
+                        lawFirmAddress: selected.address
+                      }));
+                    }
+                  }}
+                >
+                  <option value="">-- Choose Registered Law Firm or Type Below --</option>
+                  {attorneys.map(a => (
+                    <option key={a.id} value={a.id}>
+                      {a.firm} ({a.name}) — {a.phone}
+                    </option>
+                  ))}
+                  <option value="__NEW__">➕ Register New Law Firm...</option>
+                </select>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Attorney Full Name</label>
@@ -607,6 +660,22 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
           </div>
         )}
       </div>
+
+      <AddAttorneyModal
+        isOpen={showAddAttorneyModal}
+        onClose={() => setShowAddAttorneyModal(false)}
+        onAttorneyAdded={(newAtty) => {
+          loadAttorneys();
+          setFormData(p => ({
+            ...p,
+            attorneyName: newAtty.name,
+            lawFirm: newAtty.firm,
+            attorneyPhone: newAtty.phone,
+            attorneyEmail: newAtty.email,
+            lawFirmAddress: newAtty.address
+          }));
+        }}
+      />
     </Modal>
   );
 };

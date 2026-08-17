@@ -1,13 +1,18 @@
 import express from 'express';
 import { 
   getFourBillsByCase, getBillById, createBill, addServiceLine, 
-  postPayment, postAdjustment, finaliseBill, getAgingSummary 
+  postPayment, postAdjustment, finaliseBill, getAgingSummary,
+  getOverviewStats, getPaymentsList
 } from '../controllers/billingController.js';
 
 const router = express.Router();
 
 // Register paths
+router.get('/overview-stats', getOverviewStats);
+router.get('/transactions', getPaymentsList);
 router.get('/cases/bills', getFourBillsByCase); // Matches mock call getFourBillsByCase
+router.get('/four-bills', getFourBillsByCase);
+router.get('/case-bills', getFourBillsByCase);
 router.get('/aging', getAgingSummary);
 router.get('/bills/:id', getBillById);
 router.post('/bills', createBill);

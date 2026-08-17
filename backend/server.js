@@ -14,6 +14,7 @@ import billingRoutes from './src/routes/billingRoutes.js';
 import documentRoutes from './src/routes/documentRoutes.js';
 import auditRoutes from './src/routes/auditRoutes.js';
 import staffRoutes from './src/routes/staffRoutes.js';
+import attorneyRoutes from './src/routes/attorneyRoutes.js';
 
 import { logger } from './src/config/logger.js';
 
@@ -57,6 +58,7 @@ app.use('/v1/billing', billingRoutes);
 app.use('/v1/documents', documentRoutes);
 app.use('/v1/audit-logs', auditRoutes);
 app.use('/v1/staff', staffRoutes);
+app.use('/v1/attorneys', attorneyRoutes);
 
 // Root landing endpoint
 app.get('/', (req, res) => {

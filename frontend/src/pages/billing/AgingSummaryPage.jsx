@@ -107,16 +107,38 @@ const ActivityIcon = ({ type }) => {
 };
 
 export const AgingSummaryPage = () => {
-  const [aging, setAging] = useState({ current: 0, past30: 0, past60: 0, past90: 0, grandTotal: 0 });
+  const [aging, setAging] = useState({
+    current: 0,
+    past30: 0,
+    past60: 0,
+    past90: 0,
+    grandTotal: 0,
+    providerAgingBreakdown: PROVIDER_AGING,
+    patientAgingLedger: PATIENT_AGING
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockBillingService.getAgingSummary().then(setAging);
+    mockBillingService.getAgingSummary().then(res => {
+      if (res) {
+        setAging({
+          ...res,
+          providerAgingBreakdown: res.providerAgingBreakdown && res.providerAgingBreakdown.length > 0 ? res.providerAgingBreakdown : PROVIDER_AGING,
+          patientAgingLedger: res.patientAgingLedger && res.patientAgingLedger.length > 0 ? res.patientAgingLedger : PATIENT_AGING
+        });
+      }
+    });
   }, []);
+
+  const total = aging.grandTotal || (aging.current + aging.past30 + aging.past60 + aging.past90) || 1;
+  const pct = (val) => ((val / total) * 100).toFixed(1);
 
   const collectionRate = aging.grandTotal > 0
     ? Math.round(((aging.grandTotal - aging.past90) / aging.grandTotal) * 100)
     : 0;
+
+  const providerAgingList = aging.providerAgingBreakdown || PROVIDER_AGING;
+  const patientAgingList = aging.patientAgingLedger || PATIENT_AGING;
 
   return (
     <div className="space-y-6">
@@ -189,7 +211,7 @@ export const AgingSummaryPage = () => {
         <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
           <BarChart2 className="w-4 h-4 text-teal-600" />
           <h2 className="text-sm font-bold text-slate-900">Provider-Level Aging Breakdown</h2>
-          <span className="ml-auto text-[10px] text-slate-400 font-semibold">{PROVIDER_AGING.length} PROVIDERS</span>
+          <span className="ml-auto text-[10px] text-slate-400 font-semibold">{providerAgingList.length} PROVIDERS</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[700px]">
@@ -207,7 +229,7 @@ export const AgingSummaryPage = () => {
               </tr>
             </thead>
             <tbody>
-              {PROVIDER_AGING.map((row, i) => (
+              {providerAgingList.map((row, i) => (
                 <tr key={i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                   <td className="px-5 py-3.5">
                     <p className="font-bold text-slate-900 truncate max-w-[160px]">{row.provider}</p>
@@ -247,10 +269,10 @@ export const AgingSummaryPage = () => {
           <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
             <User className="w-4 h-4 text-teal-600" />
             <h2 className="text-sm font-bold text-slate-900">Patient Aging Ledger</h2>
-            <span className="ml-auto text-[10px] text-slate-400 font-semibold">{PATIENT_AGING.length} PATIENTS</span>
+            <span className="ml-auto text-[10px] text-slate-400 font-semibold">{patientAgingList.length} PATIENTS / CASES</span>
           </div>
           <div className="divide-y divide-slate-50">
-            {PATIENT_AGING.map((p, i) => {
+            {patientAgingList.map((p, i) => {
               const pct90 = p.total > 0 ? Math.round((p.past90 / p.total) * 100) : 0;
               return (
                 <div key={i} className="px-5 py-3.5 hover:bg-slate-50 transition-colors">

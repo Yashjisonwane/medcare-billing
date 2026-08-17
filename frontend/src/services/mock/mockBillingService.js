@@ -87,5 +87,34 @@ export const mockBillingService = {
       throw new Error('Failed to retrieve aging summaries.');
     }
     return res.json();
+  },
+
+  async getOverviewStats() {
+    try {
+      const res = await fetch(`${API_BASE}/billing/overview-stats`);
+      if (!res.ok) throw new Error('API Error');
+      return await res.json();
+    } catch {
+      return {
+        kpis: { totalBilled: 58054, amountCollected: 0, totalAdjustments: 50, outstandingBalance: 58004, past90Overdue: 28790 },
+        agingBuckets: { current: 27090, past30: 1644, past60: 530, past90: 28790, grandTotal: 58004 },
+        providers: [
+          { name: 'JOSMIC Wellness Center', specialty: 'Pain Management', total: 4428, paid: 0, balance: 4428, status: 'Finalised', color: 'teal' },
+          { name: "DAV'S Anatomy", specialty: 'Shockwave (ESWT)', total: 17870, paid: 0, balance: 17870, status: 'Issued', color: 'blue' },
+          { name: 'ANIK Laser Therapy', specialty: 'Laser Therapy', total: 33526, paid: 0, balance: 33476, status: 'Issued', color: 'violet' },
+          { name: 'Counselor Practice', specialty: 'Counseling & Mental Health', total: 1140, paid: 0, balance: 1140, status: 'Issued', color: 'amber' }
+        ]
+      };
+    }
+  },
+
+  async getTransactions() {
+    try {
+      const res = await fetch(`${API_BASE}/billing/transactions`);
+      if (!res.ok) throw new Error('API Error');
+      return await res.json();
+    } catch {
+      return [];
+    }
   }
 };

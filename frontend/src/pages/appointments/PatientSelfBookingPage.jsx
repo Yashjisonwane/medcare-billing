@@ -4,16 +4,18 @@ import { mockAppointmentService } from '../../services/mock/mockAppointmentServi
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { CORE_SERVICES as SERVICES_CATALOG } from '../../constants/servicesCatalog';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import {
   Calendar, Clock, User, Phone, Mail, CheckCircle2,
   Sparkles, ArrowRight, ArrowLeft, ShieldCheck, AlertCircle,
-  Building2, Stethoscope, Check, Search, FileText, Tag, RefreshCw
+  Building2, Stethoscope, Check, Search, FileText, Tag, RefreshCw, Printer, Scale
 } from 'lucide-react';
 
 export const PatientSelfBookingPage = () => {
   const navigate = useNavigate();
   const { addToast } = useUIStore();
+  const { user } = useAuthStore();
 
   const [mode, setMode] = useState('book'); // 'book' | 'lookup'
   const [step, setStep] = useState(1);
@@ -39,10 +41,14 @@ export const PatientSelfBookingPage = () => {
     reasonForVisit: 'Initial consultation and evaluation',
     date: new Date().toISOString().split('T')[0],
     time: '',
+    hasAttorney: false,
+    attorneyName: '',
+    lawFirm: '',
+    attorneyPhone: '',
   });
 
   // Available Slots state
-  const [slotsState, setSlotsState] = useState({ loading: false, isHoliday: false, holidayName: '', slots: [] });
+  const [slotsState, setSlotsState] = useState({ loading: false, isClosed: false, isWeekend: false, isHoliday: false, reason: '', holidayName: '', slots: [] });
 
   const providers = Object.values(INITIAL_PROVIDER_CONFIGS);
   const selectedProvider = providers.find(p => p.id === formData.providerId) || providers[0];
@@ -120,8 +126,8 @@ export const PatientSelfBookingPage = () => {
 
   const handleNextStep1 = (e) => {
     e.preventDefault();
-    if (!formData.patientName || !formData.patientPhone) {
-      addToast('Please enter your full name and phone number', 'warning');
+    if (!formData.patientName || !formData.patientPhone || !formData.patientEmail) {
+      addToast('Please enter your full name, mobile phone number, and email address', 'warning');
       return;
     }
     setStep(2);
@@ -147,13 +153,13 @@ export const PatientSelfBookingPage = () => {
         id: `line-${idx + 1}`,
         cptCode: s.suggestedCptCode,
         description: s.name,
-        modifier1: idx === 0 ? (formData.visitType === 'INITIAL' ? '25' : '') : '59',
-        modifier2: '',
-        modifier3: '',
-        modifier4: '',
+        modifier1: idx === 0 ? (formData.visitType === 'INITIAL' ? '25' : '25') : '59',
+        modifier2: '59',
+        modifier3: 'RT',
+        modifier4: 'GP',
         diagnosisPointer: 'A',
         units: 1,
-        charge: s.suggestedCptCode === '99204' ? 450.00 : s.suggestedCptCode === '97039' ? 250.00 : 350.00
+        charge: s.suggestedCptCode === '99204' ? 450.00 : s.suggestedCptCode === '97039' ? 250.00 : (s.standardRate || 350.00)
       }));
 
       const created = await mockAppointmentService.autoBookAppointment({
@@ -172,7 +178,6 @@ export const PatientSelfBookingPage = () => {
     }
   };
 
-
   return (
     <div className="max-w-4xl mx-auto py-4 space-y-6">
       
@@ -182,14 +187,14 @@ export const PatientSelfBookingPage = () => {
         <div className="relative z-10 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-200 text-xs font-bold border border-teal-400/30 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-teal-300" /> Automated Patient Booking Portal
+              <Sparkles className="w-3.5 h-3.5 text-teal-300" /> Patient Public Self-Booking Portal
             </div>
 
             {/* Mode Switcher Buttons */}
             <div className="flex items-center gap-1.5 bg-slate-800/80 p-1 rounded-2xl border border-slate-700">
               <button
                 onClick={() => setMode('book')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition ${
+                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
                   mode === 'book'
                     ? 'bg-teal-500 text-white shadow-md'
                     : 'text-slate-300 hover:text-white'
@@ -199,7 +204,7 @@ export const PatientSelfBookingPage = () => {
               </button>
               <button
                 onClick={() => setMode('lookup')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 ${
+                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer ${
                   mode === 'lookup'
                     ? 'bg-teal-500 text-white shadow-md'
                     : 'text-slate-300 hover:text-white'
@@ -246,7 +251,7 @@ export const PatientSelfBookingPage = () => {
             <button
               type="submit"
               disabled={isSearching}
-              className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 shrink-0"
+              className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 shrink-0 cursor-pointer"
             >
               {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Search Bookings
             </button>
@@ -327,7 +332,7 @@ export const PatientSelfBookingPage = () => {
                         <span className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" /> Reminder Log: <strong>{apt.reminderStatus || 'Automated SMS Dispatched'}</strong>
                         </span>
-                        <span className="text-slate-400 text-[10px]">ID: {apt.id}</span>
+                        <span className="text-slate-400 text-[10px]">Ref: {apt.bookingRef || apt.id}</span>
                       </div>
                     </div>
                   ))}
@@ -403,11 +408,12 @@ export const PatientSelfBookingPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 mb-1">Email Address</label>
+                  <label className="block text-xs font-bold text-slate-900 mb-1">Email Address (For Appointment Confirmation) *</label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
                       type="email"
+                      required
                       placeholder="e.g. sarah.j@example.com"
                       value={formData.patientEmail}
                       onChange={e => setFormData({ ...formData, patientEmail: e.target.value })}
@@ -430,7 +436,7 @@ export const PatientSelfBookingPage = () => {
               <div>
                 <label className="block text-xs font-bold text-slate-900 mb-1">Reason for Visit / Symptoms</label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   placeholder="Describe your pain, injury, or consultation request..."
                   value={formData.reasonForVisit}
                   onChange={e => setFormData({ ...formData, reasonForVisit: e.target.value })}
@@ -438,10 +444,56 @@ export const PatientSelfBookingPage = () => {
                 ></textarea>
               </div>
 
+              {/* Legal / Attorney Lien Representation (Optional) */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Scale className="w-4 h-4 text-teal-600" /> Accident Legal Representation (Optional)
+                    </span>
+                    <p className="text-[11px] text-slate-500">Do you have an attorney representing your auto accident or injury claim?</p>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.hasAttorney}
+                      onChange={e => setFormData({ ...formData, hasAttorney: e.target.checked })}
+                      className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
+                    />
+                    <span className="text-xs font-bold text-teal-800">Yes, I have an attorney</span>
+                  </label>
+                </div>
+
+                {formData.hasAttorney && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200/80 animate-in fade-in-50">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-800 mb-1">Attorney Name / Law Firm</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. OJ Lawal & Associates, Marcus Vance"
+                        value={formData.attorneyName}
+                        onChange={e => setFormData({ ...formData, attorneyName: e.target.value })}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-800 mb-1">Law Firm Phone (Optional)</label>
+                      <input
+                        type="tel"
+                        placeholder="e.g. 713-555-0188"
+                        value={formData.attorneyPhone}
+                        onChange={e => setFormData({ ...formData, attorneyPhone: e.target.value })}
+                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
                 >
                   Continue to Doctor &amp; Service <ArrowRight className="w-4 h-4" />
                 </button>
@@ -533,7 +585,7 @@ export const PatientSelfBookingPage = () => {
               <div className="flex justify-between items-center pt-2">
                 <button
                   onClick={() => setStep(1)}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back to Patient Info
                 </button>
@@ -612,7 +664,7 @@ export const PatientSelfBookingPage = () => {
                           key={s.time}
                           disabled={!s.available}
                           onClick={() => setFormData({ ...formData, time: s.time })}
-                          className={`p-3 rounded-xl text-xs font-bold border transition flex items-center justify-between ${
+                          className={`p-3 rounded-xl text-xs font-bold border transition flex items-center justify-between cursor-pointer ${
                             !s.available
                               ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
                               : formData.time === s.time
@@ -632,17 +684,17 @@ export const PatientSelfBookingPage = () => {
               <div className="flex justify-between items-center pt-2">
                 <button
                   onClick={() => setStep(2)}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back to Provider Selection
                 </button>
                 <button
-                  disabled={isSubmitting || !formData.time || slotsState.isHoliday}
+                  disabled={isSubmitting || !formData.time || slotsState.isClosed}
                   onClick={handleAutoBookSubmit}
-                  className={`inline-flex items-center gap-2 px-8 py-3.5 text-white font-extrabold text-xs rounded-xl shadow-lg transition ${
-                    isSubmitting || !formData.time || slotsState.isHoliday
+                  className={`inline-flex items-center gap-2 px-8 py-3.5 text-white font-extrabold text-xs rounded-xl shadow-lg transition cursor-pointer ${
+                    isSubmitting || !formData.time || slotsState.isClosed
                       ? 'bg-slate-300 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700'
+                      : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95'
                   }`}
                 >
                   {isSubmitting ? (
@@ -666,11 +718,11 @@ export const PatientSelfBookingPage = () => {
 
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold mb-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> Booking Confirmed Automatically
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> Booking Confirmed Successfully
                 </div>
                 <h2 className="text-2xl font-extrabold text-slate-900">Your Appointment is Scheduled!</h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Booking Reference Number: <strong className="text-slate-900 font-mono text-sm">{confirmedBooking.bookingRef}</strong>
+                  Booking Reference Code: <strong className="text-teal-700 font-mono text-sm px-2 py-0.5 bg-teal-50 rounded border border-teal-200">{confirmedBooking.bookingRef}</strong>
                 </p>
               </div>
 
@@ -700,22 +752,69 @@ export const PatientSelfBookingPage = () => {
                 </div>
               </div>
 
-              {/* Reminder Dispatch Card */}
-              <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 max-w-lg mx-auto flex items-center justify-between text-left text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
-                    SMS
+              {/* Reminder Dispatch Cards (Email & SMS) */}
+              <div className="max-w-lg mx-auto space-y-2.5">
+                {/* Email Confirmation Dispatch Card */}
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between text-left text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-2xs">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-emerald-950">Confirmation Email Dispatched</div>
+                      <div className="text-[11px] text-emerald-800">
+                        Details sent to <strong className="font-mono">{formData.patientEmail || confirmedBooking.patientEmail || 'patient@email.com'}</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-bold text-teal-900">Automated Notification Dispatched</div>
-                    <div className="text-[11px] text-teal-700">Confirmation SMS sent to {confirmedBooking.patientPhone}</div>
-                  </div>
+                  <span className="px-2.5 py-1 bg-emerald-200/80 text-emerald-900 text-[10px] font-extrabold rounded-lg font-mono">
+                    SENT ✓
+                  </span>
                 </div>
-                <span className="px-2.5 py-1 bg-teal-200/60 text-teal-800 text-[10px] font-bold rounded-lg">Status: SENT</span>
+
+                {/* SMS Confirmation Dispatch Card */}
+                <div className="bg-teal-50 border border-teal-200 rounded-2xl p-4 flex items-center justify-between text-left text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shadow-2xs">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-teal-950">Automated SMS Notification</div>
+                      <div className="text-[11px] text-teal-800">
+                        SMS dispatched to <strong className="font-mono">{confirmedBooking.patientPhone}</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 bg-teal-200/80 text-teal-900 text-[10px] font-extrabold rounded-lg font-mono">
+                    SENT ✓
+                  </span>
+                </div>
               </div>
 
-              <div className="flex justify-center gap-3 pt-4">
+              {/* Action Buttons for Patient & Staff */}
+              <div className="flex flex-wrap justify-center gap-3 pt-4">
                 <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" /> Print Confirmation
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(confirmedBooking.bookingRef || confirmedBooking.patientPhone);
+                    setMode('lookup');
+                    handleSearchLookup();
+                  }}
+                  className="px-5 py-2.5 border border-teal-300 text-teal-800 bg-teal-50/50 hover:bg-teal-100 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Search className="w-4 h-4" /> View in My Bookings
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => {
                     setStep(1);
                     setConfirmedBooking(null);
@@ -725,7 +824,7 @@ export const PatientSelfBookingPage = () => {
                       patientEmail: '',
                       patientDob: '',
                       providerId: 'prov-josmic',
-                      serviceId: SERVICES_CATALOG[0].id,
+                      serviceIds: [SERVICES_CATALOG[0].id],
                       appointmentType: SERVICES_CATALOG[0].name,
                       cptCode: SERVICES_CATALOG[0].suggestedCptCode,
                       reasonForVisit: 'Initial consultation and evaluation',
@@ -733,16 +832,21 @@ export const PatientSelfBookingPage = () => {
                       time: '',
                     });
                   }}
-                  className="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition"
+                  className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
                 >
                   Book Another Appointment
                 </button>
-                <button
-                  onClick={() => navigate('/appointments/calendar')}
-                  className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition"
-                >
-                  View Calendar Schedule
-                </button>
+
+                {/* If staff is logged in, show back to clinic portal */}
+                {user && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/appointments/calendar')}
+                    className="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
+                  >
+                    Back to Staff Calendar
+                  </button>
+                )}
               </div>
             </div>
           )}

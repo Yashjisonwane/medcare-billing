@@ -1,6 +1,7 @@
 // src/pages/dashboards/BillingStaffDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
+import { mockCaseService } from '../../services/mock/mockCaseService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { Receipt, DollarSign, FileCheck, Clock, PlusCircle, ChevronRight, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,8 +12,13 @@ export const BillingStaffDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockBillingService.getAgingSummary().then(setAging);
-    mockBillingService.getFourBillsByCase('case-001').then(res => setFourBills(res.allBills));
+    mockBillingService.getAgingSummary().then(setAging).catch(() => {});
+    mockCaseService.getCases().then(cases => {
+      const target = cases && cases.length > 0 ? cases[0] : { id: 'case-001' };
+      mockBillingService.getFourBillsByCase(target.id || target.caseId).then(res => {
+        if (res?.allBills) setFourBills(res.allBills);
+      }).catch(() => {});
+    }).catch(() => {});
   }, []);
 
   return (

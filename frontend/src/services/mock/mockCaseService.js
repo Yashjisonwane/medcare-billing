@@ -35,6 +35,19 @@ export const mockCaseService = {
     return res.json();
   },
 
+  async updateCase(id, caseData) {
+    const res = await fetch(`${API_BASE}/cases/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(caseData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to update accident case.');
+    }
+    return res.json();
+  },
+
   async updateAssignedProviders(caseId, providerIds) {
     const res = await fetch(`${API_BASE}/cases/${caseId}/providers`, {
       method: 'PUT',

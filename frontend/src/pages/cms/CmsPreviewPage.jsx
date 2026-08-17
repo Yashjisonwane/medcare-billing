@@ -130,20 +130,20 @@ export const CmsPreviewPage = () => {
         </div>
       </div>
 
-      {/* WARNING NOTICES (Hidden during Printing) */}
-      <div className="space-y-2 print:hidden">
-        <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-900 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <FileCheck className="w-4 h-4 text-teal-600 flex-shrink-0" />
-            <span className="text-[11px] sm:text-xs">
-              <strong>Form Version:</strong> Official CMS-1500 (02/12) NUCC Standard &bull; Linked to Visit Dates
+        <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center border border-teal-500/30">
+              <FileCheck className="w-4 h-4 text-teal-400" />
+            </div>
+            <span className="text-xs text-slate-300">
+              <strong className="text-white">Standard HCFA CMS-1500 (02/12):</strong> Form mapped to Box 1–33 NUCC Compliance
             </span>
           </div>
-          <span className="px-2 py-0.5 text-[10px] font-bold bg-teal-100 text-teal-800 rounded-full border border-teal-300 flex-shrink-0">
-            {currentClaim.status}
-          </span>
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full font-bold text-xs shrink-0 self-start sm:self-auto">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>✓ Ready to File &bull; Generated &amp; Validated</span>
+          </div>
         </div>
-      </div>
 
       {/* VIEWER NAVIGATION TOOLBAR (Hidden during Printing) */}
       <div className="bg-slate-900 text-white p-3 sm:p-4 rounded-xl border border-slate-800 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">

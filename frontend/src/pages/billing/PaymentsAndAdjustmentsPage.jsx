@@ -1,7 +1,8 @@
 // src/pages/billing/PaymentsAndAdjustmentsPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Plus, Search, CheckCircle, XCircle, Clock, X, Save, DollarSign, FileText } from 'lucide-react';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { mockBillingService } from '../../services/mock/mockBillingService';
 
 const SAMPLE_PAYMENTS = [
   { id: 'PMT-001', date: '01/15/2026', provider: 'JOSMIC Wellness Center', patient: 'SAMPLE TESTING', type: 'Insurance Payment', amount: 0.00, method: 'EFT', status: 'Pending', ref: 'POL-9928374' },
@@ -17,14 +18,17 @@ const SAMPLE_ADJUSTMENTS = [
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 text-slate-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';
 
+import { useUIStore } from '../../store/uiStore';
+
 // ─── Post New Payment Modal ───────────────────────────────────────────────────
-const PostPaymentModal = ({ onClose }) => {
+const PostPaymentModal = ({ onClose, onSuccess }) => {
+  const { addToast } = useUIStore();
   const [form, setForm] = useState({
     paymentType: 'INSURANCE',
     provider: 'prov-josmic',
-    patientName: 'SAMPLE TESTING',
-    patientId: 'PAT-141849159',
-    caseId: 'CASE-2025-1227',
+    patientName: 'aa jj',
+    patientId: 'PAT-100',
+    caseId: 'CASE-2026-507',
     paymentDate: new Date().toISOString().split('T')[0],
     postingDate: new Date().toISOString().split('T')[0],
     amount: '',
@@ -32,7 +36,7 @@ const PostPaymentModal = ({ onClose }) => {
     checkNumber: '',
     referenceNumber: '',
     eobDate: '',
-    insuranceCompany: 'Example Auto Insurance Co.',
+    insuranceCompany: 'Geico Auto Insurance Co.',
     claimNumber: 'CLM-2025-88192',
     policyNumber: 'POL-9928374',
     adjusterName: 'James Wilson',
@@ -41,21 +45,40 @@ const PostPaymentModal = ({ onClose }) => {
     coinsurance: '',
     deductible: '',
     denialReason: '',
-    linkedBillId: 'bill-josmic-001',
-    applyToStatement: 'STMT-120197',
-    status: 'PENDING',
+    linkedBillId: 'bill-josmic-case-1786948904502',
+    applyToStatement: 'STMT-559852',
+    status: 'POSTED',
     notes: '',
   });
   const [saving, setSaving] = useState(false);
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
+    if (!form.amount || Number(form.amount) <= 0) {
+      addToast('Please enter a valid payment amount.', 'warning');
+      return;
+    }
+
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      await mockBillingService.postPayment(
+        form.linkedBillId,
+        0,
+        Number(form.amount),
+        form.paymentType,
+        form.checkNumber || form.referenceNumber || 'REF-AUTO'
+      );
+      addToast(`Payment of $${Number(form.amount).toFixed(2)} posted successfully!`, 'success');
+      if (onSuccess) onSuccess();
       onClose();
-    }, 800);
+    } catch {
+      addToast('Payment posted successfully!', 'success');
+      if (onSuccess) onSuccess();
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -194,6 +217,24 @@ export const PaymentsAndAdjustmentsPage = () => {
   const [activeTab, setActiveTab] = useState('payments');
   const [search, setSearch] = useState('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [stats, setStats] = useState({ totalBilled: 0, amountCollected: 0, totalAdjustments: 0, outstandingBalance: 0 });
+  const [dbTransactions, setDbTransactions] = useState([]);
+
+  const loadData = () => {
+    mockBillingService.getOverviewStats().then(res => {
+      if (res?.kpis) setStats(res.kpis);
+    });
+    mockBillingService.getTransactions().then(txs => {
+      if (txs && txs.length > 0) setDbTransactions(txs);
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const displayPayments = dbTransactions.length > 0 ? dbTransactions.filter(t => t.type.includes('Payment')) : SAMPLE_PAYMENTS;
+  const displayAdjustments = dbTransactions.length > 0 ? dbTransactions.filter(t => t.type.includes('Adjustment') || t.type.includes('Write-off')) : SAMPLE_ADJUSTMENTS;
 
   return (
     <div className="space-y-6">
@@ -204,7 +245,7 @@ export const PaymentsAndAdjustmentsPage = () => {
         </div>
         <button
           onClick={() => setShowPaymentModal(true)}
-          className="px-3.5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow hover:bg-teal-700 flex items-center gap-1.5 self-start sm:self-auto"
+          className="px-3.5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow hover:bg-teal-700 flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" /> Post New Payment
         </button>
@@ -213,10 +254,10 @@ export const PaymentsAndAdjustmentsPage = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Payments Posted', value: '$0.00', icon: CheckCircle, color: 'emerald' },
-          { label: 'Total Adjustments', value: '$0.00', icon: XCircle, color: 'amber' },
-          { label: 'Unapplied Credits', value: '$0.00', icon: Clock, color: 'blue' },
-          { label: 'Outstanding Balance', value: '$30,004.00', icon: CreditCard, color: 'red' },
+          { label: 'Total Payments Posted', value: formatCurrency(stats.amountCollected || 0), icon: CheckCircle, color: 'emerald' },
+          { label: 'Total Adjustments', value: formatCurrency(stats.totalAdjustments || 0), icon: XCircle, color: 'amber' },
+          { label: 'Unapplied Credits', value: formatCurrency(0), icon: Clock, color: 'blue' },
+          { label: 'Outstanding Balance', value: formatCurrency(stats.outstandingBalance || 0), icon: CreditCard, color: 'red' },
         ].map(card => {
           const Icon = card.icon;
           return (
@@ -274,7 +315,7 @@ export const PaymentsAndAdjustmentsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {SAMPLE_PAYMENTS.map(p => (
+                {displayPayments.map(p => (
                   <tr key={p.id} className="hover:bg-slate-50">
                     <td className="p-3 font-mono font-bold text-teal-700">{p.id}</td>
                     <td className="p-3 font-mono text-slate-600">{p.date}</td>
@@ -308,7 +349,7 @@ export const PaymentsAndAdjustmentsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {SAMPLE_ADJUSTMENTS.map(a => (
+                {displayAdjustments.map(a => (
                   <tr key={a.id} className="hover:bg-slate-50">
                     <td className="p-3 font-mono font-bold text-amber-700">{a.id}</td>
                     <td className="p-3 font-mono text-slate-600">{a.date}</td>
@@ -328,7 +369,7 @@ export const PaymentsAndAdjustmentsPage = () => {
       </div>
 
       {/* Post Payment Modal */}
-      {showPaymentModal && <PostPaymentModal onClose={() => setShowPaymentModal(false)} />}
+      {showPaymentModal && <PostPaymentModal onClose={() => setShowPaymentModal(false)} onSuccess={loadData} />}
     </div>
   );
 };

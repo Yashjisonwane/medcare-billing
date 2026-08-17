@@ -98,7 +98,7 @@ export const AddCasePage = () => {
         : (patientObj.injuryBodyParts || prev.injuryBodyParts || ''),
       chiefComplaint: patientObj.chiefComplaint || patientObj.patientNotes || prev.chiefComplaint || '',
       attorneyName: patientObj.referringAttorney || patientObj.attorneyName || prev.attorneyName || '',
-      lawFirm: patientObj.lawFirm || prev.lawFirm || '',
+      lawFirm: patientObj.lawFirm || patientObj.attorneyLawFirm || (patientObj.referringAttorney ? `${patientObj.referringAttorney}` : prev.lawFirm || ''),
       insuranceCompany: patientObj.primaryInsuranceCompany || prev.insuranceCompany || '',
       policyNumber: patientObj.primaryPolicyNumber || prev.policyNumber || '',
       claimNumber: patientObj.primaryPolicyNumber || prev.claimNumber || '',

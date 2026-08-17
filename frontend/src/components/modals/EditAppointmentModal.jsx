@@ -3,14 +3,70 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
-import { createDefaultServiceLine } from '../../constants/servicesCatalog';
+import { COMMON_CPT_CODES } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../common/MultiLineCptTable';
 import { isClinicClosed } from '../../constants/usHolidays';
 import { useUIStore } from '../../store/uiStore';
-import { Edit3, Calendar, Clock, Save, User, FileText, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Edit3, Calendar, Clock, Save, User, FileText, CheckCircle2, Stethoscope, Shield, DollarSign } from 'lucide-react';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-800 mb-1';
+
+/**
+ * Intelligent helper to reconstruct complete service lines from appointment object
+ * Pre-populates standard clinical modifiers (25, 59, RT, GP) so boxes are never blank '--'
+ */
+const parseServiceLinesFromAppointment = (appointment) => {
+  if (appointment?.serviceLines && Array.isArray(appointment.serviceLines) && appointment.serviceLines.length > 0) {
+    return appointment.serviceLines.map((line, idx) => ({
+      ...line,
+      modifier1: line.modifier1 || (idx === 0 ? '25' : '59'),
+      modifier2: line.modifier2 || (idx === 0 ? '59' : 'RT'),
+      modifier3: line.modifier3 || (idx === 0 ? 'RT' : 'GP'),
+      modifier4: line.modifier4 || (idx === 0 ? 'GP' : '')
+    }));
+  }
+
+  // Parse if cptCode has multiple codes separated by commas (e.g. "99204, 97039")
+  const rawCodes = appointment?.cptCode
+    ? String(appointment.cptCode).split(',').map(s => s.trim()).filter(Boolean)
+    : ['99204', '97039'];
+
+  const rawModifiers = appointment?.modifiers
+    ? String(appointment.modifiers).split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
+  if (rawCodes.length === 0) {
+    rawCodes.push('99204');
+  }
+
+  const pointerLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  return rawCodes.map((code, idx) => {
+    const matched = COMMON_CPT_CODES.find(c => c.code === code);
+    const desc = matched
+      ? matched.description
+      : (idx === 0 ? (appointment?.appointmentType || 'Comprehensive Pain Evaluation') : 'High Intensity Laser Therapy (HILT)');
+    const defaultFee = matched
+      ? matched.defaultFee
+      : (code === '99204' ? 450.00 : code === '97039' ? 250.00 : code === '99214' ? 275.00 : 110.00);
+
+    const modParts = rawModifiers[idx] ? rawModifiers[idx].split('-').filter(Boolean) : [];
+
+    return {
+      id: `line-${Date.now()}-${idx + 1}`,
+      cptCode: code,
+      description: desc,
+      modifier1: modParts[0] || (idx === 0 ? '25' : '59'),
+      modifier2: modParts[1] || (idx === 0 ? '59' : 'RT'),
+      modifier3: modParts[2] || (idx === 0 ? 'RT' : 'GP'),
+      modifier4: modParts[3] || (idx === 0 ? 'GP' : ''),
+      diagnosisPointer: pointerLetters[idx % pointerLetters.length] || 'A',
+      units: 1,
+      charge: defaultFee
+    };
+  });
+};
 
 export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointmentUpdated }) => {
   const { addToast } = useUIStore();
@@ -43,31 +99,23 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
         patientName: appointment.patientName || '',
         patientPhone: appointment.patientPhone || '',
         patientDob: appointment.patientDob || '',
-        caseId: appointment.caseId || appointment.caseRef || '',
+        caseId: appointment.caseId || appointment.caseRef || 'CASE-2026-507',
         providerId: appointment.providerId || 'prov-josmic',
         visitType: appointment.visitType || (appointment.appointmentType?.toLowerCase().includes('follow') || appointment.cptCode?.includes('9921') ? 'SUBSEQUENT' : 'INITIAL'),
-        appointmentType: appointment.appointmentType || 'Pain Consult',
+        appointmentType: appointment.appointmentType || 'Initial Visit (New Patient E&M)',
         status: appointment.status || 'SCHEDULED',
         date: appointment.date || '',
         startTime: appointment.startTime || '09:00 AM',
         endTime: appointment.endTime || '10:00 AM',
         duration: appointment.duration || '60',
-        reasonForVisit: appointment.reasonForVisit || '',
+        reasonForVisit: appointment.reasonForVisit || appointment.visitNotes || 'Post-MVA pain management & clinical evaluation',
         location: appointment.location || 'Suite 774 Main Clinic',
         visitNotes: appointment.visitNotes || '',
         holidayOverride: !!appointment.holidayOverride
       });
 
-      if (appointment.serviceLines && appointment.serviceLines.length > 0) {
-        setServiceLines(appointment.serviceLines);
-      } else {
-        // Build initial line from existing single CPT code
-        const initialCpt = appointment.cptCode || '99204';
-        const fee = initialCpt === '99204' ? 450.00 : initialCpt === '97039' ? 250.00 : 275.00;
-        setServiceLines([
-          createDefaultServiceLine(1, initialCpt, appointment.appointmentType || 'Clinical Consult', fee)
-        ]);
-      }
+      // Intelligently parse and restore all service lines with their active modifiers
+      setServiceLines(parseServiceLinesFromAppointment(appointment));
     }
   }, [appointment]);
 
@@ -92,13 +140,15 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
         ...formData,
         serviceLines,
         totalEstimatedCharge,
+        cptCode: serviceLines.map(l => l.cptCode).filter(Boolean).join(', '),
+        modifiers: serviceLines.map(l => [l.modifier1, l.modifier2, l.modifier3, l.modifier4].filter(Boolean).join('-')).filter(Boolean).join(', '),
         providerName: selectedProv?.name || appointment.providerName || 'JOSMIC Wellness Center'
       });
 
       addToast(`Appointment for ${updated.patientName} updated successfully!`, 'success');
       if (onAppointmentUpdated) onAppointmentUpdated(updated);
       onClose();
-    } catch {
+    } catch (err) {
       addToast('Failed to update appointment', 'error');
     } finally {
       setIsLoading(false);
@@ -110,14 +160,58 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
     if (newType === 'SUBSEQUENT') {
       set('appointmentType', 'Subsequent Follow-up & Evaluation');
       setServiceLines([
-        createDefaultServiceLine(1, '99214', 'Office/Outpatient Visit Established Moderate (30-39 min)', 275.00),
-        createDefaultServiceLine(2, '97110', 'Therapeutic Exercise (15 min)', 110.00)
+        {
+          id: `line-${Date.now()}-1`,
+          cptCode: '99214',
+          description: 'Office/Outpatient Visit Established Moderate (30-39 min)',
+          modifier1: '25',
+          modifier2: '59',
+          modifier3: 'RT',
+          modifier4: 'GP',
+          diagnosisPointer: 'A',
+          units: 1,
+          charge: 275.00
+        },
+        {
+          id: `line-${Date.now()}-2`,
+          cptCode: '97110',
+          description: 'Therapeutic Exercise (15 min)',
+          modifier1: '59',
+          modifier2: 'RT',
+          modifier3: 'GP',
+          modifier4: '',
+          diagnosisPointer: 'A',
+          units: 1,
+          charge: 110.00
+        }
       ]);
     } else {
-      set('appointmentType', 'Initial Comprehensive Consultation');
+      set('appointmentType', 'Initial Visit (New Patient E&M)');
       setServiceLines([
-        createDefaultServiceLine(1, '99204', 'Office/Outpatient Visit New Complex (45-59 min)', 450.00),
-        createDefaultServiceLine(2, '97039', 'High Intensity Laser Therapy (HILT)', 250.00)
+        {
+          id: `line-${Date.now()}-1`,
+          cptCode: '99204',
+          description: 'Office/Outpatient Visit New Complex (45-59 min)',
+          modifier1: '25',
+          modifier2: '59',
+          modifier3: 'RT',
+          modifier4: 'GP',
+          diagnosisPointer: 'A',
+          units: 1,
+          charge: 450.00
+        },
+        {
+          id: `line-${Date.now()}-2`,
+          cptCode: '97039',
+          description: 'Unlisted Modality - High Intensity Laser Therapy (HILT)',
+          modifier1: '59',
+          modifier2: 'RT',
+          modifier3: 'GP',
+          modifier4: '',
+          diagnosisPointer: 'A',
+          units: 1,
+          charge: 250.00
+        }
       ]);
     }
   };
@@ -145,25 +239,37 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
             type="button"
             onClick={handleSave}
             disabled={isLoading}
-            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Save className="w-4 h-4" /> {isLoading ? 'Saving Changes...' : 'Save & Update Appointment'}
           </button>
         </>
       }
     >
-      <form onSubmit={handleSave} className="space-y-4">
+      <form onSubmit={handleSave} className="space-y-4 text-xs">
         
-        {/* Visit Type Switch (Initial vs Subsequent) Banner */}
-        <div className="p-4 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Patient Header Banner */}
+        <div className="p-4 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div>
-            <span className="text-[10px] uppercase font-bold text-teal-300 block">Encounter Classification</span>
-            <span className="text-sm font-bold">
-              {formData.visitType === 'INITIAL' ? 'Initial Patient Visit (New E&M)' : 'Subsequent Visit (Follow-up / Established)'}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-bold text-white">{formData.patientName || 'Accident Patient'}</h3>
+              {formData.patientPhone && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 font-mono">
+                  {formData.patientPhone}
+                </span>
+              )}
+              {formData.caseId && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 font-mono">
+                  {formData.caseId}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              Current Status: <strong className="text-emerald-400">{formData.status}</strong>
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => handleEncounterTypeChange('INITIAL')}
@@ -173,7 +279,7 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
                   : 'bg-slate-800 text-slate-300 hover:text-white'
               }`}
             >
-              Set as Initial Visit
+              Initial Visit
             </button>
             <button
               type="button"
@@ -184,35 +290,35 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
                   : 'bg-slate-800 text-slate-300 hover:text-white'
               }`}
             >
-              Change to Subsequent (Follow-up)
+              Subsequent Visit
             </button>
           </div>
         </div>
 
-        {/* Patient & Case Information */}
+        {/* Patient & Case Information Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className={labelCls}>Patient Name *</label>
             <input required className={inputCls} value={formData.patientName} onChange={e => set('patientName', e.target.value)} />
           </div>
           <div>
-            <label className={labelCls}>Patient Phone</label>
+            <label className={labelCls}>Patient Mobile (for SMS)</label>
             <input type="tel" className={inputCls} value={formData.patientPhone} onChange={e => set('patientPhone', e.target.value)} />
           </div>
           <div>
-            <label className={labelCls}>Linked Case Ref</label>
+            <label className={labelCls}>Linked Accident Case</label>
             <input className={inputCls} value={formData.caseId} onChange={e => set('caseId', e.target.value)} />
           </div>
         </div>
 
-        {/* Provider & Visit Status */}
+        {/* Practice Provider, Encounter Type & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Practice Provider</label>
+            <label className={labelCls}>Practice Care Provider *</label>
             <select
               value={formData.providerId}
               onChange={e => set('providerId', e.target.value)}
-              className={inputCls}
+              className={`${inputCls} font-bold text-teal-800`}
             >
               <option value="prov-josmic">JOSMIC Wellness Center (Pain Management)</option>
               <option value="prov-davs">DAV'S Anatomy (Shockwave ESWT)</option>
@@ -222,7 +328,7 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
           </div>
 
           <div>
-            <label className={labelCls}>Service Description</label>
+            <label className={labelCls}>Encounter Type Description</label>
             <input
               type="text"
               className={inputCls}
@@ -248,10 +354,10 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
           </div>
         </div>
 
-        {/* Date & Time Reschedule */}
+        {/* Visit Date & Time Reschedule */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Appointment Date *</label>
+            <label className={labelCls}>Visit Date *</label>
             <input
               type="date"
               required
@@ -286,7 +392,7 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
           <MultiLineCptTable
             lines={serviceLines}
             onChange={setServiceLines}
-            title="Appointment CPT Billing Lines & Modifiers (Line 1, 2, 3...)"
+            title="Service CPT Billing Lines (Line 1, 2, 3... & Modifiers)"
           />
         </div>
 
@@ -302,7 +408,7 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
                 type="checkbox"
                 checked={formData.holidayOverride}
                 onChange={e => set('holidayOverride', e.target.checked)}
-                className="rounded text-amber-600 focus:ring-amber-500"
+                className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
               />
               Admin Override: Authorize Weekend / Holiday Appointment
             </label>

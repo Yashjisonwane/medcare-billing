@@ -242,3 +242,51 @@ export const updateAssignedProviders = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update assigned providers.' });
   }
 };
+
+/**
+ * Update entire case (including Attorney & Law Firm)
+ */
+export const updateCase = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  try {
+    const existing = await prisma.case.findFirst({
+      where: {
+        OR: [{ id }, { caseId: id }]
+      }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Case not found.' });
+    }
+
+    const updated = await prisma.case.update({
+      where: { id: existing.id },
+      data: {
+        ...(data.attorneyName !== undefined && { attorneyName: data.attorneyName }),
+        ...(data.lawFirm !== undefined && { lawFirm: data.lawFirm }),
+        ...(data.attorneyPhone !== undefined && { attorneyPhone: data.attorneyPhone }),
+        ...(data.attorneyEmail !== undefined && { attorneyEmail: data.attorneyEmail }),
+        ...(data.lawFirmAddress !== undefined && { lawFirmAddress: data.lawFirmAddress }),
+        ...(data.insuranceCompany !== undefined && { insuranceCompany: data.insuranceCompany }),
+        ...(data.insurancePolicyNumber !== undefined && { insurancePolicyNumber: data.insurancePolicyNumber }),
+        ...(data.insuranceClaimNumber !== undefined && { insuranceClaimNumber: data.insuranceClaimNumber }),
+        ...(data.status !== undefined && { status: data.status })
+      },
+      include: {
+        patient: {
+          select: {
+            firstName: true,
+            lastName: true
+          }
+        }
+      }
+    });
+
+    return res.status(200).json(formatCase(updated));
+  } catch (error) {
+    console.error('Error updating case:', error);
+    return res.status(500).json({ error: 'Failed to update case.' });
+  }
+};

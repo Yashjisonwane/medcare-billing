@@ -3,16 +3,71 @@ import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { 
   FileSpreadsheet, Shield, Scale, ExternalLink, Calendar, MapPin, 
-  Stethoscope, Receipt, User, Clock, AlertTriangle, FileText, CheckCircle2, ChevronRight 
+  Stethoscope, Receipt, User, Clock, AlertTriangle, FileText, CheckCircle2, ChevronRight, Edit3, Save, X 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { mockCaseService } from '../../services/mock/mockCaseService';
+import { useUIStore } from '../../store/uiStore';
 import { formatCurrency } from '../../utils/billingCalculations';
 
-export const CaseDetailsModal = ({ isOpen, onClose, caseItem }) => {
+const KNOWN_LAW_FIRMS = [
+  { name: 'OJ Lawal, Esq.', firm: 'OJ Law Firm & Associates LLC', phone: '713-555-0188', email: 'attorney@ojlawfirm.com' },
+  { name: 'Marcus Vance, Esq.', firm: 'Law Offices of Marcus Vance', phone: '713-555-0219', email: 'mvance@vancelaw.com' },
+  { name: 'Robert Cole, Attorney', firm: 'Cole & Partners Injury Law', phone: '713-555-0442', email: 'rcole@colelaw.com' },
+  { name: 'Sarah Jenkins, Esq.', firm: 'Davis & Associates Injury Law Group', phone: '713-555-0300', email: 'sjenkins@davisinjury.com' },
+];
+
+export const CaseDetailsModal = ({ isOpen, onClose, caseItem, onCaseUpdated }) => {
   const navigate = useNavigate();
+  const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('ACCIDENT');
+  const [isEditingLegal, setIsEditingLegal] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [legalData, setLegalData] = useState({
+    attorneyName: caseItem?.attorneyName || '',
+    lawFirm: caseItem?.lawFirm || '',
+    attorneyPhone: caseItem?.attorneyPhone || '',
+    attorneyEmail: caseItem?.attorneyEmail || '',
+    lawFirmAddress: caseItem?.lawFirmAddress || ''
+  });
 
   if (!caseItem) return null;
+
+  const handleSaveLegal = async () => {
+    setSaving(true);
+    try {
+      await mockCaseService.updateCase(caseItem.id || caseItem.caseId, {
+        attorneyName: legalData.attorneyName,
+        lawFirm: legalData.lawFirm,
+        attorneyPhone: legalData.attorneyPhone,
+        attorneyEmail: legalData.attorneyEmail,
+        lawFirmAddress: legalData.lawFirmAddress
+      });
+      caseItem.attorneyName = legalData.attorneyName;
+      caseItem.lawFirm = legalData.lawFirm;
+      caseItem.attorneyPhone = legalData.attorneyPhone;
+      caseItem.attorneyEmail = legalData.attorneyEmail;
+      caseItem.lawFirmAddress = legalData.lawFirmAddress;
+      addToast('Attorney & Law Firm assigned successfully!', 'success');
+      setIsEditingLegal(false);
+      if (onCaseUpdated) onCaseUpdated();
+    } catch {
+      addToast('Failed to update attorney details', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSelectPreset = (preset) => {
+    setLegalData({
+      attorneyName: preset.name,
+      lawFirm: preset.firm,
+      attorneyPhone: preset.phone,
+      attorneyEmail: preset.email,
+      lawFirmAddress: '11711 Bedford St. Suite 01, Houston TX 77031'
+    });
+  };
 
   return (
     <Modal
@@ -37,11 +92,11 @@ export const CaseDetailsModal = ({ isOpen, onClose, caseItem }) => {
             type="button"
             onClick={() => {
               onClose();
-              navigate('/billing/four-bills');
+              navigate(`/billing/provider-bills?caseId=${caseItem.id || caseItem.caseId}`);
             }}
             className="w-full sm:w-auto px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <Receipt className="w-3.5 h-3.5" /> View Connected 4-Bill Ledger
+            <Receipt className="w-3.5 h-3.5" /> View Connected Bills Ledger
           </button>
         </>
       }
@@ -148,26 +203,148 @@ export const CaseDetailsModal = ({ isOpen, onClose, caseItem }) => {
         {activeTab === 'LEGAL' && (
           <div className="space-y-4 text-xs">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2.5">
-                <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5 flex items-center gap-1.5">
-                  <Scale className="w-4 h-4 text-teal-600" /> Attorney &amp; Law Firm (Legal Lien)
-                </h4>
-                <div className="space-y-1.5 text-slate-700">
-                  <div className="flex justify-between"><span>Attorney Name:</span><strong className="text-slate-900">{caseItem.attorneyName || 'OJ Lawal & Associates'}</strong></div>
-                  <div className="flex justify-between"><span>Law Firm:</span><strong className="text-slate-900">{caseItem.lawFirm || 'OJ Law Firm & Associates LLC'}</strong></div>
-                  <div className="flex justify-between"><span>Firm Address:</span><strong className="text-slate-900">{caseItem.lawFirmAddress || '11711 Bedford St. Suite 01, Houston TX 77031'}</strong></div>
-                  <div className="flex justify-between"><span>Attorney Phone:</span><strong className="text-slate-900">{caseItem.attorneyPhone || '713-555-0188'}</strong></div>
-                  <div className="flex justify-between"><span>Attorney Email:</span><strong className="text-slate-900">{caseItem.attorneyEmail || 'attorney@ojlawfirm.com'}</strong></div>
-                  <div className="flex justify-between"><span>Lien Agreement:</span><span className="text-teal-700 font-bold">Letter of Protection (LOP) on File</span></div>
+              {/* Attorney & Law Firm Box */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <h4 className="font-bold text-slate-900 flex items-center gap-1.5">
+                    <Scale className="w-4 h-4 text-teal-600" /> Attorney &amp; Law Firm (Legal Lien)
+                  </h4>
+                  {!isEditingLegal ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingLegal(true)}
+                      className="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 rounded-lg font-bold text-[11px] flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Edit3 className="w-3 h-3" /> {caseItem.attorneyName ? 'Edit Attorney' : '+ Assign Attorney'}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingLegal(false)}
+                      className="p-1 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
+
+                {!isEditingLegal ? (
+                  <div className="space-y-1.5 text-slate-700">
+                    <div className="flex justify-between">
+                      <span>Attorney Name:</span>
+                      <strong className="text-slate-900">{caseItem.attorneyName || 'Self-Represented (Direct Patient)'}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Law Firm:</span>
+                      <strong className="text-slate-900">{caseItem.lawFirm || 'Direct Billing / Self-Pay'}</strong>
+                    </div>
+                    {caseItem.lawFirmAddress && (
+                      <div className="flex justify-between"><span>Firm Address:</span><strong className="text-slate-900">{caseItem.lawFirmAddress}</strong></div>
+                    )}
+                    {caseItem.attorneyPhone && (
+                      <div className="flex justify-between"><span>Attorney Phone:</span><strong className="text-slate-900">{caseItem.attorneyPhone}</strong></div>
+                    )}
+                    {caseItem.attorneyEmail && (
+                      <div className="flex justify-between"><span>Attorney Email:</span><strong className="text-slate-900">{caseItem.attorneyEmail}</strong></div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>Lien Agreement:</span>
+                      <span className={`font-bold ${caseItem.attorneyName ? 'text-teal-700' : 'text-slate-500'}`}>
+                        {caseItem.attorneyName ? 'Letter of Protection (LOP) on File' : 'Direct Patient Agreement'}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-500 block mb-1">Quick Select Law Firm Preset:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {KNOWN_LAW_FIRMS.map(preset => (
+                          <button
+                            key={preset.name}
+                            type="button"
+                            onClick={() => handleSelectPreset(preset)}
+                            className="px-2 py-0.5 bg-white hover:bg-teal-50 hover:border-teal-300 text-slate-800 border border-slate-200 rounded text-[10px] font-semibold transition cursor-pointer"
+                          >
+                            + {preset.firm}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Attorney Full Name</label>
+                      <input
+                        type="text"
+                        value={legalData.attorneyName}
+                        onChange={e => setLegalData({ ...legalData, attorneyName: e.target.value })}
+                        placeholder="e.g. OJ Lawal, Esq."
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Law Firm Name</label>
+                      <input
+                        type="text"
+                        value={legalData.lawFirm}
+                        onChange={e => setLegalData({ ...legalData, lawFirm: e.target.value })}
+                        placeholder="e.g. OJ Law Firm & Associates LLC"
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Attorney Phone</label>
+                        <input
+                          type="tel"
+                          value={legalData.attorneyPhone}
+                          onChange={e => setLegalData({ ...legalData, attorneyPhone: e.target.value })}
+                          placeholder="713-555-0188"
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-800 mb-0.5">Attorney Email</label>
+                        <input
+                          type="email"
+                          value={legalData.attorneyEmail}
+                          onChange={e => setLegalData({ ...legalData, attorneyEmail: e.target.value })}
+                          placeholder="attorney@lawoffice.com"
+                          className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:border-teal-600 outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingLegal(false)}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveLegal}
+                        disabled={saving}
+                        className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <Save className="w-3.5 h-3.5" /> {saving ? 'Saving...' : 'Save & Link Attorney'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
+              {/* Auto Insurance Claim Box */}
               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2.5">
                 <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-1.5 flex items-center gap-1.5">
                   <Shield className="w-4 h-4 text-teal-600" /> Auto Insurance Claim &amp; Policy
                 </h4>
                 <div className="space-y-1.5 text-slate-700">
-                  <div className="flex justify-between"><span>Insurance Carrier:</span><strong className="text-slate-900">{caseItem.insuranceCompany || 'Example Auto Insurance Co.'}</strong></div>
+                  <div className="flex justify-between"><span>Insurance Carrier:</span><strong className="text-slate-900">{caseItem.insuranceCompany || 'Geico Auto Insurance Co.'}</strong></div>
                   <div className="flex justify-between"><span>Policy #:</span><strong className="text-slate-900 font-mono">{caseItem.insurancePolicyNumber || 'POL-9928374'}</strong></div>
                   <div className="flex justify-between"><span>Claim #:</span><strong className="text-slate-900 font-mono">{caseItem.insuranceClaimNumber || 'CLM-2025-88192'}</strong></div>
                   <div className="flex justify-between"><span>Insurance Adjuster:</span><strong className="text-slate-900">{caseItem.insuranceAdjuster || 'James Wilson'}</strong></div>

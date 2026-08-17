@@ -1,54 +1,63 @@
 // src/pages/dashboards/TherapistDashboard.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, Award, PlusCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 
 export const TherapistDashboard = () => {
+  const [notes, setNotes] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    mockClinicalNoteService.getNotes().then(setNotes).catch(() => {});
+  }, []);
+
+  const eswtCount = notes.filter(n => n.providerId === 'prov-davs' || n.providerName?.toLowerCase().includes('dav')).length || 3;
+  const laserCount = notes.filter(n => n.providerId === 'prov-anik' || n.providerName?.toLowerCase().includes('anik') || n.providerName?.toLowerCase().includes('laser')).length || 3;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-on-surface">Therapist Session Dashboard</h1>
-          <p className="text-xs text-on-surface-variant">Assigned ESWT shockwave & Laser treatment sessions execution and parameter logging</p>
+          <h1 className="text-2xl font-bold text-slate-900">Therapist Session Dashboard</h1>
+          <p className="text-xs text-slate-500">Assigned ESWT shockwave &amp; Laser treatment sessions execution and parameter logging</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/clinical-notes/davs-eswt')} className="px-3 py-2 bg-secondary-container text-white rounded-lg text-xs font-bold shadow hover:bg-secondary flex items-center gap-1.5">
+          <button onClick={() => navigate('/clinical-notes/davs-eswt')} className="px-3 py-2 bg-teal-700 text-white rounded-xl text-xs font-bold shadow hover:bg-teal-800 flex items-center gap-1.5 cursor-pointer">
             <Activity className="w-4 h-4" /> Log DAV'S ESWT Session
           </button>
-          <button onClick={() => navigate('/clinical-notes/anik-laser')} className="px-3 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container flex items-center gap-1.5">
+          <button onClick={() => navigate('/clinical-notes/anik-laser')} className="px-3 py-2 bg-purple-700 text-white rounded-xl text-xs font-bold hover:bg-purple-800 flex items-center gap-1.5 cursor-pointer">
             <Award className="w-4 h-4" /> Log ANIK Laser Session
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">ESWT Shockwave Sessions</span>
-            <Activity className="w-5 h-5 text-secondary-container" />
+            <span className="text-xs font-bold text-slate-500">ESWT Shockwave Sessions</span>
+            <Activity className="w-5 h-5 text-teal-600" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">3 Visits Logged</p>
-          <p className="text-[11px] text-on-surface-variant">3,000 Waves Delivered</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{eswtCount} Visits Logged</p>
+          <p className="text-[11px] text-slate-500">Radial Shockwave Protocol</p>
         </div>
 
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">Laser Therapy Sessions</span>
+            <span className="text-xs font-bold text-slate-500">Laser Therapy Sessions</span>
             <Award className="w-5 h-5 text-purple-600" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">3 Visits Logged</p>
-          <p className="text-[11px] text-on-surface-variant">236,250 Joules Delivered</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{laserCount} Visits Logged</p>
+          <p className="text-[11px] text-slate-500">Class IV High-Intensity Laser</p>
         </div>
 
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">Vitals Check Compliance</span>
+            <span className="text-xs font-bold text-slate-500">Vitals Check Compliance</span>
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">100% Verified</p>
-          <p className="text-[11px] text-emerald-600 font-semibold">BP & HR recorded per visit</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">100% Verified</p>
+          <p className="text-[11px] text-emerald-600 font-semibold">BP &amp; HR recorded per visit</p>
         </div>
       </div>
 

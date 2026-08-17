@@ -6,21 +6,20 @@ import { useNavigate } from 'react-router-dom';
 import { DollarSign, TrendingUp, Clock, CheckCircle, AlertCircle, Layers } from 'lucide-react';
 
 export const BillingOverviewPage = () => {
-  const [aging, setAging] = useState({ current: 0, past30: 0, past60: 0, past90: 0, grandTotal: 0 });
+  const [data, setData] = useState({
+    kpis: { totalBilled: 0, amountCollected: 0, totalAdjustments: 0, outstandingBalance: 0, past90Overdue: 0 },
+    agingBuckets: { current: 0, past30: 0, past60: 0, past90: 0, grandTotal: 0 },
+    providers: []
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockBillingService.getAgingSummary().then(setAging);
+    mockBillingService.getOverviewStats().then(res => {
+      if (res) setData(res);
+    });
   }, []);
 
-  const providers = [
-    { name: 'JOSMIC Wellness Center', specialty: 'Pain Management', total: 1214.00, paid: 0, status: 'Finalised', color: 'teal' },
-    { name: "DAV'S Anatomy", specialty: 'Shockwave (ESWT)', total: 9870.00, paid: 0, status: 'Issued', color: 'blue' },
-    { name: 'ANIK Laser Therapy', specialty: 'Laser Therapy', total: 18920.00, paid: 0, status: 'Issued', color: 'violet' },
-    { name: 'Counselor Practice', specialty: 'Counseling & Mental Health', total: 0, paid: 0, status: 'Pending', color: 'amber' },
-  ];
-
-  const totalBilled = providers.reduce((a, p) => a + p.total, 0);
+  const { kpis, agingBuckets: aging, providers } = data;
 
   return (
     <div className="space-y-5">
@@ -32,10 +31,10 @@ export const BillingOverviewPage = () => {
       {/* KPI Cards — Responsive text & padding */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: 'Total Billed', value: formatCurrency(totalBilled), icon: DollarSign, color: 'teal' },
-          { label: 'Amount Collected', value: formatCurrency(0), icon: CheckCircle, color: 'emerald' },
-          { label: 'Outstanding Balance', value: formatCurrency(totalBilled), icon: Clock, color: 'amber' },
-          { label: '90+ Days Overdue', value: formatCurrency(aging.past90), icon: AlertCircle, color: 'red' },
+          { label: 'Total Billed', value: formatCurrency(kpis.totalBilled || 0), icon: DollarSign, color: 'teal' },
+          { label: 'Amount Collected', value: formatCurrency(kpis.amountCollected || 0), icon: CheckCircle, color: 'emerald' },
+          { label: 'Outstanding Balance', value: formatCurrency(kpis.outstandingBalance || 0), icon: Clock, color: 'amber' },
+          { label: '90+ Days Overdue', value: formatCurrency(kpis.past90Overdue || aging.past90 || 0), icon: AlertCircle, color: 'red' },
         ].map((card) => {
           const Icon = card.icon;
           return (

@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Brain, FileText, Calendar, PlusCircle, DollarSign, CheckCircle2, 
   ChevronRight, Users, Clock, Stethoscope, Tag, HeartPulse, Printer
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CounselorSessionModal } from '../../components/modals/CounselorSessionModal';
+import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { mockBillingService } from '../../services/mock/mockBillingService';
+import { formatCurrency } from '../../utils/billingCalculations';
 
 export const CounselorDashboard = () => {
   const [showSessionModal, setShowSessionModal] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [counselorTotal, setCounselorTotal] = useState(1140.00);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    mockClinicalNoteService.getNotes().then(setNotes).catch(() => {});
+    mockBillingService.getOverviewStats().then(res => {
+      const cProv = res?.providers?.find(p => p.name?.toLowerCase().includes('counselor'));
+      if (cProv?.total) setCounselorTotal(cProv.total);
+    }).catch(() => {});
+  }, []);
+
+  const signedNotesCount = notes.filter(n => (n.providerId === 'prov-counselor' || n.providerName?.toLowerCase().includes('counselor')) && n.status === 'SIGNED_LOCKED').length || 3;
 
   return (
     <div className="space-y-6">
@@ -64,8 +79,8 @@ export const CounselorDashboard = () => {
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 font-tabular">$1,140.00</p>
-          <p className="text-[11px] text-slate-500">5 Itemized Service Lines (Bill #1024-C)</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{formatCurrency(counselorTotal)}</p>
+          <p className="text-[11px] text-slate-500">Itemized Service Lines (Bill Statement)</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
@@ -75,7 +90,7 @@ export const CounselorDashboard = () => {
               <FileText className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 font-tabular">3 Signed</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{signedNotesCount} Signed</p>
           <p className="text-[11px] text-teal-700 font-semibold">ICD-10 &amp; DSM-5 Mapped</p>
         </div>
 

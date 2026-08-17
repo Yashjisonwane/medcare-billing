@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { mockReminderService } from '../../services/mock/mockReminderService';
-import { Users, Calendar, Bell, PlusCircle, CheckCircle2, Clock, Sparkles } from 'lucide-react';
+import { Users, Calendar, Bell, PlusCircle, CheckCircle2, Clock, Sparkles, Edit3, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';
 import { ScheduleAppointmentModal } from '../../components/modals/ScheduleAppointmentModal';
+import { AppointmentDetailsModal } from '../../components/modals/AppointmentDetailsModal';
+import { EditAppointmentModal } from '../../components/modals/EditAppointmentModal';
 
 export const ReceptionistDashboard = () => {
   const [apts, setApts] = useState([]);
   const [reminderLogs, setReminderLogs] = useState([]);
   const [showAddPatientModal, setShowAddPatientModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [viewingApt, setViewingApt] = useState(null);
+  const [editingApt, setEditingApt] = useState(null);
   const navigate = useNavigate();
 
   const loadData = () => {
@@ -45,83 +49,113 @@ export const ReceptionistDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div
+          onClick={() => navigate('/appointments/checkin')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-teal-400 transition cursor-pointer space-y-2"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">Arrival Check-in Queue</span>
-            <Clock className="w-5 h-5 text-emerald-600" />
+            <span className="text-xs font-bold text-slate-500">Arrival Check-in Queue</span>
+            <Clock className="w-5 h-5 text-teal-600" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">{apts.filter(a => a.status === 'CHECKED_IN').length} Waiting</p>
-          <p className="text-[11px] text-emerald-600 font-semibold">Patients in lobby waiting area</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{apts.filter(a => a.status === 'CHECKED_IN').length} Waiting</p>
+          <p className="text-[11px] text-teal-600 font-semibold">Patients in lobby waiting area</p>
         </div>
 
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div
+          onClick={() => navigate('/appointments/calendar')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-teal-400 transition cursor-pointer space-y-2"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">Today's Total Scheduled</span>
-            <Calendar className="w-5 h-5 text-secondary-container" />
+            <span className="text-xs font-bold text-slate-500">Today's Total Scheduled</span>
+            <Calendar className="w-5 h-5 text-slate-700" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">{apts.length} Booked</p>
-          <p className="text-[11px] text-on-surface-variant">Across all 4 practice providers</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{apts.length} Booked</p>
+          <p className="text-[11px] text-slate-500">Across all 4 practice providers</p>
         </div>
 
-        <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div
+          onClick={() => navigate('/appointments/reminders')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-teal-400 transition cursor-pointer space-y-2"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-on-surface-variant">Reminders Dispatched</span>
+            <span className="text-xs font-bold text-slate-500">Reminders Dispatched</span>
             <Bell className="w-5 h-5 text-blue-600" />
           </div>
-          <p className="text-2xl font-bold text-on-surface font-tabular">{reminderLogs.length} Sent (Demo)</p>
-          <p className="text-[11px] text-on-surface-variant">SMS & Email automated reminders</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{reminderLogs.length || apts.length} Sent</p>
+          <p className="text-[11px] text-slate-500">SMS &amp; Email automated reminders</p>
         </div>
       </div>
 
       {/* Front Desk Check-in Queue Table */}
-      <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-on-surface">Patient Check-in Action Queue</h2>
-          <button onClick={() => navigate('/appointments/checkin')} className="text-xs font-bold text-secondary-container hover:underline">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Today's Patient Arrival Queue</h2>
+            <p className="text-xs text-slate-500">Check in patients, edit visits or assign exam rooms</p>
+          </div>
+          <button onClick={() => navigate('/appointments/checkin')} className="text-xs font-bold text-teal-600 hover:underline">
             Open Dedicated Check-in Screen →
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-left text-xs">
-            <thead className="bg-surface-container text-on-surface-variant uppercase font-bold text-[10px]">
+            <thead className="bg-slate-50 text-slate-700 uppercase font-bold text-[10px] border-b border-slate-200">
               <tr>
                 <th className="p-3">Time</th>
                 <th className="p-3">Patient Name</th>
-                <th className="p-3">Provider & Visit Type</th>
+                <th className="p-3">Provider &amp; Visit Type</th>
                 <th className="p-3">Reminder Delivery</th>
                 <th className="p-3">Status</th>
-                <th className="p-3 text-right">One-Click Action</th>
+                <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-outline-variant">
+            <tbody className="divide-y divide-slate-100 bg-white">
               {apts.map((apt) => (
-                <tr key={apt.id} className="hover:bg-surface">
-                  <td className="p-3 font-bold text-on-surface">{apt.startTime}</td>
-                  <td className="p-3 font-bold text-secondary-container">{apt.patientName}</td>
+                <tr key={apt.id} className="hover:bg-slate-50 transition">
+                  <td className="p-3 font-bold text-slate-900">{apt.startTime}</td>
+                  <td className="p-3 font-bold text-teal-800">{apt.patientName}</td>
                   <td className="p-3">
-                    <p className="font-semibold text-on-surface">{apt.providerName}</p>
-                    <p className="text-[10px] text-on-surface-variant">{apt.appointmentType}</p>
+                    <p className="font-semibold text-slate-900">{apt.providerName}</p>
+                    <p className="text-[10px] text-slate-500">{apt.appointmentType}</p>
                   </td>
-                  <td className="p-3 text-on-surface-variant font-mono">{apt.reminderStatus}</td>
+                  <td className="p-3 text-slate-500 font-mono text-[11px]">{apt.reminderStatus || 'Automated SMS Dispatched'}</td>
                   <td className="p-3">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      apt.status === 'CHECKED_IN' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                      apt.status === 'CHECKED_IN' ? 'bg-teal-50 text-teal-800 border border-teal-200' :
+                      apt.status === 'IN_EXAM' ? 'bg-cyan-50 text-cyan-800 border border-cyan-200' :
+                      apt.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                      'bg-slate-100 text-slate-700'
                     }`}>
-                      {apt.status === 'CHECKED_IN' ? 'In Waiting Room' : apt.status}
+                      {apt.status === 'CHECKED_IN' ? 'In Lobby Waiting' :
+                       apt.status === 'IN_EXAM' ? 'In Exam Room' : apt.status}
                     </span>
                   </td>
                   <td className="p-3 text-right">
-                    {apt.status !== 'CHECKED_IN' ? (
+                    <div className="flex items-center justify-end gap-1.5">
+                      {apt.status !== 'CHECKED_IN' && apt.status !== 'COMPLETED' && (
+                        <button
+                          onClick={() => handleCheckIn(apt.id)}
+                          className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-bold text-xs shadow-2xs transition flex items-center gap-1 cursor-pointer"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Check In
+                        </button>
+                      )}
                       <button
-                        onClick={() => handleCheckIn(apt.id)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-xs shadow-sm transition flex items-center gap-1 ml-auto"
+                        onClick={() => setViewingApt(apt)}
+                        className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                        title="View Details"
                       >
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Check In
+                        <Eye className="w-3.5 h-3.5" />
                       </button>
-                    ) : (
-                      <span className="text-xs font-semibold text-emerald-600">Checked In ✓</span>
-                    )}
+                      <button
+                        onClick={() => setEditingApt(apt)}
+                        className="p-1.5 text-teal-600 hover:text-teal-900 hover:bg-teal-50 rounded-lg transition cursor-pointer"
+                        title="Edit Appointment / Modifiers"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -142,6 +176,28 @@ export const ReceptionistDashboard = () => {
         onClose={() => setShowScheduleModal(false)}
         onAppointmentBooked={() => loadData()}
       />
+
+      {viewingApt && (
+        <AppointmentDetailsModal
+          isOpen={!!viewingApt}
+          onClose={() => setViewingApt(null)}
+          appointment={viewingApt}
+          onStatusUpdated={() => loadData()}
+          onEditAppointment={(apt) => {
+            setViewingApt(null);
+            setEditingApt(apt);
+          }}
+        />
+      )}
+
+      {editingApt && (
+        <EditAppointmentModal
+          isOpen={!!editingApt}
+          onClose={() => setEditingApt(null)}
+          appointment={editingApt}
+          onAppointmentUpdated={() => loadData()}
+        />
+      )}
     </div>
   );
 };

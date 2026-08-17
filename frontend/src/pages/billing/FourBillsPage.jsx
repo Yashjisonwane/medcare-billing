@@ -12,43 +12,47 @@ import { CreateBillModal } from '../../components/modals/CreateBillModal';
 export const FourBillsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [casesList, setCasesList] = useState([]);
-  const [selectedCaseId, setSelectedCaseId] = useState(searchParams.get('caseId') || 'case-001');
+  const [selectedCaseId, setSelectedCaseId] = useState(searchParams.get('caseId') || '');
   const [caseData, setCaseData] = useState(null);
   const [bills, setBills] = useState([]);
-  const [providers, setProviders] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateBillModal, setShowCreateBillModal] = useState(false);
   const navigate = useNavigate();
 
-  // Load all registered cases and providers from backend
+  // 1. Initial Load: Fetch all cases from backend
   useEffect(() => {
     mockCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCasesList(res);
         const queryId = searchParams.get('caseId');
-        if (queryId && res.some(c => c.id === queryId || c.caseId === queryId)) {
-          setSelectedCaseId(queryId);
-        } else {
-          setSelectedCaseId(res[0].id || 'case-001');
-        }
+        const matched = res.find(c => c.id === queryId || c.caseId === queryId);
+        const targetCase = matched || res[0];
+        setSelectedCaseId(targetCase.id || targetCase.caseId);
+        setCaseData(targetCase);
       }
-    }).catch(() => {});
+    }).catch(err => {
+      console.error('Failed to fetch cases list:', err);
+    });
+  }, []);
 
-    mockProviderService.getProviders().then(res => {
-      setProviders(res || {});
-    }).catch(() => {});
-  }, [searchParams]);
-
-  // Load bills for selected case from backend
-  const loadBills = async () => {
-    if (!selectedCaseId) return;
+  // 2. Load bills whenever selectedCaseId changes
+  const loadBills = async (targetId) => {
+    const idToUse = targetId || selectedCaseId;
+    if (!idToUse) return;
     setIsLoading(true);
     try {
       const [cData, bData] = await Promise.all([
-        mockCaseService.getCaseById(selectedCaseId).catch(() => null),
-        mockBillingService.getFourBillsByCase(selectedCaseId).catch(() => ({ allBills: [] }))
+        mockCaseService.getCaseById(idToUse).catch(() => null),
+        mockBillingService.getFourBillsByCase(idToUse).catch(() => ({ allBills: [] }))
       ]);
-      setCaseData(cData);
+
+      if (cData) {
+        setCaseData(cData);
+      } else {
+        const found = casesList.find(c => c.id === idToUse || c.caseId === idToUse);
+        if (found) setCaseData(found);
+      }
+
       setBills(bData?.allBills || []);
     } catch (err) {
       console.error('Failed to load bills:', err);
@@ -58,13 +62,19 @@ export const FourBillsPage = () => {
   };
 
   useEffect(() => {
-    loadBills();
+    if (selectedCaseId) {
+      loadBills(selectedCaseId);
+    }
   }, [selectedCaseId]);
 
-  // Handle case selection change
+  // 3. Dropdown case change handler
   const handleCaseChange = (newCaseId) => {
     setSelectedCaseId(newCaseId);
     setSearchParams({ caseId: newCaseId });
+    const localMatch = casesList.find(c => c.id === newCaseId || c.caseId === newCaseId);
+    if (localMatch) {
+      setCaseData(localMatch);
+    }
   };
 
   // Grand totals across all provider statements for this case
@@ -123,7 +133,7 @@ export const FourBillsPage = () => {
           >
             {casesList.length > 0 ? (
               casesList.map((c) => (
-                <option key={c.id} value={c.id}>
+                <option key={c.id || c.caseId} value={c.id || c.caseId}>
                   {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
                 </option>
               ))
@@ -170,13 +180,13 @@ export const FourBillsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-300">
             <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-800">
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Attorney &amp; Law Firm:</span>
-              <strong className="text-white text-xs">{caseData.attorneyName || 'OJ Lawal & Associates'}</strong>
-              <p className="text-[10px] text-slate-400">{caseData.lawFirm || 'OJ Law Firm'}</p>
+              <strong className="text-white text-xs">{caseData.attorneyName || 'Self-Represented (Direct)'}</strong>
+              <p className="text-[10px] text-slate-400">{caseData.lawFirm || 'Personal Injury Law'}</p>
             </div>
             <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-800">
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Auto Insurance Carrier:</span>
-              <strong className="text-white text-xs">{caseData.insuranceCompany || 'Geico Auto Insurance'}</strong>
-              <p className="text-[10px] text-slate-400">Policy: {caseData.insurancePolicyNumber || 'POL-TX-9921'}</p>
+              <strong className="text-white text-xs">{caseData.insuranceCompany || 'Auto Insurance Claim'}</strong>
+              <p className="text-[10px] text-slate-400">Policy: {caseData.insurancePolicyNumber || 'POL-PENDING'}</p>
             </div>
             <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-800">
               <span className="text-slate-400 block text-[10px] uppercase font-bold">Case Financials:</span>
@@ -213,7 +223,7 @@ export const FourBillsPage = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {bills.map((bill) => (
             <div key={bill.id} className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4 hover:border-teal-300 hover:shadow-md transition">
               <div>
@@ -275,7 +285,7 @@ export const FourBillsPage = () => {
         isOpen={showCreateBillModal}
         onClose={() => setShowCreateBillModal(false)}
         selectedCaseId={selectedCaseId}
-        onBillCreated={() => loadBills()}
+        onBillCreated={() => loadBills(selectedCaseId)}
       />
     </div>
   );

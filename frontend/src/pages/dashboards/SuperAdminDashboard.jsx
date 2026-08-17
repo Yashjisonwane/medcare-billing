@@ -22,7 +22,6 @@ export const SuperAdminDashboard = () => {
   const [aptsCount, setAptsCount] = useState(0);
   const [selfBookedCount, setSelfBookedCount] = useState(0);
   const [auditLogs, setAuditLogs] = useState([]);
-  const [reminderFailures, setReminderFailures] = useState(0);
   const [showAddPatientModal, setShowAddPatientModal] = useState(false);
   const [showAddCaseModal, setShowAddCaseModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -40,7 +39,6 @@ export const SuperAdminDashboard = () => {
       setSelfBookedCount(selfs);
     });
     mockAuditService.getLogs().then(logs => setAuditLogs(logs.slice(0, 5)));
-    mockReminderService.getLogs().then(rems => setReminderFailures(rems.filter(r => r.status.includes('Failed')).length));
   };
 
   useEffect(() => {
@@ -110,15 +108,20 @@ export const SuperAdminDashboard = () => {
           </p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 medical-card-hover">
+        <div 
+          onClick={() => navigate('/billing/aging')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2 medical-card-hover cursor-pointer"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500">Reminder Failures & Past 90+</span>
+            <span className="text-xs font-bold text-slate-500">Past 90+ Days A/R Aging</span>
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
-              <Bell className="w-5 h-5" />
+              <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 font-tabular">{reminderFailures} Failures / {formatCurrency(aging.past90)}</p>
-          <p className="text-[11px] text-amber-600 font-semibold">Requires follow-up review</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{formatCurrency(aging.past90 || 0)}</p>
+          <p className="text-[11px] text-amber-600 font-semibold flex items-center gap-1">
+            Overdue Legal Liens &amp; Claims <ChevronRight className="w-3 h-3" />
+          </p>
         </div>
       </div>
 

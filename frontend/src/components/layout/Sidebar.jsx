@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, FileSpreadsheet, Calendar,
   FileText, Bot, ClipboardList, Activity,
   Receipt, CreditCard, PieChart, Layers, Shield,
-  Stethoscope, HelpCircle, UserCog, Tag, Globe,
+  Stethoscope, HelpCircle, UserCog, Tag, Globe, CheckCircle2,
   LogOut, X
 } from 'lucide-react';
 
@@ -17,10 +17,10 @@ const ICON_MAP = {
   LayoutDashboard, Users, FileSpreadsheet, Calendar,
   FileText, Bot, ClipboardList, Activity,
   Receipt, CreditCard, PieChart, Layers, Shield,
-  Stethoscope, HelpCircle, UserCog, Tag, Globe
+  Stethoscope, HelpCircle, UserCog, Tag, Globe, CheckCircle2
 };
 
-// Clean, enterprise navigation sections
+// Clean, enterprise navigation sections for clinic staff
 const ALL_SECTIONS = (dashboardPath) => [
   {
     title: 'CORE PRACTICE',
@@ -29,7 +29,7 @@ const ALL_SECTIONS = (dashboardPath) => [
       { label: 'Patients', path: '/patients', icon: 'Users' },
       { label: 'Accident Cases', path: '/cases', icon: 'FileSpreadsheet' },
       { label: 'Appointments Calendar', path: '/appointments/calendar', icon: 'Calendar' },
-      { label: 'Patient Self-Booking', path: '/appointments/self-booking', icon: 'Globe' },
+      { label: 'Patient Check-In Queue', path: '/appointments/checkin', icon: 'CheckCircle2' },
     ],
   },
   {
