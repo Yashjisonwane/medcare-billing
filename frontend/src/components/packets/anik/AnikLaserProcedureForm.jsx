@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 /**
  * ANIK Laser Therapy Procedure Form (Radial Device) — Sample PDF Pages 8, 9, 10
  */
-export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false }) => {
+export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, blankMode = false, packetData = null }) => {
   const [nerveBlock, setNerveBlock] = useState('NO');
   const [tolerated, setTolerated] = useState('YES');
   const [durationCompleted, setDurationCompleted] = useState('YES');
@@ -23,10 +23,10 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false })
 
       {/* Demographics Row */}
       <div className="grid grid-cols-4 gap-2 text-xs font-mono border-b border-slate-300 pb-2">
-        <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">SAMPLE TESTING</strong></div>
-        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">10/08/1974</strong></div>
-        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">M</strong></div>
-        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{dos}</strong></div>
+        <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
+        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? '10/08/1974' : (packetData.patient?.dob || 'N/A')}</strong></div>
+        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'M' : (packetData.patient?.sex || 'M')}</strong></div>
+        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? dos : packetData.accidentDate}</strong></div>
       </div>
 
       {/* Intro Consent & Vitals */}

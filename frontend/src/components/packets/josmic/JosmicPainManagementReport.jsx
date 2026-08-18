@@ -23,7 +23,7 @@ const SectionHeader = ({ children }) => (
   <h2 className="font-bold text-slate-900 text-[12px] uppercase mt-5 mb-2 border-b border-slate-300 pb-1">{children}</h2>
 );
 
-const PageHeader = ({ page }) => (
+const PageHeader = ({ page, packetData }) => (
   <div className="flex items-center justify-between border-b-2 border-slate-700 pb-3 mb-4">
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center flex-shrink-0">
@@ -45,28 +45,28 @@ const PageHeader = ({ page }) => (
     </div>
     <div className="text-right font-mono text-[10px] text-slate-600 border border-slate-300 p-2 bg-slate-50">
       <p className="font-bold">PAGE {page} OF 4</p>
-      <p>DOS: 12/30/2025</p>
+      <p>DOS: {packetData ? (packetData.initialDate || '12/30/2025') : '12/30/2025'}</p>
     </div>
   </div>
 );
 
-const PatientInfoBar = ({ blankMode }) => (
+const PatientInfoBar = ({ blankMode, packetData }) => (
   <div className="bg-slate-100 border border-slate-300 p-2.5 mb-4 grid grid-cols-2 gap-2 text-[11px] font-mono">
-    <div>PATIENT: <strong>{blankMode ? '_______________________' : 'SAMPLE TESTING'}</strong></div>
+    <div>PATIENT: <strong>{blankMode || !packetData ? '_______________________' : packetData.patientName}</strong></div>
     <div>CONSULTING PHYSICIAN: <strong>Anthony Nguyen, MD / Pain Management</strong></div>
   </div>
 );
 
 // ─── PAGE 1 ──────────────────────────────────────────────────────────────────
-const Page1 = ({ blankMode }) => (
+const Page1 = ({ blankMode, packetData }) => (
   <div>
     <div className="flex items-center gap-4 mb-4">
       <span className="text-[11px] font-bold text-slate-700">Current Date:</span>
-      <div className="border-b border-slate-500 w-32 text-[11px] font-mono">{blankMode ? '' : '12 / 30 / 2025'}&nbsp;</div>
+      <div className="border-b border-slate-500 w-32 text-[11px] font-mono">{blankMode || !packetData ? '' : (packetData.initialDate || '12 / 30 / 2025')}&nbsp;</div>
     </div>
 
     <div className="bg-slate-50 border border-slate-200 p-3 mb-4 grid grid-cols-3 gap-3 text-[11px] font-mono">
-      <div><span className="font-bold">Patient Name: </span><span className="border-b border-slate-400 inline-block w-28">{blankMode ? '' : 'SAMPLE TESTING'}&nbsp;</span></div>
+      <div><span className="font-bold">Patient Name: </span><span className="border-b border-slate-400 inline-block w-28">{blankMode || !packetData ? '' : packetData.patientName}&nbsp;</span></div>
       <div><span className="font-bold">DOB: </span><span className="border-b border-slate-400 inline-block w-20">{blankMode ? '' : '10/08/1974'}&nbsp;</span></div>
       <div><span className="font-bold">Gender: </span><span className="border-b border-slate-400 inline-block w-16">{blankMode ? '' : 'M'}&nbsp;</span></div>
     </div>
@@ -150,12 +150,12 @@ const Page1 = ({ blankMode }) => (
 );
 
 // ─── PAGE 2 ──────────────────────────────────────────────────────────────────
-const Page2 = ({ blankMode }) => (
+const Page2 = ({ blankMode, packetData }) => (
   <div>
     <div className="mb-4 text-[11px]">
       <div className="flex items-center gap-3 mb-2">
         <span className="font-bold">2.1 Date of Injury:</span>
-        <div className="border-b border-slate-400 w-24 font-mono">{blankMode ? '' : '12 / 27 / 2025'}&nbsp;</div>
+        <div className="border-b border-slate-400 w-24 font-mono">{blankMode || !packetData ? '' : (packetData.accidentDate || '12 / 27 / 2025')}&nbsp;</div>
       </div>
       <p className="font-bold mb-2">2.2 Pain Severity (0–10): rate in scale of severity</p>
       <div className="grid grid-cols-3 gap-4 mb-3 pl-2">
@@ -387,7 +387,7 @@ const Page3 = ({ blankMode }) => (
 );
 
 // ─── PAGE 4 ──────────────────────────────────────────────────────────────────
-const Page4 = ({ blankMode }) => (
+const Page4 = ({ blankMode, packetData }) => (
   <div>
     <div className="pl-2 space-y-1.5 text-[11px] mb-4">
       <div className="flex items-center gap-2">
@@ -476,11 +476,11 @@ const Page4 = ({ blankMode }) => (
     <div className="border-t-2 border-slate-700 pt-5 mt-4">
       <div className="grid grid-cols-2 gap-8 text-[11px] font-mono">
         <div>
-          <div className="border-b border-slate-500 pb-1 mb-1 min-h-[28px] font-bold">{blankMode ? '' : 'ADEOYE SEGUN'}&nbsp;</div>
+          <div className="border-b border-slate-500 pb-1 mb-1 min-h-[28px] font-bold">{blankMode || !packetData ? '' : (packetData.referringProviderName || 'ADEOYE SEGUN')}&nbsp;</div>
           <p className="text-slate-600 text-[10px]">Provider Name / Signature</p>
         </div>
         <div>
-          <div className="border-b border-slate-500 pb-1 mb-1 min-h-[28px]">{blankMode ? '' : '12 / 30 / 2025'}&nbsp;</div>
+          <div className="border-b border-slate-500 pb-1 mb-1 min-h-[28px]">{blankMode || !packetData ? '' : (packetData.dischargeDate || '12 / 30 / 2025')}&nbsp;</div>
           <p className="text-slate-600 text-[10px]">Date</p>
         </div>
       </div>
@@ -492,15 +492,15 @@ const Page4 = ({ blankMode }) => (
 );
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
-export const JosmicPainManagementReport = ({ reportPage = 1, blankMode = false }) => {
+export const JosmicPainManagementReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
   const pageComponents = { 1: Page1, 2: Page2, 3: Page3, 4: Page4 };
   const PageContent = pageComponents[reportPage] || Page1;
 
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '40px 56px', paddingBottom: '60px' }}>
-      <PageHeader page={reportPage} />
-      <PatientInfoBar blankMode={blankMode} />
-      <PageContent blankMode={blankMode} />
+      <PageHeader page={reportPage} packetData={packetData} />
+      <PatientInfoBar blankMode={blankMode} packetData={packetData} />
+      <PageContent blankMode={blankMode} packetData={packetData} />
 
       {/* Footer */}
       <div className="absolute bottom-4 left-0 right-0 px-14 flex justify-between text-[9px] text-slate-400 font-mono border-t border-slate-100 pt-2">

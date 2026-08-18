@@ -95,16 +95,22 @@ export const ClinicalNoteEditorPage = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const newNote = {
-        id: `note-${Date.now()}`,
+      let providerId = 'prov-josmic';
+      let type = 'JOSMIC_PAIN';
+      if (formData.providerName.includes("DAV'S")) { providerId = 'prov-davs'; type = 'DAVS_ESWT'; }
+      if (formData.providerName.includes("ANIK")) { providerId = 'prov-anik'; type = 'ANIK_LASER'; }
+      if (formData.providerName.includes("Counselor")) { providerId = 'prov-counselor'; type = 'COUNSELOR_GENERIC'; }
+
+      const newNoteData = {
         patientId: formData.patientId,
         patientName: formData.patientName || 'Accident Patient',
         caseId: formData.caseId,
+        providerId,
         providerName: formData.providerName,
+        type,
         title: formData.title,
         date: formData.date,
         author: currentUser?.name || 'Attending Physician',
-        status: 'DRAFT_REVIEW',
         content: {
           'Chief Complaint': formData.chiefComplaint,
           'Subjective (HPI)': formData.subjective,
@@ -115,9 +121,10 @@ export const ClinicalNoteEditorPage = () => {
         }
       };
 
-      setNote(newNote);
+      const createdNote = await mockClinicalNoteService.createNote(newNoteData);
+      setNote(createdNote);
       addToast('Clinical note created & logged to patient chart!', 'success');
-      navigate(`/clinical-notes/${newNote.id}`);
+      navigate(`/clinical-notes/${createdNote.id}`);
     } catch (err) {
       addToast('Failed to save clinical note', 'error');
     } finally {
@@ -128,8 +135,9 @@ export const ClinicalNoteEditorPage = () => {
   const handleSignChart = async () => {
     setIsSigning(true);
     try {
+      if (!note || !note.id) return;
       const updated = await mockClinicalNoteService.signNote(
-        note?.id || 'note-001',
+        note.id,
         'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=200',
         currentUser?.name || 'Dr. Segun Adeoye'
       );

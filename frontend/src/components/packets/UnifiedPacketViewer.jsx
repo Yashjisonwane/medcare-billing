@@ -44,7 +44,7 @@ const getInitialZoom = () => {
   return 0.9;               // Desktop
 };
 
-export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = false }) => {
+export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = false, selectedCase = null }) => {
   const manifest = PACKET_MANIFESTS[providerId] || PACKET_MANIFESTS['prov-anik'];
   const [bill, setBill] = useState(null);
   const [cmsClaims, setCmsClaims] = useState([]);
@@ -120,25 +120,25 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
     }
     
     // ANIK Components
-    if (key === 'AnikCoverPage') return <AnikCoverPage readOnly={isLocked} blankMode={blankPracticeMode} />;
-    if (key === 'AnikTherapyAssessmentForm') return <AnikTherapyAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} />;
-    if (key === 'AnikLaserProcedureForm') return <AnikLaserProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} />;
-    if (key === 'AnikNarrativeReport') return <AnikNarrativeReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} />;
-    if (key === 'AnikFinalReport') return <AnikFinalReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} />;
+    if (key === 'AnikCoverPage') return <AnikCoverPage readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'AnikTherapyAssessmentForm') return <AnikTherapyAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'AnikLaserProcedureForm') return <AnikLaserProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'AnikNarrativeReport') return <AnikNarrativeReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'AnikFinalReport') return <AnikFinalReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
 
     // DAV'S Components
-    if (key === 'DavCoverPage') return <DavCoverPage blankMode={blankPracticeMode} />;
-    if (key === 'DavEswtProcedureForm') return <DavEswtProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} />;
-    if (key === 'DavProgressNote') return <DavProgressNote notePage={pageDef.notePage} blankMode={blankPracticeMode} />;
-    if (key === 'DavFinalNarrative') return <DavFinalNarrative reportPage={pageDef.reportPage} blankMode={blankPracticeMode} />;
+    if (key === 'DavCoverPage') return <DavCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'DavEswtProcedureForm') return <DavEswtProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'DavProgressNote') return <DavProgressNote notePage={pageDef.notePage} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'DavFinalNarrative') return <DavFinalNarrative reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
 
     // JOSMIC Components
-    if (key === 'JosmicCoverPage') return <JosmicCoverPage blankMode={blankPracticeMode} />;
-    if (key === 'JosmicPainManagementReport') return <JosmicPainManagementReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} />;
+    if (key === 'JosmicCoverPage') return <JosmicCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'JosmicPainManagementReport') return <JosmicPainManagementReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
 
     // Counselor Components
-    if (key === 'CounselorCoverPage') return <CounselorCoverPage blankMode={blankPracticeMode} />;
-    if (key === 'CounselorAssessmentForm') return <CounselorAssessmentForm blankMode={blankPracticeMode} />;
+    if (key === 'CounselorCoverPage') return <CounselorCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'CounselorAssessmentForm') return <CounselorAssessmentForm blankMode={blankPracticeMode} packetData={selectedCase} />;
 
     return <div className="p-12 text-center text-xs text-slate-400">Component {key} placeholder</div>;
   };
@@ -162,7 +162,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
               <span className="truncate">{manifest.providerName}</span>
             </h2>
             <p className="text-[11px] text-slate-400 truncate mt-0.5">
-              {manifest.totalPages} Pages | {blankPracticeMode ? <span className="text-amber-400 font-bold">UNFILLED BLANK PRACTICE FORM</span> : <span>Patient: <strong className="text-white">SAMPLE TESTING</strong></span>}
+              {manifest.totalPages} Pages | {blankPracticeMode ? <span className="text-amber-400 font-bold">UNFILLED BLANK PRACTICE FORM</span> : <span>Patient: <strong className="text-white">{selectedCase ? selectedCase.patientName : 'SELECT A CASE'}</strong></span>}
             </p>
           </div>
 

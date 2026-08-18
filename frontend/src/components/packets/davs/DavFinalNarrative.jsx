@@ -1,7 +1,7 @@
 // src/components/packets/davs/DavFinalNarrative.jsx
 import React from 'react';
 
-export const DavFinalNarrative = ({ reportPage = 1 }) => {
+export const DavFinalNarrative = ({ reportPage = 1, blankMode = false, packetData = null }) => {
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300 p-12 space-y-6" style={{ width: '850px', height: '1100px' }}>
       <div className="flex justify-between items-start border-b border-slate-300 pb-4">
@@ -16,7 +16,7 @@ export const DavFinalNarrative = ({ reportPage = 1 }) => {
       </div>
 
       <div className="bg-slate-50 p-4 border border-slate-200 text-xs font-mono grid grid-cols-2 gap-2">
-        <div>PATIENT: <strong>SAMPLE TESTING</strong></div>
+        <div>PATIENT: <strong>{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
         <div>TOTAL ESWT SESSIONS: <strong>3 COMPLETED ($9,870 TOTAL)</strong></div>
       </div>
 

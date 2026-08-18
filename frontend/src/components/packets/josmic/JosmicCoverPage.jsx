@@ -1,7 +1,7 @@
 // src/components/packets/josmic/JosmicCoverPage.jsx
 import React from 'react';
 
-export const JosmicCoverPage = ({ blankMode = false }) => {
+export const JosmicCoverPage = ({ blankMode = false, packetData = null }) => {
   const val = (v) => blankMode ? '' : v;
 
   return (
@@ -36,23 +36,23 @@ export const JosmicCoverPage = ({ blankMode = false }) => {
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">NAME:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{val('SAMPLE TESTING')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{packetData ? packetData.patientName : val('SAMPLE TESTING')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Birth:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('10/08/1974')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{packetData ? (packetData.patient?.dob || 'N/A') : val('10/08/1974')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Accident:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('12/27/2025')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.accidentDate || 'N/A') : val('12/27/2025')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Initial Date:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('12/30/2025')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.initialDate || 'N/A') : val('12/30/2025')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Discharge Date:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('12/30/2025')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.dischargeDate || 'N/A') : val('12/30/2025')}&nbsp;</div>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ export const JosmicCoverPage = ({ blankMode = false }) => {
         <ol className="list-decimal pl-4 space-y-1.5 text-slate-700 text-xs font-mono">
           <li>Patient &amp; Accident Cover Sheet</li>
           <li>Billing Statement</li>
-          <li>CMS-1500 Claim Form (DOS: 12/30/2025)</li>
+          <li>CMS-1500 Claim Form (DOS: {packetData ? (packetData.initialDate || '12/30/2025') : '12/30/2025'})</li>
           <li>Pain Management Evaluation Report (Page 1)</li>
           <li>Pain Management Evaluation Report (Page 2)</li>
           <li>Pain Management Evaluation Report (Page 3)</li>
@@ -82,7 +82,7 @@ export const JosmicCoverPage = ({ blankMode = false }) => {
             <p className="text-slate-600">Authorized Provider Signature</p>
           </div>
           <div>
-            <div className="border-b border-slate-400 pb-1 mb-1 min-h-[24px]">{val('02/11/2026')}&nbsp;</div>
+            <div className="border-b border-slate-400 pb-1 mb-1 min-h-[24px]">{packetData ? (packetData.dischargeDate || '02/11/2026') : val('02/11/2026')}&nbsp;</div>
             <p className="text-slate-600">Date</p>
           </div>
         </div>

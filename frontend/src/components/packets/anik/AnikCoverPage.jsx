@@ -22,37 +22,37 @@ export const AnikCoverPage = ({ packetData, onFieldChange, readOnly, blankMode =
         <div className="grid grid-cols-2 gap-4 text-xs font-mono">
           <div>
             <span className="text-slate-500 block font-bold">PATIENT NAME:</span>
-            {blankMode
+            {blankMode || !packetData
               ? <div className="border-b border-slate-400 mt-1 w-40">&nbsp;</div>
-              : <strong className="text-slate-900 text-sm">SAMPLE TESTING</strong>}
+              : <strong className="text-slate-900 text-sm">{packetData.patientName || 'N/A'}</strong>}
           </div>
           <div>
             <span className="text-slate-500 block font-bold">PATIENT SYSTEM ID:</span>
-            {blankMode
+            {blankMode || !packetData
               ? <div className="border-b border-slate-400 mt-1 w-32">&nbsp;</div>
-              : <strong className="text-slate-900 text-sm">141849159</strong>}
+              : <strong className="text-slate-900 text-sm">{packetData.patient?.patientId || packetData.patientId || 'N/A'}</strong>}
           </div>
           <div>
             <span className="text-slate-500 block font-bold">DATE OF ACCIDENT:</span>
-            {blankMode
+            {blankMode || !packetData
               ? <div className="border-b border-slate-400 mt-1 w-28">&nbsp;</div>
-              : <strong className="text-slate-900">12/27/2025</strong>}
+              : <strong className="text-slate-900">{packetData.accidentDate || 'N/A'}</strong>}
           </div>
           <div>
             <span className="text-slate-500 block font-bold">ATTORNEY / LAW FIRM:</span>
-            {blankMode
+            {blankMode || !packetData
               ? <div className="border-b border-slate-400 mt-1 w-40">&nbsp;</div>
-              : <strong className="text-slate-900">OJ LAWAL REMI ADESHOLA (OJ LAW FIRM)</strong>}
+              : <strong className="text-slate-900">{packetData.attorneyName ? `${packetData.attorneyName} (${packetData.lawFirm || ''})` : 'N/A'}</strong>}
           </div>
           <div>
             <span className="text-slate-500 block font-bold">TREATING CLINIC:</span>
             <strong className="text-slate-900">ANIK LASER THERAPY</strong>
           </div>
           <div>
-            <span className="text-slate-500 block font-bold">TOTAL CLAIM BALANCE:</span>
-            {blankMode
+            <span className="text-slate-500 block font-bold">CASE STATUS:</span>
+            {blankMode || !packetData
               ? <div className="border-b border-slate-400 mt-1 w-28">&nbsp;</div>
-              : <strong className="text-teal-700 text-base font-black">$18,920.00</strong>}
+              : <strong className="text-teal-700 text-base font-black">{packetData.status || 'ACTIVE'}</strong>}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 // src/components/packets/counselor/CounselorCoverPage.jsx
 import React from 'react';
 
-export const CounselorCoverPage = ({ blankMode = false }) => {
+export const CounselorCoverPage = ({ blankMode = false, packetData = null }) => {
   const val = (v) => blankMode ? '' : v;
 
   return (
@@ -28,23 +28,23 @@ export const CounselorCoverPage = ({ blankMode = false }) => {
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">NAME:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{val('SAMPLE TESTING')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{packetData ? packetData.patientName : val('')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Birth:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('10/08/1974')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{packetData ? (packetData.patient?.dob || 'N/A') : val('')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Accident:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('12/27/2025')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.accidentDate || 'N/A') : val('')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Initial Evaluation:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{val('01/05/2026')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.initialDate || 'N/A') : val('')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Diagnostic Codes:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900 font-bold">{val('F43.10, F41.1, M54.50')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900 font-bold">{packetData ? (packetData.diagnosisCodes?.join(', ') || 'N/A') : val('')}&nbsp;</div>
           </div>
         </div>
       </div>

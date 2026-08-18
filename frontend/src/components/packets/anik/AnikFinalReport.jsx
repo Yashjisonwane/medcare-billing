@@ -1,7 +1,7 @@
 // src/components/packets/anik/AnikFinalReport.jsx
 import React from 'react';
 
-export const AnikFinalReport = ({ reportPage = 1, blankMode = false }) => {
+export const AnikFinalReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300 p-12 space-y-6" style={{ width: '850px', height: '1100px' }}>
       
@@ -17,7 +17,7 @@ export const AnikFinalReport = ({ reportPage = 1, blankMode = false }) => {
       </div>
 
       <div className="bg-slate-50 p-4 border border-slate-200 text-xs font-mono grid grid-cols-2 gap-2">
-        <div>PATIENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>SAMPLE TESTING</strong>}</div>
+        <div>PATIENT: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{packetData.patientName}</strong>}</div>
         <div>DISCHARGE DATE: {blankMode ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>01/26/2026</strong>}</div>
         <div>TOTAL SESSIONS COMPLETED: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>3 HILT SESSIONS ($18,920 TOTAL)</strong>}</div>
         <div>OUTCOME: {blankMode ? <span className="border-b border-slate-400 inline-block w-40">&nbsp;</span> : <strong>DISCHARGED WITH MAXIMUM MEDICAL IMPROVEMENT (MMI)</strong>}</div>

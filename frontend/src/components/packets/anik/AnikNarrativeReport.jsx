@@ -1,7 +1,7 @@
 // src/components/packets/anik/AnikNarrativeReport.jsx
 import React from 'react';
 
-export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false }) => {
+export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300 p-12 space-y-6" style={{ width: '850px', height: '1100px' }}>
       
@@ -17,7 +17,7 @@ export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false }) => {
       </div>
 
       <div className="bg-slate-50 p-4 border border-slate-200 text-xs font-mono grid grid-cols-2 gap-2">
-        <div>PATIENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>SAMPLE TESTING</strong>}</div>
+        <div>PATIENT: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{packetData.patientName}</strong>}</div>
         <div>DOB: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>10/08/1974 (42 Y/O MALE)</strong>}</div>
         <div>DATE OF ACCIDENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>12/27/2025</strong>}</div>
         <div>DIAGNOSIS: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>M54.50, M54.2, M25.572</strong>}</div>

@@ -12,6 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-surface text-on-surface antialiased font-sans">
+    <script>
+      window.addEventListener('error', e => { 
+        document.body.innerHTML = '<div style="padding:20px;color:red;font-size:20px;font-family:sans-serif"><h1>Global Error</h1><pre>' + (e.error ? e.error.stack : e.message) + '</pre></div>'; 
+      }); 
+      window.addEventListener('unhandledrejection', e => { 
+        document.body.innerHTML = '<div style="padding:20px;color:red;font-size:20px;font-family:sans-serif"><h1>Unhandled Promise Rejection</h1><pre>' + (e.reason && e.reason.stack ? e.reason.stack : e.reason) + '</pre></div>'; 
+      });
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

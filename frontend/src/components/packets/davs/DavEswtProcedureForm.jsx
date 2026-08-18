@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 /**
  * DAV'S ESWT Procedure Form (Radial Device) — Sample PDF Pages 7, 8, 9
  */
-export const DavEswtProcedureForm = ({ dos = '01/06/2026', readOnly = false }) => {
+export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, blankMode = false, packetData = null }) => {
   const [nerveBlock, setNerveBlock] = useState('NO');
   const [bltCream, setBltCream] = useState('YES');
 
@@ -22,10 +22,10 @@ export const DavEswtProcedureForm = ({ dos = '01/06/2026', readOnly = false }) =
 
       {/* Demographics Row */}
       <div className="grid grid-cols-4 gap-2 text-xs font-mono border-b border-slate-300 pb-2">
-        <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">SAMPLE TESTING</strong></div>
-        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">10/08/1974</strong></div>
-        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">M</strong></div>
-        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{dos}</strong></div>
+        <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
+        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? '10/08/1974' : (packetData.patient?.dob || 'N/A')}</strong></div>
+        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'M' : (packetData.patient?.sex || 'M')}</strong></div>
+        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? dos : (packetData.accidentDate || dos)}</strong></div>
       </div>
 
       {/* Intro Consent & Vitals */}
@@ -38,7 +38,7 @@ export const DavEswtProcedureForm = ({ dos = '01/06/2026', readOnly = false }) =
           <div><strong>ALLERGIES:</strong> <span className="underline ml-1">NONE</span></div>
           <div><strong>BP:</strong> <span className="underline ml-1">120/80 mmHg</span></div>
           <div><strong>HR:</strong> <span className="underline ml-1">100 bpm</span></div>
-          <div><strong>PT Hx:</strong> <span className="underline ml-1">Motor vehicle collision on 12/27/2025</span></div>
+          <div><strong>PT Hx:</strong> <span className="underline ml-1">Motor vehicle collision on {blankMode || !packetData ? '12/27/2025' : (packetData.accidentDate || '12/27/2025')}</span></div>
         </div>
 
         {/* ── 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) ── */}

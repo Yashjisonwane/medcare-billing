@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 /**
  * ANIK Therapy Assessment Form — ANIK Reference PDF Page 7
  */
-export const AnikTherapyAssessmentForm = ({ readOnly = false }) => {
+export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false, packetData = null }) => {
   // Session 1 Assessment State (01/22/2026)
   const [s1Tolerance, setS1Tolerance] = useState('FAIRLY');
   const [s1Improving, setS1Improving] = useState('IMPROVING_SLOWLY');
@@ -40,11 +40,23 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false }) => {
       <div className="space-y-1.5 text-xs font-mono font-bold border-b border-slate-300 pb-2">
         <div className="flex gap-2">
           <span>PATIENT NAME:</span>
-          <span className="text-slate-900">SAMPLE TESTING</span>
+          {blankMode || !packetData ? (
+            <div className="border-b border-slate-400 mt-1 w-48">&nbsp;</div>
+          ) : (
+            <span className="text-slate-900">{packetData.patientName}</span>
+          )}
         </div>
         <div className="flex gap-2">
           <span>DIAGNOSIS:</span>
-          <span className="text-slate-900">NECK, LOW BACK, LEFT ANKLE</span>
+          {blankMode || !packetData ? (
+            <div className="border-b border-slate-400 mt-1 w-64">&nbsp;</div>
+          ) : (
+            <span className="text-slate-900">
+              {packetData.diagnosisCodes && packetData.diagnosisCodes.length > 0 
+                ? packetData.diagnosisCodes.map(d => d.description || d.code).join(', ') 
+                : 'NECK, LOW BACK, LEFT ANKLE'}
+            </span>
+          )}
         </div>
       </div>
 

@@ -1,7 +1,9 @@
 // src/components/modals/CounselorSessionModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
 import { Brain, Save, CheckCircle2, Stethoscope, Tag, Clock } from 'lucide-react';
 
@@ -18,16 +20,34 @@ const COMMON_DIAGNOSES = [
 export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
   const { addToast } = useUIStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [cases, setCases] = useState([]);
+  const [providerServices, setProviderServices] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      apiCaseService.getCases().then(setCases).catch(console.error);
+      apiProviderService.getProviders().then(provMap => {
+        const counselor = provMap['prov-counselor'];
+        if (counselor && Array.isArray(counselor.availableServices)) {
+          setProviderServices(counselor.availableServices);
+        }
+      }).catch(console.error);
+    }
+  }, [isOpen]);
 
   const [formData, setFormData] = useState({
-    patientName: 'Demo Patient 001 (SAMPLE TESTING)',
-    caseId: 'CASE-2025-1227',
+    caseId: '',
     counselorName: 'Jordan Miller, LCSW, BCD',
-    sessionDate: '2026-08-10',
-    cptCode: '90834',
-    diagnosisCodes: ['F43.10', 'F41.1', 'M54.50'],
-    summary: 'Patient presented for 45-minute individual psychotherapy session. Discussed anxiety triggers during vehicular passenger travel. Demonstrated mastery of diaphragmatic breathing and cognitive reframing techniques.'
+    sessionDate: new Date().toISOString().split('T')[0],
+    cptCode: '',
+    diagnosisCodes: [],
+    summary: ''
   });
+
+  const selectedCaseObj = cases.find(c => c.id === formData.caseId);
+  const availableDiagnoses = selectedCaseObj && Array.isArray(selectedCaseObj.diagnosisCodes) 
+    ? selectedCaseObj.diagnosisCodes 
+    : [];
 
   const handleToggleDiagnosis = (code) => {
     setFormData(prev => {
@@ -43,18 +63,26 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!formData.caseId) {
+      addToast('Please select a patient/case', 'error');
+      return;
+    }
+    
+    const selectedCase = cases.find(c => c.id === formData.caseId);
+    if (!selectedCase) return;
+
     setIsLoading(true);
     try {
       const created = await mockClinicalNoteService.createNote({
-        patientId: 'pat-001',
-        patientName: formData.patientName,
-        caseId: formData.caseId,
+        patientId: selectedCase.patientId,
+        patientName: selectedCase.patientName,
+        caseId: selectedCase.id,
         providerId: 'prov-counselor',
         providerName: 'Counselor Practice (Hope Behavioral Health)',
         type: 'COUNSELOR_GENERIC',
         title: `Counseling Progress Note (${formData.cptCode}) — ${formData.sessionDate}`,
         author: formData.counselorName,
-        content: { ...formData, isSigned: true }
+        content: { ...formData, patientName: selectedCase.patientName, isSigned: true }
       });
       addToast('Counselor session note saved and linked to bill #1024-C!', 'success');
       if (onNoteSaved) onNoteSaved(created);
@@ -99,8 +127,20 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
       <form onSubmit={handleSave} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Patient Name</label>
-            <input className={inputCls} value={formData.patientName} onChange={e => setFormData({ ...formData, patientName: e.target.value })} />
+            <label className={labelCls}>Patient / Case</label>
+            <select 
+              required
+              className={inputCls} 
+              value={formData.caseId} 
+              onChange={e => setFormData({ ...formData, caseId: e.target.value })}
+            >
+              <option value="">-- Select Patient Case --</option>
+              {cases.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.patientName} ({c.caseId})
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className={labelCls}>Session Date</label>
@@ -108,10 +148,18 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
           </div>
           <div>
             <label className={labelCls}>CPT Procedure Code</label>
-            <select className={inputCls} value={formData.cptCode} onChange={e => setFormData({ ...formData, cptCode: e.target.value })}>
-              <option value="90791">90791 - Psychiatric Diagnostic Evaluation ($350)</option>
-              <option value="90834">90834 - Psychotherapy, 45 min ($180)</option>
-              <option value="90837">90837 - Psychotherapy, 60 min ($250)</option>
+            <select required className={inputCls} value={formData.cptCode} onChange={e => setFormData({ ...formData, cptCode: e.target.value })}>
+              <option value="">-- Select Procedure Code --</option>
+              {providerServices.map(svc => {
+                const code = svc.code || svc;
+                const desc = svc.description ? ` - ${svc.description}` : '';
+                const fee = svc.fee ? ` ($${svc.fee})` : '';
+                return (
+                  <option key={code} value={code}>
+                    {code}{desc}{fee}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>
@@ -119,24 +167,30 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
         {/* Diagnostic Codes */}
         <div>
           <label className={labelCls}>ICD-10 Diagnostic Codes (Box 21)</label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {COMMON_DIAGNOSES.map(item => {
-              const active = formData.diagnosisCodes.includes(item.code);
-              return (
-                <button
-                  type="button"
-                  key={item.code}
-                  onClick={() => handleToggleDiagnosis(item.code)}
-                  className={`p-2.5 rounded-xl border text-left text-xs transition ${
-                    active ? 'bg-indigo-50 border-indigo-400 text-indigo-950 font-bold' : 'bg-slate-50 border-slate-200 text-slate-700'
-                  }`}
-                >
-                  <span className="block text-[10px] text-indigo-600 font-bold">{item.code}</span>
-                  <span className="truncate block mt-0.5">{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          {availableDiagnoses.length === 0 ? (
+            <p className="text-xs text-slate-500 italic mt-1">Select a case with saved diagnosis codes to view options.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {availableDiagnoses.map(item => {
+                const code = item.code || (typeof item === 'string' ? item.split(' - ')[0] : item);
+                const label = item.label || (typeof item === 'string' && item.includes(' - ') ? item.split(' - ')[1] : '');
+                const active = formData.diagnosisCodes.includes(code);
+                return (
+                  <button
+                    type="button"
+                    key={code}
+                    onClick={() => handleToggleDiagnosis(code)}
+                    className={`p-2.5 rounded-xl border text-left text-xs transition ${
+                      active ? 'bg-indigo-50 border-indigo-400 text-indigo-950 font-bold' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <span className="block text-[10px] text-indigo-600 font-bold">{code}</span>
+                    {label && <span className="truncate block mt-0.5">{label}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div>
