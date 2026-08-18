@@ -1,27 +1,36 @@
 // src/pages/documents/DocumentListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockDocumentService } from '../../services/mock/mockDocumentService';
-import { FolderOpen, Eye, X, Printer, Upload, Edit } from 'lucide-react';
+import { mockCaseService } from '../../services/mock/mockCaseService';
+import { FolderOpen, Eye, X, Printer, Upload, Edit, FileText, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UnifiedPacketViewer } from '../../components/packets/UnifiedPacketViewer';
 import { useUIStore } from '../../store/uiStore';
 
 export const DocumentListPage = () => {
   const [docs, setDocs] = useState([]);
+  const [casesList, setCasesList] = useState([]);
   const [previewDoc, setPreviewDoc] = useState(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { addToast } = useUIStore();
   const navigate = useNavigate();
 
   // Import form states
+  const [newDocCaseId, setNewDocCaseId] = useState('case-001');
   const [newDocName, setNewDocName] = useState('');
   const [newDocProvider, setNewDocProvider] = useState('JOSMIC Wellness Center');
-  const [newDocType, setNewDocType] = useState('Narrative Report');
-  const [newDocStatus, setNewDocStatus] = useState('SIGNED');
+  const [newDocType, setNewDocType] = useState('Medical Records');
+  const [newDocStatus, setNewDocStatus] = useState('COMPLETED_DEMO');
   const [newDocSize, setNewDocSize] = useState('1.5 MB');
 
   useEffect(() => {
     mockDocumentService.getDocuments().then(setDocs);
+    mockCaseService.getCases().then(res => {
+      if (res && res.length > 0) {
+        setCasesList(res);
+        setNewDocCaseId(res[0].id || res[0].caseId);
+      }
+    });
   }, []);
 
   const getProviderId = (providerName) => {
@@ -37,19 +46,19 @@ export const DocumentListPage = () => {
     const type = doc.type || '';
     
     if (provider.includes('JOSMIC')) {
-      if (type.includes('Bill') || type.includes('Statement')) return '/billing/four-bills';
+      if (type.includes('Bill') || type.includes('Statement')) return '/billing/provider-bills';
       return '/clinical-notes/josmic-pain';
     }
     if (provider.includes('DAV')) {
-      if (type.includes('Bill') || type.includes('Statement')) return '/billing/four-bills';
+      if (type.includes('Bill') || type.includes('Statement')) return '/billing/provider-bills';
       return '/clinical-notes/davs-eswt';
     }
     if (provider.includes('ANIK')) {
-      if (type.includes('Bill') || type.includes('Statement')) return '/billing/four-bills';
+      if (type.includes('Bill') || type.includes('Statement')) return '/billing/provider-bills';
       return '/clinical-notes/anik-laser';
     }
     if (provider.includes('Counselor')) {
-      if (type.includes('Bill') || type.includes('Statement')) return '/billing/four-bills';
+      if (type.includes('Bill') || type.includes('Statement')) return '/billing/provider-bills';
       return '/clinical-notes/counselor-session';
     }
     return '/clinical-notes';
@@ -62,21 +71,24 @@ export const DocumentListPage = () => {
       return;
     }
     const payload = {
+      caseId: newDocCaseId,
       name: newDocName.endsWith('.pdf') ? newDocName : `${newDocName}.pdf`,
       providerName: newDocProvider,
       type: newDocType,
+      documentType: newDocType,
       status: newDocStatus,
       size: newDocSize
     };
     try {
       await mockDocumentService.uploadDocument(payload);
-      addToast('Document imported successfully!', 'success');
+      addToast(`Document "${payload.name}" imported and attached to case!`, 'success');
       setIsUploadModalOpen(false);
       setNewDocName('');
       // Refresh documents list
       const updatedDocs = await mockDocumentService.getDocuments();
       setDocs(updatedDocs);
     } catch (err) {
+      console.error(err);
       addToast('Failed to import document', 'error');
     }
   };
@@ -211,10 +223,25 @@ export const DocumentListPage = () => {
             {/* Modal Form */}
             <form onSubmit={handleUploadSubmit} className="p-5 space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Document File Name</label>
+                <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Target Patient Accident Case *</label>
+                <select
+                  value={newDocCaseId}
+                  onChange={(e) => setNewDocCaseId(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
+                >
+                  {casesList.map(c => (
+                    <option key={c.id || c.caseId} value={c.id || c.caseId}>
+                      {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Document File Name *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Patient_Accident_Intake_Form"
+                  placeholder="e.g. Police_Accident_Report_Houston_PD"
                   value={newDocName}
                   onChange={(e) => setNewDocName(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
@@ -233,6 +260,7 @@ export const DocumentListPage = () => {
                   <option value="DAV'S Anatomy">DAV'S Anatomy (ESWT Shockwave)</option>
                   <option value="ANIK Laser Therapy">ANIK Laser Therapy (Laser Therapy)</option>
                   <option value="Counselor Practice">Counselor Practice (Hope Behavioral)</option>
+                  <option value="General Clinic Records">General Clinic Records</option>
                 </select>
               </div>
 

@@ -54,26 +54,27 @@ export const getDocuments = async (req, res) => {
 export const uploadDocument = async (req, res) => {
   const data = req.body;
 
-  if (!data.name || !data.caseId) {
-    return res.status(400).json({ error: 'name and caseId are required.' });
+  if (!data.name) {
+    return res.status(400).json({ error: 'name is required.' });
   }
 
   const generatedId = `doc-${Date.now()}`;
   const currentDateStr = new Date().toLocaleDateString('en-US');
+  const targetCaseId = data.caseId || 'case-001';
 
   try {
     const newDoc = await prisma.document.create({
       data: {
         id: generatedId,
-        caseId: data.caseId,
+        caseId: targetCaseId,
         name: data.name,
-        documentType: data.documentType || data.type || 'Other',
-        type: data.type || data.documentType || 'Other',
-        providerName: data.providerName || '',
-        date: currentDateStr,
-        status: 'UPLOADED_DEMO',
+        documentType: data.documentType || data.type || 'Medical Records',
+        type: data.type || data.documentType || 'Medical Records',
+        providerName: data.providerName || 'JOSMIC Wellness Center',
+        date: data.date || currentDateStr,
+        status: data.status || 'UPLOADED_DEMO',
         size: data.size || '1.2 MB',
-        url: data.url || ''
+        url: data.url || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
       }
     });
 
