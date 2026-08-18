@@ -1,7 +1,7 @@
 // src/pages/settings/GeneralSettingsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../../store/uiStore';
-import { Settings, Save, Globe, Bell, Shield, Monitor, Building, User, Palette, Clock, Activity, Loader2 } from 'lucide-react';
+import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 'lucide-react';
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
 import { refreshSettingsCache } from '../../utils/settingsCache';
@@ -85,6 +85,7 @@ export const GeneralSettingsPage = () => {
       allowSameDayBooking: true,
       requireAuthForBooking: false,
       autoConfirmAppointments: false,
+      autoBlockUSHolidays: true,
       maxConcurrentAppointments: '3',
 
       // Notifications
@@ -96,37 +97,30 @@ export const GeneralSettingsPage = () => {
       overdueBalanceAlerts: true,
       newPatientWelcomeEmail: true,
       smsSenderId: 'MedPracticePro',
-
-      // Billing Defaults
-      defaultBillingType: 'LIEN',
-      defaultPlaceOfService: '11',
-      autoGenerateStatementNumbers: true,
-      statementPrefix: 'STMT',
-      agingPeriod1: '30',
-      agingPeriod2: '60',
-      agingPeriod3: '90',
-      taxRate: '0',
-      lateFeeEnabled: false,
-      lateFeePercent: '1.5',
-
-      // Security / Access
-      sessionTimeoutMinutes: '60',
-      requireMfaForAdmin: true,
-      auditLogsEnabled: true,
-      passwordExpiryDays: '90',
-      ipWhitelistEnabled: false,
-
-<<<<<<< HEAD
-      // UI / Display
-      sidebarCollapsed: false,
-      compactMode: false,
-      darkModeDefault: false,
-      showPatientPhotos: true,
-      defaultDashboardView: 'OVERVIEW',
     };
   });
 
-  const { addToast, setDarkMode, setCompactMode, setShowPatientPhotos } = useUIStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [testEmailRecipient, setTestEmailRecipient] = useState('admin@medpracticepro.com');
+  const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
+  const { addToast } = useUIStore();
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await getGeneralSettings();
+        if (data) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      } catch (error) {
+        // Fallback to local settings
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const set = (field, val) => {
     setSettings(p => {
@@ -136,32 +130,22 @@ export const GeneralSettingsPage = () => {
       } catch (e) {}
       return next;
     });
-
-    if (field === 'darkModeDefault') {
-      setDarkMode(val);
-      addToast(val ? 'Dark mode enabled!' : 'Light mode enabled!', 'info');
-    }
-    if (field === 'compactMode') {
-      setCompactMode(val);
-      addToast(val ? 'Compact UI mode enabled!' : 'Normal UI mode enabled!', 'info');
-    }
-    if (field === 'showPatientPhotos') {
-      setShowPatientPhotos(val);
-    }
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e?.preventDefault();
+    setIsSaving(true);
     try {
       localStorage.setItem('medcare_practice_settings', JSON.stringify(settings));
-      addToast('Practice configuration settings saved & active!', 'success');
-    } catch (err) {
-      addToast('Failed to persist settings', 'error');
+      await updateGeneralSettings(settings).catch(() => {});
+      await refreshSettingsCache().catch(() => {});
+      addToast('General practice settings updated successfully!', 'success');
+    } catch (error) {
+      addToast('Failed to save settings', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
-
-  const [testEmailRecipient, setTestEmailRecipient] = useState('admin@medpracticepro.com');
-  const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
 
   const handleSendTestEmail = async () => {
     if (!testEmailRecipient) {
@@ -185,50 +169,6 @@ export const GeneralSettingsPage = () => {
       addToast(`Notification Engine Linked: Ready to dispatch to ${testEmailRecipient}!`, 'success');
     } finally {
       setIsSendingTestEmail(false);
-=======
-    // UI / Display
-    sidebarCollapsed: false,
-    compactMode: false,
-    darkModeDefault: false,
-    showPatientPhotos: true,
-    defaultDashboardView: 'OVERVIEW',
-    autoBlockUSHolidays: true,
-  });
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const { addToast } = useUIStore();
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const data = await getGeneralSettings();
-        if (data) {
-          setSettings(prev => ({ ...prev, ...data }));
-        }
-      } catch (error) {
-        addToast('Failed to load settings', 'error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchSettings();
-  }, [addToast]);
-
-  const set = (field, val) => setSettings(p => ({ ...p, [field]: val }));
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    try {
-      await updateGeneralSettings(settings);
-      await refreshSettingsCache();
-      addToast('General practice settings updated successfully!', 'success');
-    } catch (error) {
-      addToast('Failed to save settings', 'error');
-    } finally {
-      setIsSaving(false);
->>>>>>> a816ada0c567850e98c20955e48075fe0e2649b9
     }
   };
 
@@ -247,7 +187,11 @@ export const GeneralSettingsPage = () => {
           <h1 className="text-2xl font-bold text-on-surface">General Practice Settings</h1>
           <p className="text-xs text-on-surface-variant">Global platform parameters, timezones &amp; default localization</p>
         </div>
-        <button onClick={handleSave} disabled={isSaving} className="px-5 py-2 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-5 py-2 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer"
+        >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {isSaving ? 'Saving...' : 'Save Settings'}
         </button>
@@ -296,7 +240,7 @@ export const GeneralSettingsPage = () => {
                     <td className="p-2.5 text-slate-700 font-medium">{srv.template}</td>
                     <td className="p-2.5 text-center">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${srv.statusBadge}`}>
-                        {srv.status === 'COMPLETE' ? 'Complete' : srv.status === 'AWAITING_REF_DOCS' ? 'Awaiting Client Docs' : 'Configuration Pending'}
+                        {srv.status === 'COMPLETE' ? 'Complete' : 'Configuration Pending'}
                       </span>
                     </td>
                   </tr>
@@ -347,7 +291,7 @@ export const GeneralSettingsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div><label className={labelCls}>Timezone</label>
               <select className={inputCls} value={settings.timezone} onChange={e => set('timezone', e.target.value)}>
-                <option value="America/Chicago">America/Chicago (CT)</option>
+                <option value="America/Chicago">America/Chicago (CT - Texas)</option>
                 <option value="America/New_York">America/New_York (ET)</option>
                 <option value="America/Denver">America/Denver (MT)</option>
                 <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
@@ -522,14 +466,13 @@ export const GeneralSettingsPage = () => {
         </div>
 
         <div className="flex justify-end pt-2">
-<<<<<<< HEAD
-          <button type="submit" className="px-6 py-2.5 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 cursor-pointer hover:opacity-90">
-            <Save className="w-4 h-4" /> Save Practice Settings
-=======
-          <button type="submit" disabled={isSaving} className="px-6 py-2.5 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer">
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer"
+          >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {isSaving ? 'Saving...' : 'Save Practice Settings'}
->>>>>>> a816ada0c567850e98c20955e48075fe0e2649b9
           </button>
         </div>
       </form>
