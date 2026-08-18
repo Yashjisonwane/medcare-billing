@@ -1,13 +1,15 @@
 // src/pages/clinical/ClinicalNotesListPage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
-import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar } from 'lucide-react';
+import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar, Search, Filter, Stethoscope } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CounselorSessionModal } from '../../components/modals/CounselorSessionModal';
 
 export const ClinicalNotesListPage = () => {
   const [notes, setNotes] = useState([]);
   const [showCounselorModal, setShowCounselorModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const navigate = useNavigate();
 
   const loadNotes = () => {
@@ -17,6 +19,22 @@ export const ClinicalNotesListPage = () => {
   useEffect(() => {
     loadNotes();
   }, []);
+
+  const filteredNotes = useMemo(() => {
+    return notes.filter(n => {
+      const matchSearch = searchTerm === '' || 
+        n.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        n.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        n.providerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        n.author?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchStatus = statusFilter === 'ALL' || n.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [notes, searchTerm, statusFilter]);
+
+  const signedCount = notes.filter(n => n.status === 'SIGNED' || n.status === 'SIGNED_LOCKED').length;
+  const draftCount = notes.filter(n => n.status === 'DRAFT').length;
 
   return (
     <div className="space-y-5">
@@ -42,19 +60,53 @@ export const ClinicalNotesListPage = () => {
         </div>
       </div>
 
+      {/* ── Search & Filter Controls ── */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="relative w-full sm:max-w-md">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search notes by patient name, title, provider..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-medium rounded-xl outline-none focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold">
+            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[11px] text-slate-700">Total: {notes.length}</span>
+            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px]">Signed: {signedCount}</span>
+            <span className="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-[11px]">Drafts: {draftCount}</span>
+          </div>
+
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="px-3 py-2 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl outline-none cursor-pointer"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="SIGNED_LOCKED">SIGNED_LOCKED</option>
+            <option value="DRAFT">DRAFT</option>
+          </select>
+        </div>
+      </div>
+
       {/* ── Notes List (Mobile Cards + Desktop Table) ── */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        {notes.length === 0 ? (
+        {filteredNotes.length === 0 ? (
           <div className="p-8 text-center space-y-3">
             <FileText className="w-10 h-10 text-slate-300 mx-auto" />
             <p className="text-sm font-bold text-slate-900">No Clinical Notes Found</p>
-            <p className="text-xs text-slate-500">No records recorded in the clinical queue.</p>
+            <p className="text-xs text-slate-500">
+              {searchTerm || statusFilter !== 'ALL' ? 'No notes match your active search filters.' : 'No clinical records found in the database.'}
+            </p>
           </div>
         ) : (
           <>
             {/* 1. Mobile Cards View (< 768px) */}
             <div className="divide-y divide-slate-100 md:hidden">
-              {notes.map((note) => (
+              {filteredNotes.map((note) => (
                 <div key={note.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -116,7 +168,7 @@ export const ClinicalNotesListPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {notes.map((note) => (
+                  {filteredNotes.map((note) => (
                     <tr key={note.id} className="hover:bg-slate-50/80 transition">
                       <td className="p-3.5 font-mono text-slate-600 font-bold">{note.date}</td>
                       <td className="p-3.5 font-bold text-teal-700">{note.patientName}</td>
