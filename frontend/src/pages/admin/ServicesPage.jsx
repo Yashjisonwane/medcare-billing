@@ -11,6 +11,8 @@ export const ServicesPage = () => {
     }
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [viewingSvc, setViewingSvc] = useState(null);
   const [form, setForm] = useState({ cptCode: '', description: '', fee: '', type: 'Standard' });
 
   const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition';
@@ -20,15 +22,37 @@ export const ServicesPage = () => {
     localStorage.setItem('medcare_services', JSON.stringify(services));
   }, [services]);
 
-  const handleAddSubmit = (e) => {
+  const openAddModal = () => {
+    setForm({ cptCode: '', description: '', fee: '', type: 'Standard' });
+    setEditingId(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (svc) => {
+    setForm({
+      cptCode: svc.cptCode,
+      description: svc.description,
+      fee: svc.fee,
+      type: svc.type
+    });
+    setEditingId(svc.id);
+    setIsModalOpen(true);
+  };
+
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    const newService = {
-      ...form,
-      id: Date.now().toString()
-    };
-    setServices([...services, newService]);
+    if (editingId) {
+      setServices(services.map(s => s.id === editingId ? { ...form, id: editingId } : s));
+    } else {
+      const newService = {
+        ...form,
+        id: Date.now().toString()
+      };
+      setServices([...services, newService]);
+    }
     setIsModalOpen(false);
     setForm({ cptCode: '', description: '', fee: '', type: 'Standard' });
+    setEditingId(null);
   };
 
   return (
@@ -39,7 +63,7 @@ export const ServicesPage = () => {
           <p className="text-xs font-medium text-slate-500 mt-1">Manage service codes, standard rates, and payer-specific fee schedules.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={openAddModal}
           className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-teal-500/20 transition-all flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
@@ -91,11 +115,21 @@ export const ServicesPage = () => {
                     </td>
                     <td className="p-3.5 text-center">
                       <div className="flex items-center justify-center gap-3">
-                        <button className="text-blue-600 hover:text-blue-800 text-xs font-bold transition">View</button>
-                        <button className="text-amber-600 hover:text-amber-800 text-xs font-bold transition">Edit</button>
+                        <button 
+                          onClick={() => setViewingSvc(svc)}
+                          className="text-blue-600 hover:text-blue-800 text-xs font-bold transition cursor-pointer"
+                        >
+                          View
+                        </button>
+                        <button 
+                          onClick={() => openEditModal(svc)}
+                          className="text-amber-600 hover:text-amber-800 text-xs font-bold transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
                         <button 
                           onClick={() => setServices(services.filter(s => s.id !== svc.id))} 
-                          className="text-red-600 hover:text-red-800 text-xs font-bold transition"
+                          className="text-red-600 hover:text-red-800 text-xs font-bold transition cursor-pointer"
                         >
                           Delete
                         </button>
@@ -118,7 +152,7 @@ export const ServicesPage = () => {
                   <Tag className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-slate-900">Add New Service / CPT</h2>
+                  <h2 className="text-sm font-bold text-slate-900">{editingId ? 'Edit Service / CPT' : 'Add New Service / CPT'}</h2>
                   <p className="text-[10px] text-slate-500">Register a new service code in the catalog</p>
                 </div>
               </div>
@@ -127,7 +161,7 @@ export const ServicesPage = () => {
               </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
               <div>
                 <label className={labelCls}>CPT Code *</label>
                 <input
@@ -197,6 +231,54 @@ export const ServicesPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {viewingSvc && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                  <Tag className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900">View Service Details</h2>
+                </div>
+              </div>
+              <button onClick={() => setViewingSvc(null)} className="p-1.5 hover:bg-slate-200 rounded-xl transition cursor-pointer">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4 text-sm">
+              <div>
+                <span className="block text-xs font-bold text-slate-500 mb-1">CPT Code</span>
+                <span className="font-medium text-slate-900">{viewingSvc.cptCode}</span>
+              </div>
+              <div>
+                <span className="block text-xs font-bold text-slate-500 mb-1">Description</span>
+                <span className="font-medium text-slate-900">{viewingSvc.description}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="block text-xs font-bold text-slate-500 mb-1">Standard Fee</span>
+                  <span className="font-medium text-slate-900">${parseFloat(viewingSvc.fee || 0).toFixed(2)}</span>
+                </div>
+                <div>
+                  <span className="block text-xs font-bold text-slate-500 mb-1">Service Type</span>
+                  <span className="font-medium text-slate-900">{viewingSvc.type}</span>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={() => setViewingSvc(null)}
+                  className="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -308,3 +308,10 @@ model ReminderLog {
 
   @@map("reminder_logs")
 }
+
+model GeneralSetting {
+  id   String @id @default("default") @db.VarChar(50)
+  data Json
+
+  @@map("general_settings")
+}

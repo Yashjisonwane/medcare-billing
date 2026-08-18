@@ -1,8 +1,10 @@
 // src/pages/settings/GeneralSettingsPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../../store/uiStore';
-import { Settings, Save, Globe, Bell, Shield, Monitor, Building, User, Palette, Clock, Activity } from 'lucide-react';
+import { Settings, Save, Globe, Bell, Shield, Monitor, Building, User, Palette, Clock, Activity, Loader2 } from 'lucide-react';
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
+import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
+import { refreshSettingsCache } from '../../utils/settingsCache';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-on-surface mb-1';
@@ -105,15 +107,52 @@ export const GeneralSettingsPage = () => {
     darkModeDefault: false,
     showPatientPhotos: true,
     defaultDashboardView: 'OVERVIEW',
+    autoBlockUSHolidays: true,
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const { addToast } = useUIStore();
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await getGeneralSettings();
+        if (data) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      } catch (error) {
+        addToast('Failed to load settings', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, [addToast]);
+
   const set = (field, val) => setSettings(p => ({ ...p, [field]: val }));
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    addToast('General practice settings updated (Demo)!', 'success');
+    setIsSaving(true);
+    try {
+      await updateGeneralSettings(settings);
+      await refreshSettingsCache();
+      addToast('General practice settings updated successfully!', 'success');
+    } catch (error) {
+      addToast('Failed to save settings', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -122,8 +161,9 @@ export const GeneralSettingsPage = () => {
           <h1 className="text-2xl font-bold text-on-surface">General Practice Settings</h1>
           <p className="text-xs text-on-surface-variant">Global platform parameters, timezones &amp; default localization</p>
         </div>
-        <button onClick={handleSave} className="px-5 py-2 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5">
-          <Save className="w-4 h-4" /> Save Settings
+        <button onClick={handleSave} disabled={isSaving} className="px-5 py-2 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer">
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {isSaving ? 'Saving...' : 'Save Settings'}
         </button>
       </div>
 
@@ -410,8 +450,9 @@ export const GeneralSettingsPage = () => {
         </div>
 
         <div className="flex justify-end pt-2">
-          <button type="submit" className="px-6 py-2.5 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5">
-            <Save className="w-4 h-4" /> Save Practice Settings
+          <button type="submit" disabled={isSaving} className="px-6 py-2.5 bg-secondary-container text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 disabled:opacity-50 transition cursor-pointer">
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {isSaving ? 'Saving...' : 'Save Practice Settings'}
           </button>
         </div>
       </form>

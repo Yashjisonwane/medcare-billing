@@ -1,4 +1,5 @@
 // src/utils/billingCalculations.js
+import { getCachedSettings } from './settingsCache';
 
 export const calculateLineItemBalance = (item) => {
   const charge = Number(item?.charge) || 0;
@@ -43,10 +44,32 @@ export const calculateBillLedgerTotals = (serviceLines = []) => {
 };
 
 export const formatCurrency = (amount) => {
+  // Read the user's currency preference from the settings cache
+  let currencyCode = 'USD';
+  try {
+    const settings = getCachedSettings();
+    if (settings && settings.currency) {
+      currencyCode = settings.currency;
+    }
+  } catch (e) {
+    // fallback to USD if cache not loaded yet
+  }
+
+  // Map currency codes to matching locales for proper symbol rendering
+  const localeMap = {
+    USD: 'en-US',
+    CAD: 'en-CA',
+    EUR: 'de-DE',
+    GBP: 'en-GB',
+    INR: 'en-IN',
+    MXN: 'es-MX',
+  };
+  const locale = localeMap[currencyCode] || 'en-US';
+
   const num = Number(amount) || 0;
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'USD',
+    currency: currencyCode,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(num);
