@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, verifyMfa, getCurrentUser } from '../controllers/authController.js';
+import { login, verifyMfa, getCurrentUser, updateProfile } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -7,5 +7,7 @@ const router = express.Router();
 router.post('/login', login);
 router.post('/mfa/verify', verifyMfa);
 router.get('/me', getCurrentUser);
+router.put('/profile', updateProfile);
+router.patch('/profile', updateProfile);
 
 export default router;

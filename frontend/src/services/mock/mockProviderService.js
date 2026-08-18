@@ -6,7 +6,8 @@ export const mockProviderService = {
     if (!res.ok) {
       throw new Error('Failed to retrieve provider registry.');
     }
-    return res.json();
+    const data = await res.json();
+    return Array.isArray(data) ? data : Object.values(data);
   },
 
   async addProvider(providerData) {

@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { mockProviderService } from '../../services/mock/mockProviderService';
-import { Search, Bell, Shield, LogOut, ChevronDown, User, Activity, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
+import { Search, Bell, Shield, LogOut, ChevronDown, User, Activity, ChevronLeft, ChevronRight, Menu, Pen, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FMLogo } from '../common/FMLogo';
+import { EditProfileModal } from '../modals/EditProfileModal';
 
 export const TopHeader = () => {
   const { currentUser, logout } = useAuthStore();
   const { sidebarCollapsed, toggleSidebar, activeProviderFilter, setProviderFilter } = useUIStore();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [providersList, setProvidersList] = useState([]);
   const navigate = useNavigate();
@@ -159,15 +161,25 @@ export const TopHeader = () => {
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 mt-2 w-64 bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-4 py-2.5 border-b border-slate-100">
                 <p className="text-sm font-extrabold text-slate-900">{currentUser?.name || 'Staff User'}</p>
-                <p className="text-xs text-teal-600 font-bold">{currentUser?.role || 'Super Admin'}</p>
+                <p className="text-xs text-teal-600 font-bold">{currentUser?.title || currentUser?.role || 'Super Admin'}</p>
                 <p className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">{currentUser?.email}</p>
               </div>
+
+              {/* Edit Profile Action */}
+              <button
+                onClick={() => { setUserMenuOpen(false); setIsEditProfileOpen(true); }}
+                className="w-full text-left px-4 py-2.5 text-xs text-teal-700 hover:bg-teal-50 flex items-center gap-2 cursor-pointer font-bold transition"
+              >
+                <Pen className="w-4 h-4 text-teal-600" />
+                Edit My Profile &amp; Avatar
+              </button>
+
               <button
                 onClick={() => { setUserMenuOpen(false); navigate('/settings/general'); }}
-                className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer font-medium"
+                className="w-full text-left px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer font-medium transition"
               >
                 <User className="w-4 h-4 text-slate-400" />
                 Clinic Settings &amp; Profile
@@ -175,7 +187,7 @@ export const TopHeader = () => {
               <div className="border-t border-slate-100 my-1"></div>
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold cursor-pointer"
+                className="w-full text-left px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-bold cursor-pointer transition"
               >
                 <LogOut className="w-4 h-4 text-rose-600" />
                 Sign Out
@@ -184,6 +196,12 @@ export const TopHeader = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+      />
     </div>
   );
 };

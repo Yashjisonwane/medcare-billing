@@ -10,6 +10,7 @@ export const CORE_SERVICES = [
     icon: 'Activity',
     badgeStyle: 'bg-teal-100 text-teal-800 border-teal-200',
     suggestedCptCode: '99204',
+    standardRate: 1214.00,
     cptConfirmationStatus: 'CONFIRMED',
     suggestedDuration: '60 min',
     durationConfirmationStatus: 'CONFIRMED',
@@ -26,6 +27,7 @@ export const CORE_SERVICES = [
     icon: 'Zap',
     badgeStyle: 'bg-violet-100 text-violet-800 border-violet-200',
     suggestedCptCode: '97039',
+    standardRate: 2000.00,
     cptConfirmationStatus: 'CONFIRMED',
     suggestedDuration: '45 min',
     durationConfirmationStatus: 'CONFIRMED',
@@ -42,6 +44,7 @@ export const CORE_SERVICES = [
     icon: 'Radio',
     badgeStyle: 'bg-blue-100 text-blue-800 border-blue-200',
     suggestedCptCode: '0101T',
+    standardRate: 1000.00,
     cptConfirmationStatus: 'CONFIRMED',
     suggestedDuration: '30 min',
     durationConfirmationStatus: 'CONFIRMED',
@@ -58,6 +61,7 @@ export const CORE_SERVICES = [
     icon: 'Syringe',
     badgeStyle: 'bg-amber-100 text-amber-800 border-amber-200',
     suggestedCptCode: '20552',
+    standardRate: 350.00,
     cptConfirmationStatus: 'PENDING_CONFIRMATION',
     suggestedDuration: '30 min',
     durationConfirmationStatus: 'PENDING_CONFIRMATION',
@@ -74,6 +78,7 @@ export const CORE_SERVICES = [
     icon: 'Cpu',
     badgeStyle: 'bg-rose-100 text-rose-800 border-rose-200',
     suggestedCptCode: '97039-RF',
+    standardRate: 450.00,
     cptConfirmationStatus: 'PENDING_CONFIRMATION',
     suggestedDuration: '45 min',
     durationConfirmationStatus: 'PENDING_CONFIRMATION',
@@ -90,12 +95,13 @@ export const CORE_SERVICES = [
     icon: 'MessageSquare',
     badgeStyle: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     suggestedCptCode: '90834',
-    cptConfirmationStatus: 'PENDING_CONFIRMATION',
+    standardRate: 250.00,
+    cptConfirmationStatus: 'CONFIRMED',
     suggestedDuration: '45 min',
-    durationConfirmationStatus: 'PENDING_CONFIRMATION',
+    durationConfirmationStatus: 'CONFIRMED',
     clinicalTemplate: 'Behavioral Health Progress Note',
-    templateStatus: 'CONFIGURATION_PENDING',
-    activeStatus: 'CONFIGURATION_PENDING'
+    templateStatus: 'CONFIRMED',
+    activeStatus: 'ACTIVE'
   }
 ];
 

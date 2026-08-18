@@ -1,6 +1,6 @@
-// src/pages/appointments/PatientSelfBookingPage.jsx
 import React, { useState, useEffect } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+import { mockProviderService } from '../../services/mock/mockProviderService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { CORE_SERVICES as SERVICES_CATALOG } from '../../constants/servicesCatalog';
 import { useUIStore } from '../../store/uiStore';
@@ -47,10 +47,35 @@ export const PatientSelfBookingPage = () => {
     attorneyPhone: '',
   });
 
+  // Providers state (loaded from backend)
+  const [providers, setProviders] = useState(Object.values(INITIAL_PROVIDER_CONFIGS));
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const backendProviders = await mockProviderService.getProviders();
+        if (backendProviders && backendProviders.length > 0) {
+          const merged = backendProviders.map(bp => {
+            const staticMatch = Object.values(INITIAL_PROVIDER_CONFIGS).find(ip => ip.id === bp.id || ip.name === bp.name);
+            return {
+              ...staticMatch,
+              ...bp,
+              cptCode: bp.cptCode || staticMatch?.cptCode || '99204 (Confirmed)',
+              fee: bp.fee || staticMatch?.fee || '$1,214.00'
+            };
+          });
+          setProviders(merged);
+        }
+      } catch (err) {
+        console.warn('Using default provider configurations', err);
+      }
+    };
+    fetchProviders();
+  }, []);
+
   // Available Slots state
   const [slotsState, setSlotsState] = useState({ loading: false, isClosed: false, isWeekend: false, isHoliday: false, reason: '', holidayName: '', slots: [] });
 
-  const providers = Object.values(INITIAL_PROVIDER_CONFIGS);
   const selectedProvider = providers.find(p => p.id === formData.providerId) || providers[0];
 
   useEffect(() => {
@@ -126,8 +151,8 @@ export const PatientSelfBookingPage = () => {
 
   const handleNextStep1 = (e) => {
     e.preventDefault();
-    if (!formData.patientName || !formData.patientPhone || !formData.patientEmail) {
-      addToast('Please enter your full name, mobile phone number, and email address', 'warning');
+    if (!formData.patientName || !formData.patientPhone || !formData.patientEmail || !formData.patientDob) {
+      addToast('Please enter your full name, phone number, email, and date of birth', 'warning');
       return;
     }
     setStep(2);
@@ -423,12 +448,21 @@ export const PatientSelfBookingPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 mb-1">Date of Birth</label>
+                  <label className="block text-xs font-bold text-slate-900 mb-1 flex items-center justify-between">
+                    <span>Date of Birth *</span>
+                    {formData.patientDob && (
+                      <span className="text-[10px] text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+                        Age: {Math.max(0, new Date().getFullYear() - new Date(formData.patientDob).getFullYear())} yrs
+                      </span>
+                    )}
+                  </label>
                   <input
                     type="date"
+                    required
+                    max={new Date().toISOString().split('T')[0]}
                     value={formData.patientDob}
                     onChange={e => setFormData({ ...formData, patientDob: e.target.value })}
-                    className="w-full px-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition"
+                    className="w-full px-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition font-bold"
                   />
                 </div>
               </div>
@@ -528,8 +562,10 @@ export const PatientSelfBookingPage = () => {
                       <Building2 className={`w-5 h-5 mt-0.5 ${formData.providerId === p.id ? 'text-teal-600' : 'text-slate-400'}`} />
                       <div>
                         <div className="text-xs font-bold text-slate-900">{p.name}</div>
-                        <div className="text-[11px] text-slate-500">{p.subtitle || 'Specialized Clinic Center'}</div>
-                        <div className="text-[10px] text-teal-700 font-medium mt-1">Default CPT Code: {p.cptCode}</div>
+                        <div className="text-[11px] text-slate-500">{p.serviceCategory || p.subtitle || 'Specialized Clinic Center'}</div>
+                        <div className="text-[10px] text-teal-700 font-medium mt-1">
+                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> · Fee: <span className="font-bold text-slate-900">{p.fee || '$1,214.00'}</span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -574,7 +610,9 @@ export const PatientSelfBookingPage = () => {
                           <span className="inline-block px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-100 text-teal-800 font-mono">
                             CPT: {s.suggestedCptCode}
                           </span>
-                          <span className="text-xs font-bold text-slate-900">${s.standardRate}</span>
+                          <span className="text-xs font-black text-slate-900">
+                            ${s.standardRate ? s.standardRate.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '1,214.00'}
+                          </span>
                         </div>
                       </div>
                     );
@@ -627,6 +665,7 @@ export const PatientSelfBookingPage = () => {
                 <label className="block text-xs font-bold text-slate-900 mb-1">Select Appointment Date</label>
                 <input
                   type="date"
+                  min={new Date().toISOString().split('T')[0]}
                   value={formData.date}
                   onChange={e => setFormData({ ...formData, date: e.target.value, time: '' })}
                   className="w-full sm:w-64 px-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 outline-none transition font-bold"
@@ -638,9 +677,13 @@ export const PatientSelfBookingPage = () => {
                 <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3 text-xs">
                   <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="font-bold">Clinic Closed: {slotsState.reason}</strong>
+                    <strong className="font-bold">
+                      {slotsState.allSlotsPassed ? "Today's Schedule Ended" : `Clinic Closed: ${slotsState.reason}`}
+                    </strong>
                     <p className="text-amber-700 mt-0.5">
-                      {slotsState.isWeekend 
+                      {slotsState.allSlotsPassed
+                        ? `All appointment slots for today (${formData.date}) have already passed. Please pick tomorrow or an upcoming date from the calendar above.`
+                        : slotsState.isWeekend 
                         ? 'Our clinic is closed on Saturdays and Sundays. Please select a Monday through Friday date for your visit.'
                         : 'Routine patient visits are not scheduled on US Federal Holidays. Please select another business day.'}
                     </p>
@@ -649,37 +692,70 @@ export const PatientSelfBookingPage = () => {
               )}
 
               {/* Time Slot Picker Grid */}
-              {!slotsState.isClosed && (
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-900 flex items-center gap-2">
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-900 flex flex-wrap items-center justify-between gap-2">
+                  <span className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-teal-600" /> Available Real-time Time Slots
-                  </label>
+                  </span>
+                  <div className="flex items-center gap-2 text-[11px]">
+                    <span className="px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 font-bold flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                      Clinic Time (Houston, TX - CT): {new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: '2-digit', minute: '2-digit', hour12: true }).format(new Date())}
+                    </span>
+                  </div>
+                </label>
 
-                  {slotsState.loading ? (
-                    <div className="p-8 text-center text-slate-400 text-xs animate-pulse">Checking real-time schedule availability...</div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {slotsState.slots.map(s => (
+                {slotsState.loading ? (
+                  <div className="p-8 text-center text-slate-400 text-xs animate-pulse">Checking real-time schedule availability...</div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {slotsState.slots.map(s => {
+                      if (s.isPast) {
+                        return (
+                          <div
+                            key={s.time}
+                            className="p-3 rounded-xl text-xs font-semibold border bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed flex items-center justify-between opacity-60 select-none"
+                            title="This time slot has already passed for today"
+                          >
+                            <span className="line-through">{s.time}</span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded">Passed</span>
+                          </div>
+                        );
+                      }
+
+                      if (s.isBooked) {
+                        return (
+                          <div
+                            key={s.time}
+                            className="p-3 rounded-xl text-xs font-semibold border bg-rose-50 text-rose-400 border-rose-200 cursor-not-allowed flex items-center justify-between opacity-70 select-none"
+                            title="This time slot is already booked"
+                          >
+                            <span className="line-through">{s.time}</span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 bg-rose-100 text-rose-700 rounded">Booked</span>
+                          </div>
+                        );
+                      }
+
+                      return (
                         <button
                           key={s.time}
+                          type="button"
                           disabled={!s.available}
                           onClick={() => setFormData({ ...formData, time: s.time })}
                           className={`p-3 rounded-xl text-xs font-bold border transition flex items-center justify-between cursor-pointer ${
-                            !s.available
-                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed line-through'
-                              : formData.time === s.time
+                            formData.time === s.time
                               ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-600/30'
-                              : 'bg-white text-slate-800 border-slate-200 hover:border-teal-600 hover:bg-teal-50/30'
+                              : 'bg-white text-slate-800 border-slate-200 hover:border-teal-600 hover:bg-teal-50/30 active:scale-98'
                           }`}
                         >
                           <span>{s.time}</span>
                           {formData.time === s.time && <Check className="w-4 h-4 text-white" />}
                         </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
               <div className="flex justify-between items-center pt-2">
                 <button

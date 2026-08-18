@@ -20,5 +20,29 @@ export const mockStaffService = {
       throw new Error(err.error || 'Failed to create staff account.');
     }
     return res.json();
+  },
+
+  async updateStaff(id, staffData) {
+    const res = await fetch(`${API_BASE}/staff/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(staffData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to update staff account.');
+    }
+    return res.json();
+  },
+
+  async deleteStaff(id) {
+    const res = await fetch(`${API_BASE}/staff/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to delete staff account.');
+    }
+    return res.json();
   }
 };

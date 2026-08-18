@@ -68,3 +68,48 @@ export const createStaff = async (req, res) => {
     return res.status(500).json({ error: 'Failed to register staff profile.' });
   }
 };
+
+/**
+ * Update existing staff profile
+ */
+export const updateStaff = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(data.name ? { name: data.name, fullName: data.name } : {}),
+        ...(data.email ? { email: data.email } : {}),
+        ...(data.role ? { role: data.role } : {}),
+        ...(data.title ? { title: data.title } : {}),
+        ...(data.avatar !== undefined ? { avatar: data.avatar } : {}),
+        ...(data.status ? { status: data.status } : {})
+      }
+    });
+
+    return res.status(200).json(formatStaff(updated));
+  } catch (error) {
+    console.error('Error updating staff member:', error);
+    return res.status(500).json({ error: 'Failed to update staff member.' });
+  }
+};
+
+/**
+ * Delete staff member
+ */
+export const deleteStaff = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.user.delete({
+      where: { id }
+    });
+    return res.status(200).json({ success: true, message: 'Staff member removed from database.' });
+  } catch (error) {
+    console.error('Error deleting staff member:', error);
+    return res.status(500).json({ error: 'Failed to delete staff member.' });
+  }
+};
+

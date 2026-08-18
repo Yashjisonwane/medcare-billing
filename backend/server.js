@@ -15,6 +15,7 @@ import documentRoutes from './src/routes/documentRoutes.js';
 import auditRoutes from './src/routes/auditRoutes.js';
 import staffRoutes from './src/routes/staffRoutes.js';
 import attorneyRoutes from './src/routes/attorneyRoutes.js';
+import notificationRoutes from './src/routes/notificationRoutes.js';
 
 import { logger } from './src/config/logger.js';
 
@@ -53,6 +54,7 @@ app.use('/v1/patients', patientRoutes);
 app.use('/v1/cases', caseRoutes);
 app.use('/v1/appointments', appointmentRoutes);
 app.use('/v1/reminders', reminderRoutes);
+app.use('/v1/notifications', notificationRoutes);
 app.use('/v1/clinical-notes', clinicalNoteRoutes);
 app.use('/v1/billing', billingRoutes);
 app.use('/v1/documents', documentRoutes);

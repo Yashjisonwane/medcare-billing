@@ -1,5 +1,6 @@
 import { prisma } from '../config/db.js';
-import { sendAppointmentEmailNotification } from '../services/notificationService.js';
+import { sendAppointmentEmailNotification, sendBookingConfirmationEmail } from '../services/notificationService.js';
+import { isUSFederalHoliday } from '../constants/usHolidays.js';
 
 /**
  * Helper to format a DB Appointment record matching the frontend schema
@@ -38,13 +39,14 @@ const formatAppointment = (a) => {
  * Get appointments list with optional filters (date, patientId, providerId)
  */
 export const getAppointments = async (req, res) => {
-  const { date, patientId, providerId } = req.query;
+  const { date, patientId, providerId, status } = req.query;
 
   try {
     const where = {};
     if (date) where.date = date;
     if (patientId) where.patientId = patientId;
     if (providerId) where.providerId = providerId;
+    if (status) where.status = status;
 
     const appointments = await prisma.appointment.findMany({
       where,
@@ -64,7 +66,7 @@ export const getAppointments = async (req, res) => {
           }
         }
       },
-      orderBy: { appointmentDate: 'asc' }
+      orderBy: { startTime: 'asc' }
     });
 
     return res.status(200).json(appointments.map(formatAppointment));
@@ -84,11 +86,22 @@ export const createAppointment = async (req, res) => {
     return res.status(400).json({ error: 'date and startTime are required.' });
   }
 
+  // Check if date lands on an official US Federal Holiday
+  const holidayCheck = isUSFederalHoliday(data.date);
+  if (holidayCheck.isHoliday) {
+    return res.status(400).json({
+      error: `Cannot schedule on official US Federal Holiday: ${holidayCheck.name}. Clinic is closed.`
+    });
+  }
+
   const generatedId = `apt-${Date.now()}`;
 
   try {
     // 1. Resolve Patient ID
     let targetPatientId = data.patientId;
+    let patientEmail = data.patientEmail || '';
+    let patientName = data.patientName || '';
+
     if (data.patientId) {
       const patientObj = await prisma.patient.findFirst({
         where: {
@@ -100,12 +113,18 @@ export const createAppointment = async (req, res) => {
       });
       if (patientObj) {
         targetPatientId = patientObj.id;
+        patientEmail = patientObj.email || patientEmail;
+        patientName = `${patientObj.firstName} ${patientObj.lastName}`.trim();
       }
     }
 
     if (!targetPatientId) {
       const fallbackPatient = await prisma.patient.findFirst();
-      if (fallbackPatient) targetPatientId = fallbackPatient.id;
+      if (fallbackPatient) {
+        targetPatientId = fallbackPatient.id;
+        patientEmail = fallbackPatient.email || patientEmail;
+        patientName = `${fallbackPatient.firstName} ${fallbackPatient.lastName}`.trim();
+      }
     }
 
     // 2. Resolve Case ID (handle business code CASE-xxx or PK case-xxx)
@@ -126,6 +145,7 @@ export const createAppointment = async (req, res) => {
 
     // 3. Resolve Provider ID
     let targetProviderId = data.providerId || 'prov-josmic';
+    let provName = 'Dr. Segun Adeoye (JOSMIC Wellness)';
     const provObj = await prisma.provider.findFirst({
       where: {
         OR: [
@@ -136,9 +156,13 @@ export const createAppointment = async (req, res) => {
     });
     if (provObj) {
       targetProviderId = provObj.id;
+      provName = provObj.name;
     } else {
       const fallbackProv = await prisma.provider.findFirst();
-      if (fallbackProv) targetProviderId = fallbackProv.id;
+      if (fallbackProv) {
+        targetProviderId = fallbackProv.id;
+        provName = fallbackProv.name;
+      }
     }
 
     // Parse appointmentDate if valid
@@ -161,7 +185,7 @@ export const createAppointment = async (req, res) => {
         appointmentDate: appointmentDateVal,
         startTime: data.startTime,
         endTime: data.endTime || '09:30 AM',
-        status: 'SCHEDULED',
+        status: data.status || 'SCHEDULED',
         bookingChannel: data.bookingChannel || 'Clinic Staff Portal',
         reminderStatus: 'Sent - SMS Queued',
         reminderPreference: data.reminderPreference || 'SMS',
@@ -180,11 +204,34 @@ export const createAppointment = async (req, res) => {
       }
     });
 
+    // Asynchronously dispatch booking confirmation email
+    if (patientEmail) {
+      sendBookingConfirmationEmail({
+        patientName: patientName || 'Patient',
+        patientEmail,
+        doctorName: provName,
+        appointmentDate: data.date,
+        appointmentTime: data.startTime
+      }).catch(() => {});
+    }
+
     return res.status(201).json(formatAppointment(newApt));
   } catch (error) {
     console.error('Error creating appointment:', error);
     return res.status(500).json({ error: error.message || 'Failed to schedule appointment.' });
   }
+};
+
+const parseTimeToMinutes = (timeStr) => {
+  if (!timeStr) return 0;
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return 0;
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const ampm = match[3].toUpperCase();
+  if (ampm === 'PM' && hours < 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  return hours * 60 + minutes;
 };
 
 /**
@@ -198,7 +245,54 @@ export const getAvailableSlots = async (req, res) => {
   }
 
   try {
-    // 1. Check if weekend (local timezone check based on split)
+    const clinicTz = req.query.timezone || 'America/Chicago';
+    
+    // Calculate current date and minutes in clinic timezone (Houston, TX)
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: clinicTz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    
+    const parts = formatter.formatToParts(now);
+    const partMap = {};
+    parts.forEach(p => { partMap[p.type] = p.value; });
+
+    const todayDateStr = `${partMap.year}-${partMap.month}-${partMap.day}`;
+    const currentMinutes = parseInt(partMap.hour, 10) * 60 + parseInt(partMap.minute, 10);
+
+    const isToday = date === todayDateStr;
+    const isPastDate = date < todayDateStr;
+
+    // Check if entire date is in the past
+    if (isPastDate) {
+      return res.status(200).json({
+        isClosed: true,
+        isPast: true,
+        reason: 'Selected date is in the past. Please choose a future date.',
+        slots: []
+      });
+    }
+
+    // 1. Check if official US Federal Holiday
+    const holidayCheck = isUSFederalHoliday(date);
+    if (holidayCheck.isHoliday) {
+      return res.status(200).json({
+        isClosed: true,
+        isWeekend: false,
+        isHoliday: true,
+        holidayName: holidayCheck.name,
+        reason: `Clinic Closed — Official US Federal Holiday (${holidayCheck.name})`,
+        slots: []
+      });
+    }
+
+    // 2. Check if weekend
     const dateObj = new Date(`${date}T00:00:00`);
     const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 6 = Saturday
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
@@ -213,7 +307,7 @@ export const getAvailableSlots = async (req, res) => {
       });
     }
 
-    // 2. Fetch existing appointments for date
+    // 3. Fetch existing appointments for date
     const bookedApts = await prisma.appointment.findMany({
       where: {
         providerId,
@@ -230,13 +324,26 @@ export const getAvailableSlots = async (req, res) => {
       '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM'
     ];
 
-    const slots = defaultTimeSlots.map(time => ({
-      time,
-      available: !bookedTimes.includes(time)
-    }));
+    const slots = defaultTimeSlots.map(time => {
+      const isBooked = bookedTimes.includes(time);
+      const slotMinutes = parseTimeToMinutes(time);
+      const isPastSlot = isToday && (slotMinutes <= currentMinutes);
+
+      return {
+        time,
+        available: !isBooked && !isPastSlot,
+        isBooked,
+        isPast: isPastSlot,
+        reason: isPastSlot ? 'Time passed' : isBooked ? 'Already booked' : 'Available'
+      };
+    });
+
+    const hasAnyAvailable = slots.some(s => s.available);
 
     return res.status(200).json({
-      isClosed: false,
+      isClosed: isToday && !hasAnyAvailable,
+      allSlotsPassed: isToday && !hasAnyAvailable,
+      reason: (isToday && !hasAnyAvailable) ? 'All appointment slots for today have already passed. Please select tomorrow or an upcoming date.' : '',
       isWeekend: false,
       isHoliday: false,
       slots

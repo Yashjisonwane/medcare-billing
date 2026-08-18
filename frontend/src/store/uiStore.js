@@ -8,6 +8,20 @@ export const useUIStore = create((set) => ({
   toasts: [],
   demoDrawerOpen: false,
 
+  // UI Display Preferences
+  compactMode: false,
+  darkMode: false,
+  showPatientPhotos: true,
+
+  setCompactMode: (val) => set({ compactMode: val }),
+  setDarkMode: (val) => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('dark', val);
+    }
+    set({ darkMode: val });
+  },
+  setShowPatientPhotos: (val) => set({ showPatientPhotos: val }),
+
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setSidebarCollapsed: (val) => set({ sidebarCollapsed: val }),
 

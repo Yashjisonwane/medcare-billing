@@ -64,6 +64,47 @@ export const useAuthStore = create((set, get) => ({
   },
 
   /**
+   * Update active user profile and persist to MySQL Backend
+   */
+  updateProfile: async (updatedData) => {
+    const prev = get().currentUser || {};
+    const updated = { ...prev, ...updatedData };
+    
+    // Save locally
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    set({ currentUser: updated });
+
+    try {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const res = await fetch('http://localhost:5000/v1/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          id: prev.id,
+          name: updatedData.name,
+          title: updatedData.title,
+          email: updatedData.email,
+          avatar: updatedData.avatar,
+          role: prev.role || 'Super Admin'
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        const merged = { ...updated, ...data.user };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        set({ currentUser: merged });
+        return merged;
+      }
+    } catch (e) {
+      console.warn('[Auth Store] Backend sync fallback to local cache:', e);
+    }
+    return updated;
+  },
+
+  /**
    * Logout — clears session and token
    */
   logout: async () => {

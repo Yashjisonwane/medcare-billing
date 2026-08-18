@@ -18,7 +18,7 @@ model User {
   role         String     @db.VarChar(50)
   title        String?    @db.VarChar(100) // user job title e.g. Attending Physician
   status       String     @default("ACTIVE") @db.VarChar(50)
-  avatar       String?    @db.VarChar(255)
+  avatar       String?    @db.MediumText
   mfaSecret    String?    @map("mfa_secret") @db.VarChar(100)
   createdAt    DateTime   @default(now()) @map("created_at")
 

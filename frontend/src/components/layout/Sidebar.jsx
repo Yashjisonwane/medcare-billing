@@ -11,6 +11,7 @@ import {
   Stethoscope, HelpCircle, UserCog, Tag, Globe, CheckCircle2,
   LogOut, X
 } from 'lucide-react';
+import { EditProfileModal } from '../modals/EditProfileModal';
 
 // Icon lookup map
 const ICON_MAP = {
@@ -74,6 +75,7 @@ const ALL_SECTIONS = (dashboardPath) => [
 export const Sidebar = ({ onCloseMobile }) => {
   const { currentUser, logout } = useAuthStore();
   const { setSidebarCollapsed } = useUIStore();
+  const [isEditProfileOpen, setIsEditProfileOpen] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -170,18 +172,22 @@ export const Sidebar = ({ onCloseMobile }) => {
 
       {/* ── LOGGED-IN USER FOOTER AT THE VERY BOTTOM ── */}
       <div className="p-3 border-t border-slate-800 bg-slate-950/60 shrink-0">
-        <div className="p-2 rounded-xl bg-slate-800/70 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2.5 min-w-0">
+        <div className="p-2 rounded-xl bg-slate-800/70 border border-slate-800 hover:border-teal-500/50 hover:bg-slate-800 transition flex items-center justify-between gap-2.5">
+          <div
+            onClick={() => setIsEditProfileOpen(true)}
+            className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer group"
+            title="Click to edit Super Admin profile"
+          >
             <div className="relative shrink-0">
               <img
                 src={currentUser?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'}
                 alt={currentUser?.name || 'User'}
-                className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                className="w-8 h-8 rounded-full object-cover border border-slate-700 group-hover:border-teal-400 transition"
               />
               <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-slate-900" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-100 truncate leading-tight">
+              <p className="text-xs font-bold text-slate-100 truncate leading-tight group-hover:text-teal-300 transition">
                 {currentUser?.name || 'Staff User'}
               </p>
               <p className="text-[10px] text-slate-400 truncate mt-0.5">
@@ -201,6 +207,11 @@ export const Sidebar = ({ onCloseMobile }) => {
         </div>
       </div>
 
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+      />
     </aside>
   );
 };
