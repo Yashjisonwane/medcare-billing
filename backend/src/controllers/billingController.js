@@ -500,39 +500,57 @@ export const postPayment = async (req, res) => {
       return res.status(404).json({ error: 'Bill not found.' });
     }
 
-    const lines = bill.serviceLines;
-    const targetLine = lines[lineIndex];
+    const lines = bill.serviceLines || [];
+    let targetLine = (lineIndex !== undefined && lines[lineIndex]) 
+      ? lines[lineIndex] 
+      : lines.find(l => Number(l.lineBalance) > 0) || lines[0];
 
     if (!targetLine) {
-      return res.status(400).json({ error: 'Invalid CPT line index.' });
-    }
-
-    let insurancePayment = Number(targetLine.insurancePayment) || 0;
-    let patientPayment = Number(targetLine.patientPayment) || 0;
-    let otherPayment = Number(targetLine.otherPayment) || 0;
-
-    if (payerType === 'INSURANCE') {
-      insurancePayment += parseFloat(amount);
-    } else if (payerType === 'PATIENT') {
-      patientPayment += parseFloat(amount);
+      const lineId = `srv-l-${Date.now()}`;
+      targetLine = await prisma.serviceLine.create({
+        data: {
+          id: lineId,
+          billId: id,
+          dos: new Date().toLocaleDateString('en-US'),
+          dateOfService: new Date().toLocaleDateString('en-US'),
+          cptCode: '99204',
+          description: 'Payment Account Allocation',
+          charge: parseFloat(amount) || 0,
+          balance: 0,
+          lineBalance: 0,
+          insurancePayment: payerType === 'INSURANCE' ? (parseFloat(amount) || 0) : 0,
+          patientPayment: payerType === 'PATIENT' ? (parseFloat(amount) || 0) : 0,
+          otherPayment: (payerType !== 'INSURANCE' && payerType !== 'PATIENT') ? (parseFloat(amount) || 0) : 0
+        }
+      });
     } else {
-      otherPayment += parseFloat(amount);
-    }
+      let insurancePayment = Number(targetLine.insurancePayment) || 0;
+      let patientPayment = Number(targetLine.patientPayment) || 0;
+      let otherPayment = Number(targetLine.otherPayment) || 0;
 
-    const totalLinePay = insurancePayment + patientPayment + otherPayment;
-    const adjustments = Number(targetLine.adjustments) || 0;
-    const lineBalance = Math.max(0, Number(targetLine.charge) - (totalLinePay + adjustments));
-
-    await prisma.serviceLine.update({
-      where: { id: targetLine.id },
-      data: {
-        insurancePayment,
-        patientPayment,
-        otherPayment,
-        balance: lineBalance,
-        lineBalance
+      if (payerType === 'INSURANCE') {
+        insurancePayment += parseFloat(amount);
+      } else if (payerType === 'PATIENT') {
+        patientPayment += parseFloat(amount);
+      } else {
+        otherPayment += parseFloat(amount);
       }
-    });
+
+      const totalLinePay = insurancePayment + patientPayment + otherPayment;
+      const adjustments = Number(targetLine.adjustments) || 0;
+      const lineBalance = Math.max(0, Number(targetLine.charge) - (totalLinePay + adjustments));
+
+      await prisma.serviceLine.update({
+        where: { id: targetLine.id },
+        data: {
+          insurancePayment,
+          patientPayment,
+          otherPayment,
+          balance: lineBalance,
+          lineBalance
+        }
+      });
+    }
 
     // Create Transaction Record
     await prisma.transaction.create({
@@ -582,29 +600,48 @@ export const postAdjustment = async (req, res) => {
       return res.status(404).json({ error: 'Bill not found.' });
     }
 
-    const lines = bill.serviceLines;
-    const targetLine = lines[lineIndex];
+    const lines = bill.serviceLines || [];
+    let targetLine = (lineIndex !== undefined && lines[lineIndex]) 
+      ? lines[lineIndex] 
+      : lines.find(l => Number(l.lineBalance) > 0) || lines[0];
 
     if (!targetLine) {
-      return res.status(400).json({ error: 'Invalid CPT line index.' });
+      const lineId = `srv-adj-${Date.now()}`;
+      targetLine = await prisma.serviceLine.create({
+        data: {
+          id: lineId,
+          billId: id,
+          dos: new Date().toLocaleDateString('en-US'),
+          dateOfService: new Date().toLocaleDateString('en-US'),
+          cptCode: '99204',
+          description: 'Adjustment Allocation',
+          charge: parseFloat(amount) || 0,
+          adjustments: parseFloat(amount) || 0,
+          balance: 0,
+          lineBalance: 0,
+          insurancePayment: 0,
+          patientPayment: 0,
+          otherPayment: 0
+        }
+      });
+    } else {
+      const insurancePayment = Number(targetLine.insurancePayment) || 0;
+      const patientPayment = Number(targetLine.patientPayment) || 0;
+      const otherPayment = Number(targetLine.otherPayment) || 0;
+
+      const adjustments = (Number(targetLine.adjustments) || 0) + parseFloat(amount);
+      const totalLinePay = insurancePayment + patientPayment + otherPayment;
+      const lineBalance = Math.max(0, Number(targetLine.charge) - (totalLinePay + adjustments));
+
+      await prisma.serviceLine.update({
+        where: { id: targetLine.id },
+        data: {
+          adjustments,
+          balance: lineBalance,
+          lineBalance
+        }
+      });
     }
-
-    const insurancePayment = Number(targetLine.insurancePayment) || 0;
-    const patientPayment = Number(targetLine.patientPayment) || 0;
-    const otherPayment = Number(targetLine.otherPayment) || 0;
-
-    const adjustments = (Number(targetLine.adjustments) || 0) + parseFloat(amount);
-    const totalLinePay = insurancePayment + patientPayment + otherPayment;
-    const lineBalance = Math.max(0, Number(targetLine.charge) - (totalLinePay + adjustments));
-
-    await prisma.serviceLine.update({
-      where: { id: targetLine.id },
-      data: {
-        adjustments,
-        balance: lineBalance,
-        lineBalance
-      }
-    });
 
     // Create Transaction Record
     await prisma.transaction.create({
