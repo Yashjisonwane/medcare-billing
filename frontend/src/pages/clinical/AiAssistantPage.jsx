@@ -208,15 +208,6 @@ export const AiAssistantPage = () => {
     }
   };
 
-      setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: 'Approved' } : d));
-      addToast(`Draft approved and locked to backend database as official clinical note!`, 'success');
-      setSelectedDraft(null);
-      setDoctorNotes('');
-    } catch (err) {
-      console.error(err);
-      addToast('Failed to save approved note to database', 'error');
-    }
-  };
 
   const handleReject = (draftId) => {
     setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: 'Rejected' } : d));

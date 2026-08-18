@@ -20,7 +20,12 @@ export const mockCms1500Service = {
     } catch (e) {
       console.error('Error searching claims dynamically:', e);
     }
-    const defaultClaims = await mockCms1500Service.getClaimsByBillId('bill-anik-001');
-    return defaultClaims[0];
+    try {
+      const defaultClaims = await mockCms1500Service.getClaimsByBillId('bill-anik-001');
+      return defaultClaims && defaultClaims.length > 0 ? defaultClaims[0] : null;
+    } catch (e) {
+      console.warn('Fallback claim retrieval failed:', e);
+      return null;
+    }
   }
 };

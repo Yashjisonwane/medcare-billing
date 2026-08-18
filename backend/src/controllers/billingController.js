@@ -244,7 +244,11 @@ export const getFourBillsByCase = async (req, res) => {
         include: { serviceLines: true }
       });
 
-      if (!existingBill) {
+      const providerExists = await prisma.provider.findUnique({
+        where: { id: provId }
+      });
+
+      if (!existingBill && providerExists) {
         const stmtNum = `${Math.floor(100000 + Math.random() * 900000)}`;
         existingBill = await prisma.bill.create({
           data: {
@@ -263,6 +267,8 @@ export const getFourBillsByCase = async (req, res) => {
           include: { serviceLines: true }
         });
       }
+
+      if (!existingBill) continue;
 
       // If bill has no service lines, seed default clinical procedure lines
       if (!existingBill.serviceLines || existingBill.serviceLines.length === 0) {
