@@ -15,11 +15,8 @@ import documentRoutes from './src/routes/documentRoutes.js';
 import auditRoutes from './src/routes/auditRoutes.js';
 import staffRoutes from './src/routes/staffRoutes.js';
 import attorneyRoutes from './src/routes/attorneyRoutes.js';
-<<<<<<< HEAD
 import notificationRoutes from './src/routes/notificationRoutes.js';
-=======
 import settingsRoutes from './src/routes/settingsRoutes.js';
->>>>>>> a816ada0c567850e98c20955e48075fe0e2649b9
 
 import { logger } from './src/config/logger.js';
 
