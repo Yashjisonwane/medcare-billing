@@ -1,16 +1,9 @@
 // src/pages/treatments/TreatmentSessionsPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filter, X, Save } from 'lucide-react';
-
-const SESSIONS = [
-  { id: 'SES-001', date: '01/22/2026', dos: '01/22/2026', provider: 'ANIK Laser Therapy', providerShort: 'ANIK', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'High-Intensity Laser Therapy (HILT)', cpt: '97039', duration: '45 min', status: 'Completed', charge: 6140.00 },
-  { id: 'SES-002', date: '01/24/2026', dos: '01/24/2026', provider: 'ANIK Laser Therapy', providerShort: 'ANIK', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'High-Intensity Laser Therapy (HILT)', cpt: '97039', duration: '45 min', status: 'Completed', charge: 6140.00 },
-  { id: 'SES-003', date: '01/26/2026', dos: '01/26/2026', provider: 'ANIK Laser Therapy', providerShort: 'ANIK', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'High-Intensity Laser Therapy (HILT)', cpt: '97039', duration: '45 min', status: 'Completed', charge: 6640.00 },
-  { id: 'SES-004', date: '01/06/2026', dos: '01/06/2026', provider: "DAV'S Anatomy", providerShort: 'DAVS', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'Extracorporeal Shockwave Therapy (ESWT)', cpt: '0101T', duration: '30 min', status: 'Completed', charge: 3390.00 },
-  { id: 'SES-005', date: '01/07/2026', dos: '01/07/2026', provider: "DAV'S Anatomy", providerShort: 'DAVS', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'Extracorporeal Shockwave Therapy (ESWT)', cpt: '0101T', duration: '30 min', status: 'Completed', charge: 3140.00 },
-  { id: 'SES-006', date: '01/08/2026', dos: '01/08/2026', provider: "DAV'S Anatomy", providerShort: 'DAVS', patient: 'SAMPLE TESTING', therapist: 'Adeoye Segun, DC', type: 'Extracorporeal Shockwave Therapy (ESWT)', cpt: '0101T', duration: '30 min', status: 'Completed', charge: 3340.00 },
-  { id: 'SES-007', date: '12/30/2025', dos: '12/30/2025', provider: 'JOSMIC Wellness Center', providerShort: 'JOSMIC', patient: 'SAMPLE TESTING', therapist: 'Anthony Nguyen, MD', type: 'Pain Management Consultation & Evaluation', cpt: '99204', duration: '60 min', status: 'Completed', charge: 1214.00 },
-];
+import { apiAppointmentService } from '../../services/api/apiAppointmentService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 
 const STATUS_COLORS = {
   Completed: 'bg-emerald-100 text-emerald-700',
@@ -31,13 +24,13 @@ const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';
 
 // ─── Schedule Session Modal ───────────────────────────────────────────────────
-const ScheduleSessionModal = ({ onClose }) => {
+const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
-    patientName: 'SAMPLE TESTING',
-    patientId: 'PAT-141849159',
-    caseId: 'CASE-2025-1227',
-    provider: 'prov-anik',
-    therapist: 'Adeoye Segun, DC',
+    patientName: '',
+    patientId: '',
+    caseId: '',
+    provider: '',
+    therapist: '',
     sessionType: 'High-Intensity Laser Therapy (HILT)',
     cptCode: '97039',
     dos: new Date().toISOString().split('T')[0],
@@ -46,27 +39,87 @@ const ScheduleSessionModal = ({ onClose }) => {
     duration: '45',
     room: 'Treatment Room 1',
     location: '10101 Harwin Dr. Suite 274, Houston TX 77036',
-    diagnosisCodes: 'M54.6, M54.50',
+    diagnosisCodes: '',
     units: 1,
     charge: '6140.00',
     status: 'Scheduled',
     billedToCase: true,
-    sessionNotes: 'Patient to wear appropriate attire. No metal jewelry during laser session.',
+    sessionNotes: '',
     authNumber: '',
     reminderSent: true,
     reminderMethod: 'SMS',
   });
+  
   const [saving, setSaving] = useState(false);
+  const [cases, setCases] = useState([]);
+  const [providers, setProviders] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [casesData, provData] = await Promise.all([
+          apiCaseService.getCases(),
+          apiProviderService.getProviders()
+        ]);
+        setCases(Array.isArray(casesData) ? casesData : (casesData.cases || []));
+        setProviders(provData.providers ? provData.providers : (Array.isArray(provData) ? provData : Object.values(provData)));
+      } catch (err) {
+        console.error('Failed to load form data', err);
+      }
+    };
+    fetchData();
+  }, []);
 
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
 
-  const handleSave = (e) => {
+  const handleCaseChange = (e) => {
+    const selectedCaseId = e.target.value;
+    const selectedCase = cases.find(c => c.id === selectedCaseId);
+    if (selectedCase) {
+      setForm(p => ({
+        ...p,
+        caseId: selectedCase.caseId || selectedCase.id,
+        patientId: selectedCase.patient?.patientId || selectedCase.patientId,
+        patientName: selectedCase.patient ? `${selectedCase.patient.firstName} ${selectedCase.patient.lastName}`.trim() : 'Unknown Patient'
+      }));
+    } else {
+      setForm(p => ({ ...p, caseId: '', patientId: '', patientName: '' }));
+    }
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
+    if (!form.caseId || !form.provider) {
+      alert("Please select a Case/Patient and a Provider.");
+      return;
+    }
+    
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      // Find actual IDs from DB
+      const selCase = cases.find(c => c.caseId === form.caseId || c.id === form.caseId);
+      const payload = {
+        patientId: selCase ? selCase.patientId : form.patientId,
+        caseId: selCase ? selCase.id : form.caseId,
+        providerId: form.provider,
+        appointmentType: form.sessionType,
+        cptCode: form.cptCode,
+        date: form.dos,
+        startTime: form.startTime,
+        endTime: form.endTime,
+        location: form.location,
+        status: form.status,
+        reasonForVisit: form.sessionNotes
+      };
+      await apiAppointmentService.createAppointment(payload);
+      if (onSuccess) onSuccess();
       onClose();
-    }, 800);
+    } catch (err) {
+      console.error('Failed to save appointment', err);
+      alert('Failed to save appointment. Check console.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -93,9 +146,18 @@ const ScheduleSessionModal = ({ onClose }) => {
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Patient & Case</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div><label className={labelCls}>Patient Name *</label><input required className={inputCls} value={form.patientName} onChange={e => set('patientName', e.target.value)} /></div>
-              <div><label className={labelCls}>Patient ID</label><input className={inputCls} value={form.patientId} onChange={e => set('patientId', e.target.value)} /></div>
-              <div><label className={labelCls}>Case Reference</label><input className={inputCls} value={form.caseId} onChange={e => set('caseId', e.target.value)} /></div>
+              <div><label className={labelCls}>Select Case / Patient *</label>
+                <select required className={inputCls} onChange={handleCaseChange} defaultValue="">
+                  <option value="" disabled>Select a Case</option>
+                  {cases.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.patient ? `${c.patient.firstName} ${c.patient.lastName}` : c.patientId} - {c.caseType || c.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div><label className={labelCls}>Patient ID</label><input readOnly className={`${inputCls} bg-slate-100 cursor-not-allowed text-slate-500`} value={form.patientId} /></div>
+              <div><label className={labelCls}>Case Reference</label><input readOnly className={`${inputCls} bg-slate-100 cursor-not-allowed text-slate-500`} value={form.caseId} /></div>
             </div>
           </div>
 
@@ -105,10 +167,10 @@ const ScheduleSessionModal = ({ onClose }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div><label className={labelCls}>Practice Provider *</label>
                 <select className={inputCls} value={form.provider} onChange={e => set('provider', e.target.value)}>
-                  <option value="prov-josmic">JOSMIC Wellness Center (Pain Management)</option>
-                  <option value="prov-davs">DAV'S Anatomy (Shockwave ESWT)</option>
-                  <option value="prov-anik">ANIK Laser Therapy (Laser Therapy)</option>
-                  <option value="prov-counselor">Counselor Practice (Counseling)</option>
+                  <option value="" disabled>Select Provider</option>
+                  {providers.map(p => (
+                    <option key={p.id} value={p.id}>{p.name || p.id}</option>
+                  ))}
                 </select>
               </div>
               <div><label className={labelCls}>Attending Therapist / Provider</label><input className={inputCls} value={form.therapist} onChange={e => set('therapist', e.target.value)} /></div>
@@ -207,15 +269,66 @@ export const TreatmentSessionsPage = () => {
   const [search, setSearch] = useState('');
   const [filterProvider, setFilterProvider] = useState('ALL');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = SESSIONS.filter(s => {
+  const fetchSessions = async () => {
+    try {
+      const data = await apiAppointmentService.getAllAppointments();
+      
+      const formatted = (Array.isArray(data) ? data : (data.appointments || [])).map(a => {
+        let providerShort = 'OTHER';
+        const pName = (a.providerName || '').toUpperCase();
+        if (pName.includes('ANIK')) providerShort = 'ANIK';
+        else if (pName.includes('DAVS') || pName.includes("DAV'S")) providerShort = 'DAVS';
+        else if (pName.includes('JOSMIC')) providerShort = 'JOSMIC';
+
+        let duration = '45 min';
+        if (a.startTime && a.endTime) {
+          if (a.cptCode === '99204') duration = '60 min';
+        }
+
+        let charge = 0;
+        if (a.cptCode === '97039') charge = 6140.00;
+        else if (a.cptCode === '0101T') charge = 3390.00;
+        else if (a.cptCode === '99204') charge = 1214.00;
+        else charge = 1500.00; 
+
+        return {
+          id: a.id,
+          date: a.date,
+          dos: a.date,
+          provider: a.providerName,
+          providerShort,
+          patient: a.patientName,
+          therapist: a.providerName,
+          type: a.appointmentType || 'Therapy Session',
+          cpt: a.cptCode || 'N/A',
+          duration,
+          status: a.status || 'Completed',
+          charge
+        };
+      });
+      setSessions(formatted);
+    } catch (err) {
+      console.error('Failed to load sessions', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchSessions();
+  }, []);
+
+  const filtered = sessions.filter(s => {
     const matchSearch = !search || s.patient.toLowerCase().includes(search.toLowerCase()) || s.provider.toLowerCase().includes(search.toLowerCase()) || s.type.toLowerCase().includes(search.toLowerCase());
     const matchProvider = filterProvider === 'ALL' || s.providerShort === filterProvider;
     return matchSearch && matchProvider;
   });
 
-  const totalCharge = SESSIONS.reduce((a, s) => a + s.charge, 0);
-  const completedSessions = SESSIONS.filter(s => s.status === 'Completed').length;
+  const totalCharge = sessions.reduce((a, s) => a + s.charge, 0);
+  const completedSessions = sessions.filter(s => s.status === 'Completed').length;
 
   return (
     <div className="space-y-6">
@@ -235,7 +348,7 @@ export const TreatmentSessionsPage = () => {
       {/* Summary KPI */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Sessions', value: SESSIONS.length, icon: Activity, color: 'teal', suffix: 'sessions' },
+          { label: 'Total Sessions', value: loading ? '...' : sessions.length, icon: Activity, color: 'teal', suffix: 'sessions' },
           { label: 'Completed', value: completedSessions, icon: CheckCircle, color: 'emerald', suffix: 'done' },
           { label: 'Total Billed', value: formatCurrency(totalCharge), icon: Clock, color: 'violet', suffix: '' },
           { label: 'Providers', value: 3, icon: User, color: 'blue', suffix: 'clinics' },
@@ -364,7 +477,7 @@ export const TreatmentSessionsPage = () => {
       </div>
 
       {/* Schedule Session Modal */}
-      {showScheduleModal && <ScheduleSessionModal onClose={() => setShowScheduleModal(false)} />}
+      {showScheduleModal && <ScheduleSessionModal onClose={() => setShowScheduleModal(false)} onSuccess={fetchSessions} />}
     </div>
   );
 };

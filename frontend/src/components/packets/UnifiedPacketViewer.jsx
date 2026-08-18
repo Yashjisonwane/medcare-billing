@@ -1,8 +1,8 @@
 // src/components/packets/UnifiedPacketViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { PACKET_MANIFESTS } from '../../constants/packetManifests';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { mapBillToCms1500Claims } from '../../utils/cmsMapper';
 import { useUIStore } from '../../store/uiStore';
 
 // Common Components
@@ -72,9 +72,29 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
   }, [initialBlank]);
 
   useEffect(() => {
-    mockBillingService.getBillById(targetBillId).then(setBill);
-    mockCms1500Service.getClaimsByBillId(targetBillId).then(setCmsClaims);
-  }, [targetBillId]);
+    const fetchBillAndClaims = async () => {
+      try {
+        if (!selectedCase) return;
+        const caseIdentifier = selectedCase.id || selectedCase.caseId;
+        const res = await apiBillingService.getFourBillsByCase(caseIdentifier);
+        
+        if (res && res.allBills) {
+          const providerBill = res.allBills.find(b => b.providerId === providerId);
+          if (providerBill) {
+            setBill(providerBill);
+            const claims = mapBillToCms1500Claims(providerBill, selectedCase, { 
+              id: providerId, 
+              identifiers: { taxId: providerBill.provider?.identifiers?.taxId || '993723387' } 
+            });
+            setCmsClaims(claims);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch DB billing data:', err);
+      }
+    };
+    fetchBillAndClaims();
+  }, [selectedCase, providerId]);
 
   // Adjust zoom on screen resize
   useEffect(() => {
@@ -121,7 +141,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
     
     // ANIK Components
     if (key === 'AnikCoverPage') return <AnikCoverPage readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
-    if (key === 'AnikTherapyAssessmentForm') return <AnikTherapyAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'AnikTherapyAssessmentForm') return <AnikTherapyAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} serviceLines={bill ? bill.serviceLines : []} />;
     if (key === 'AnikLaserProcedureForm') return <AnikLaserProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} />;
     if (key === 'AnikNarrativeReport') return <AnikNarrativeReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
     if (key === 'AnikFinalReport') return <AnikFinalReport reportPage={pageDef.reportPage} blankMode={blankPracticeMode} packetData={selectedCase} />;
