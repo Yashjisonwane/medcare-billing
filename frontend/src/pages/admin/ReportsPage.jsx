@@ -1,5 +1,5 @@
 // src/pages/admin/ReportsPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
@@ -10,47 +10,10 @@ import {
   BarChart2, Calendar, Filter
 } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
+import { apiBillingService } from '../../services/api/apiBillingService';
 
-// ── Mock Data ─────────────────────────────────────────────────────────────────
+// ── Shared formatting ─────────────────────────────────────────────────────────
 
-const PROVIDER_BILLING = [
-  { provider: 'JOSMIC', charges: 1214, payments: 0, adjustments: 0, balance: 1214, sessions: 1, color: '#0d9488' },
-  { provider: "DAV'S Anatomy", charges: 9870, payments: 0, adjustments: 0, balance: 9870, sessions: 3, color: '#3b82f6' },
-  { provider: 'ANIK Laser', charges: 18920, payments: 0, adjustments: 0, balance: 18920, sessions: 3, color: '#7c3aed' },
-  { provider: 'Counselor', charges: 0, payments: 0, adjustments: 0, balance: 0, sessions: 0, color: '#f59e0b' },
-];
-
-const MONTHLY_BILLING = [
-  { month: 'Oct 25', billed: 0, collected: 0, outstanding: 0 },
-  { month: 'Nov 25', billed: 0, collected: 0, outstanding: 0 },
-  { month: 'Dec 25', billed: 1214, collected: 0, outstanding: 1214 },
-  { month: 'Jan 26', billed: 28790, collected: 0, outstanding: 28790 },
-  { month: 'Feb 26', billed: 0, collected: 0, outstanding: 30004 },
-  { month: 'Mar 26', billed: 0, collected: 0, outstanding: 30004 },
-];
-
-const SESSION_BREAKDOWN = [
-  { type: 'Pain Consultation', count: 1, provider: 'JOSMIC', charge: 1214, cpt: '99204' },
-  { type: 'ESWT Shockwave', count: 3, provider: "DAV'S Anatomy", charge: 9870, cpt: '0101T' },
-  { type: 'HILT Laser Therapy', count: 3, provider: 'ANIK Laser', charge: 18920, cpt: '97039' },
-  { type: 'Counseling Session', count: 0, provider: 'Counselor', charge: 0, cpt: 'TBD' },
-];
-
-const CLAIM_STATUS = [
-  { name: 'Generated (Demo)', value: 7, color: '#0d9488' },
-  { name: 'Submitted', value: 0, color: '#3b82f6' },
-  { name: 'Approved', value: 0, color: '#10b981' },
-  { name: 'Denied', value: 0, color: '#ef4444' },
-  { name: 'Pending', value: 0, color: '#f59e0b' },
-];
-
-const AGING_DATA = [
-  { bucket: 'Current', amount: 30004, color: '#10b981' },
-  { bucket: '1–30 Days', amount: 0, color: '#3b82f6' },
-  { bucket: '31–60 Days', amount: 0, color: '#f59e0b' },
-  { bucket: '61–90 Days', amount: 0, color: '#f97316' },
-  { bucket: '90+ Days', amount: 0, color: '#ef4444' },
-];
 
 const formatCurrency = (v) => `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 const COLORS = ['#0d9488', '#3b82f6', '#7c3aed', '#f59e0b'];
@@ -76,10 +39,34 @@ const CurrencyTooltip = ({ active, payload, label }) => {
 export const ReportsPage = () => {
   const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('billing');
+  const [providerBilling, setProviderBilling] = useState([]);
+  const [monthlyBilling, setMonthlyBilling] = useState([]);
+  const [sessionBreakdown, setSessionBreakdown] = useState([]);
+  const [claimStatus, setClaimStatus] = useState([]);
+  const [agingData, setAgingData] = useState([]);
+  const [recentClaims, setRecentClaims] = useState([]);
 
-  const totalBilled = PROVIDER_BILLING.reduce((a, p) => a + p.charges, 0);
-  const totalSessions = PROVIDER_BILLING.reduce((a, p) => a + p.sessions, 0);
-  const totalClaims = 7;
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const data = await apiBillingService.getPracticeReports();
+        setProviderBilling(data.providerBilling || []);
+        setMonthlyBilling(data.monthlyBilling || []);
+        setSessionBreakdown(data.sessionBreakdown || []);
+        setClaimStatus(data.claimStatus || []);
+        setAgingData(data.agingData || []);
+        setRecentClaims(data.recentClaims || []);
+      } catch (err) {
+        addToast('Failed to load practice reports', 'error');
+      }
+    };
+    fetchReports();
+  }, [addToast]);
+
+  const totalBilled = providerBilling.reduce((a, p) => a + p.charges, 0);
+  const totalCollected = providerBilling.reduce((a, p) => a + p.payments, 0);
+  const totalSessions = providerBilling.reduce((a, p) => a + p.sessions, 0);
+  const totalClaims = claimStatus.reduce((a, s) => a + s.value, 0);
 
   const TABS = [
     { id: 'billing', label: 'Billing Summary', icon: DollarSign },
@@ -87,6 +74,46 @@ export const ReportsPage = () => {
     { id: 'claims', label: 'CMS-1500 Claims', icon: FileText },
     { id: 'aging', label: 'AR Aging', icon: Clock },
   ];
+
+  const handleExportCSV = () => {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    let filename = "export.csv";
+
+    if (activeTab === 'billing') {
+      csvContent += "Provider,Sessions,Total Billed,Payments,Adjustments,Balance Due\n";
+      providerBilling.forEach(p => {
+        csvContent += `"${p.provider}",${p.sessions},${p.charges},${p.payments},${p.adjustments},${p.balance}\n`;
+      });
+      filename = "provider_billing.csv";
+    } else if (activeTab === 'sessions') {
+      csvContent += "Treatment Type,Provider,CPT Code,Sessions,Total Charge\n";
+      sessionBreakdown.forEach(s => {
+        csvContent += `"${s.type}","${s.provider}","${s.cpt}",${s.count},${s.charge}\n`;
+      });
+      filename = "treatment_sessions.csv";
+    } else if (activeTab === 'claims') {
+      csvContent += "Claim DOS,Provider,Patient,Diagnosis,Total Charge,Status\n";
+      recentClaims.forEach(c => {
+        csvContent += `"${c.dos}","${c.provider}","${c.patient}","${c.dx}",${c.charge},"${c.status}"\n`;
+      });
+      filename = "cms_claims.csv";
+    } else if (activeTab === 'aging') {
+      csvContent += "Provider,Total AR,Current,31-60 Days,61-90 Days,90+ Days\n";
+      providerBilling.forEach(p => {
+        csvContent += `"${p.provider}",${p.balance},${p.balance},0,0,0\n`;
+      });
+      filename = "ar_aging.csv";
+    }
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    addToast('CSV exported successfully!', 'success');
+  };
 
   return (
     <div className="space-y-6">
@@ -104,13 +131,13 @@ export const ReportsPage = () => {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={() => addToast('Simulated financial report PDF exported!', 'success')}
-            className="px-3.5 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 hover:bg-slate-800 transition"
+            onClick={() => window.print()}
+            className="px-3.5 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 hover:bg-slate-800 transition print:hidden"
           >
             <Download className="w-4 h-4" /> Export PDF
           </button>
           <button
-            onClick={() => addToast('Simulated report CSV exported!', 'success')}
+            onClick={handleExportCSV}
             className="px-3.5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5 hover:bg-teal-700 transition"
           >
             <Download className="w-4 h-4" /> Export CSV
@@ -122,8 +149,8 @@ export const ReportsPage = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total Amount Billed', value: formatCurrency(totalBilled), sub: 'Across all 4 providers', icon: DollarSign, color: 'teal' },
-          { label: 'Total Collected', value: formatCurrency(0), sub: 'Awaiting insurance payment', icon: CheckCircle, color: 'emerald' },
-          { label: 'Outstanding Balance', value: formatCurrency(totalBilled), sub: 'Total accounts receivable', icon: AlertCircle, color: 'amber' },
+          { label: 'Total Collected', value: formatCurrency(totalCollected), sub: 'Insurance & patient payments', icon: CheckCircle, color: 'emerald' },
+          { label: 'Outstanding Balance', value: formatCurrency(totalBilled - totalCollected), sub: 'Total accounts receivable', icon: AlertCircle, color: 'amber' },
           { label: 'Active Patients', value: '1', sub: 'Demo Patient 001', icon: Users, color: 'violet' },
         ].map(card => {
           const Icon = card.icon;
@@ -191,15 +218,15 @@ export const ReportsPage = () => {
             <h2 className="text-sm font-bold text-slate-700 mb-4">Provider Total Charges vs. Collections ($)</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={PROVIDER_BILLING} barCategoryGap="35%">
+                <BarChart data={providerBilling} barCategoryGap="35%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis dataKey="provider" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                   <Tooltip content={<CurrencyTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="charges" name="Total Billed" fill="#0d9488" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="payments" name="Collected" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="balance" name="Outstanding" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                  <Bar isAnimationActive={false} dataKey="charges" name="Total Billed" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                  <Bar isAnimationActive={false} dataKey="payments" name="Collected" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar isAnimationActive={false} dataKey="balance" name="Outstanding" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -212,7 +239,7 @@ export const ReportsPage = () => {
               <h2 className="text-sm font-bold text-slate-700 mb-4">Monthly Billing Trend (Oct 2025 – Mar 2026)</h2>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={MONTHLY_BILLING}>
+                  <AreaChart data={monthlyBilling}>
                     <defs>
                       <linearGradient id="billedGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#0d9488" stopOpacity={0.15} />
@@ -228,8 +255,8 @@ export const ReportsPage = () => {
                     <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
                     <Tooltip content={<CurrencyTooltip />} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Area type="monotone" dataKey="billed" name="Billed" stroke="#0d9488" fill="url(#billedGrad)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="outstanding" name="Outstanding" stroke="#f59e0b" fill="url(#outstandingGrad)" strokeWidth={2} />
+                    <Area isAnimationActive={false} type="monotone" dataKey="billed" name="Billed" stroke="#0d9488" fill="url(#billedGrad)" strokeWidth={2} />
+                    <Area isAnimationActive={false} type="monotone" dataKey="outstanding" name="Outstanding" stroke="#f59e0b" fill="url(#outstandingGrad)" strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -241,9 +268,9 @@ export const ReportsPage = () => {
               <div className="h-40">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={CLAIM_STATUS} cx="50%" cy="50%" innerRadius={35} outerRadius={60}
+                    <Pie isAnimationActive={false} data={claimStatus} cx="50%" cy="50%" innerRadius={35} outerRadius={60}
                       dataKey="value" paddingAngle={3}>
-                      {CLAIM_STATUS.map((entry, i) => (
+                      {claimStatus.map((entry, i) => (
                         <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
@@ -252,7 +279,7 @@ export const ReportsPage = () => {
                 </ResponsiveContainer>
               </div>
               <div className="space-y-1 mt-2">
-                {CLAIM_STATUS.map(s => (
+                {claimStatus.map(s => (
                   <div key={s.name} className="flex items-center justify-between text-[10px]">
                     <div className="flex items-center gap-1.5">
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
@@ -283,7 +310,7 @@ export const ReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {PROVIDER_BILLING.map(p => (
+                {providerBilling.map(p => (
                   <tr key={p.provider} className="hover:bg-slate-50">
                     <td className="p-3.5">
                       <div className="flex items-center gap-2">
@@ -327,13 +354,13 @@ export const ReportsPage = () => {
             <h2 className="text-sm font-bold text-slate-700 mb-4">Sessions by Provider (Count)</h2>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={SESSION_BREAKDOWN}>
+                <BarChart data={sessionBreakdown}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis dataKey="type" tick={{ fontSize: 10 }} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="count" name="Sessions" radius={[4, 4, 0, 0]}>
-                    {SESSION_BREAKDOWN.map((entry, i) => (
+                  <Bar isAnimationActive={false} dataKey="count" name="Sessions" radius={[4, 4, 0, 0]}>
+                    {sessionBreakdown.map((entry, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Bar>
@@ -358,7 +385,7 @@ export const ReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {SESSION_BREAKDOWN.map((s, i) => (
+                {sessionBreakdown.map((s, i) => (
                   <tr key={s.type} className="hover:bg-slate-50">
                     <td className="p-3.5">
                       <div className="flex items-center gap-2">
@@ -414,15 +441,7 @@ export const ReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {[
-                  { dos: '01/22/2026', provider: 'ANIK Laser Therapy', patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 6140.00 },
-                  { dos: '01/24/2026', provider: 'ANIK Laser Therapy', patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 6140.00 },
-                  { dos: '01/26/2026', provider: 'ANIK Laser Therapy', patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 6640.00 },
-                  { dos: '01/06/2026', provider: "DAV'S Anatomy", patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 3390.00 },
-                  { dos: '01/07/2026', provider: "DAV'S Anatomy", patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 3140.00 },
-                  { dos: '01/08/2026', provider: "DAV'S Anatomy", patient: 'SAMPLE TESTING', dx: 'M5450, M542, M25572', charge: 3340.00 },
-                  { dos: '12/30/2025', provider: 'JOSMIC Wellness Center', patient: 'SAMPLE TESTING', dx: 'M546, M5450', charge: 1214.00 },
-                ].map((c, i) => (
+                {recentClaims.map((c, i) => (
                   <tr key={i} className="hover:bg-slate-50">
                     <td className="p-3.5 font-mono text-slate-700">{c.dos}</td>
                     <td className="p-3.5 font-semibold text-slate-800">{c.provider}</td>
@@ -430,15 +449,15 @@ export const ReportsPage = () => {
                     <td className="p-3.5 font-mono text-xs text-slate-500">{c.dx}</td>
                     <td className="p-3.5 text-right font-mono font-bold text-slate-900">{formatCurrency(c.charge)}</td>
                     <td className="p-3.5 text-center">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-700">Generated</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-700">{c.status}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot className="bg-slate-100 border-t-2 border-slate-200">
                 <tr>
-                  <td colSpan={4} className="p-3.5 font-black text-slate-700 text-xs">TOTAL (7 Claims)</td>
-                  <td className="p-3.5 text-right font-mono font-black text-slate-900">{formatCurrency(30004)}</td>
+                  <td colSpan={4} className="p-3.5 font-black text-slate-700 text-xs">TOTAL ({recentClaims.length} Claims)</td>
+                  <td className="p-3.5 text-right font-mono font-black text-slate-900">{formatCurrency(recentClaims.reduce((a, b) => a + (b.charge || 0), 0))}</td>
                   <td />
                 </tr>
               </tfoot>
@@ -451,7 +470,7 @@ export const ReportsPage = () => {
       {activeTab === 'aging' && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {AGING_DATA.map(b => (
+            {agingData.map(b => (
               <div key={b.bucket} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm text-center">
                 <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">{b.bucket}</p>
                 <p className="text-lg font-black font-mono" style={{ color: b.color }}>{formatCurrency(b.amount)}</p>
@@ -463,13 +482,13 @@ export const ReportsPage = () => {
             <h2 className="text-sm font-bold text-slate-700 mb-4">AR Aging Distribution ($)</h2>
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={AGING_DATA}>
+                <BarChart data={agingData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
                   <Tooltip formatter={v => [formatCurrency(v), 'Amount']} />
-                  <Bar dataKey="amount" name="Amount" radius={[4, 4, 0, 0]}>
-                    {AGING_DATA.map((entry, i) => (
+                  <Bar isAnimationActive={false} dataKey="amount" name="Amount" radius={[4, 4, 0, 0]}>
+                    {agingData.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
                     ))}
                   </Bar>
@@ -496,7 +515,7 @@ export const ReportsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {PROVIDER_BILLING.map(p => (
+                {providerBilling.map(p => (
                   <tr key={p.provider} className="hover:bg-slate-50">
                     <td className="p-3.5 font-bold text-slate-800">{p.provider}</td>
                     <td className="p-3.5 text-right font-mono font-black text-slate-900">{formatCurrency(p.balance)}</td>

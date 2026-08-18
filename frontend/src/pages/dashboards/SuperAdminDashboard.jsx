@@ -3,7 +3,7 @@ import { mockBillingService } from '../../services/mock/mockBillingService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { mockCaseService } from '../../services/mock/mockCaseService';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
-import { mockAuditService } from '../../services/mock/mockAuditService';
+import { apiAuditService } from '../../services/api/apiAuditService';
 import { mockReminderService } from '../../services/mock/mockReminderService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { formatCurrency } from '../../utils/billingCalculations';
@@ -38,7 +38,7 @@ export const SuperAdminDashboard = () => {
       const selfs = filtered.filter(a => a.bookingChannel || (a.bookingRef && a.bookingRef.startsWith('SELF-'))).length;
       setSelfBookedCount(selfs);
     });
-    mockAuditService.getLogs().then(logs => setAuditLogs(logs.slice(0, 5)));
+    apiAuditService.getLogs().then(logs => setAuditLogs(logs.slice(0, 5)));
   };
 
   useEffect(() => {

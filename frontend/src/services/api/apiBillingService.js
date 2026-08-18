@@ -8,5 +8,13 @@ export const apiBillingService = {
       throw new Error('Failed to retrieve case bills.');
     }
     return res.json();
+  },
+
+  async getPracticeReports() {
+    const res = await fetch(`${API_BASE}/billing/reports`);
+    if (!res.ok) {
+      throw new Error('Failed to retrieve practice reports.');
+    }
+    return res.json();
   }
 };

@@ -1,9 +1,9 @@
 // src/pages/billing/FourBillsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockProviderService } from '../../services/mock/mockProviderService';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { formatStatus } from '../../utils/formatters';
 import { Receipt, PlusCircle, AlertTriangle, ChevronRight, User, Shield, FileText, Lock, ArrowLeft, Building, Stethoscope, DollarSign, Calendar, Layers } from 'lucide-react';
@@ -21,7 +21,7 @@ export const FourBillsPage = () => {
 
   // 1. Initial Load: Fetch all cases from backend
   useEffect(() => {
-    mockCaseService.getCases().then(res => {
+    apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCasesList(res);
         const queryId = searchParams.get('caseId');
@@ -42,8 +42,8 @@ export const FourBillsPage = () => {
     setIsLoading(true);
     try {
       const [cData, bData] = await Promise.all([
-        mockCaseService.getCaseById(idToUse).catch(() => null),
-        mockBillingService.getFourBillsByCase(idToUse).catch(() => ({ allBills: [] }))
+        apiCaseService.getCaseById(idToUse).catch(() => null),
+        apiBillingService.getFourBillsByCase(idToUse).catch(() => ({ allBills: [] }))
       ]);
 
       if (cData) {
@@ -138,7 +138,7 @@ export const FourBillsPage = () => {
                 </option>
               ))
             ) : (
-              <option value="case-001">CASE-2025-1227 (Demo Patient)</option>
+              <option value="" disabled>No cases found in database</option>
             )}
           </select>
 

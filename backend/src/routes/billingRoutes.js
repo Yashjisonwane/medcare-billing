@@ -2,7 +2,7 @@ import express from 'express';
 import { 
   getFourBillsByCase, getBillById, createBill, addServiceLine, 
   postPayment, postAdjustment, finaliseBill, getAgingSummary,
-  getOverviewStats, getPaymentsList
+  getOverviewStats, getPaymentsList, getPracticeReports
 } from '../controllers/billingController.js';
 
 const router = express.Router();
@@ -10,6 +10,7 @@ const router = express.Router();
 // Register paths
 router.get('/overview-stats', getOverviewStats);
 router.get('/transactions', getPaymentsList);
+router.get('/reports', getPracticeReports);
 router.get('/cases/bills', getFourBillsByCase); // Matches mock call getFourBillsByCase
 router.get('/four-bills', getFourBillsByCase);
 router.get('/case-bills', getFourBillsByCase);

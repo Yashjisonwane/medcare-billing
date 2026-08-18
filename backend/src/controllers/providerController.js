@@ -108,23 +108,48 @@ export const updateProvider = async (req, res) => {
       return res.status(404).json({ error: 'Provider not found.' });
     }
 
-    // Merge contact info if email/phone provided
-    let updatedContact = typeof existing.contact === 'string' ? JSON.parse(existing.contact) : existing.contact;
-    if (updateFields.phone || updateFields.email) {
-      updatedContact = {
-        ...updatedContact,
-        phone: updateFields.phone || updatedContact.phone,
-        email: updateFields.email || updatedContact.email
-      };
-    }
+    // Parse existing JSON fields
+    let existingContact = typeof existing.contact === 'string' ? JSON.parse(existing.contact) : existing.contact || {};
+    let existingAddress = typeof existing.address === 'string' ? JSON.parse(existing.address) : existing.address || {};
+    let existingIdentifiers = typeof existing.identifiers === 'string' ? JSON.parse(existing.identifiers) : existing.identifiers || {};
+    let existingRendering = typeof existing.renderingProvider === 'string' ? JSON.parse(existing.renderingProvider) : existing.renderingProvider || {};
+    let existingServiceFacility = typeof existing.serviceFacility === 'string' ? JSON.parse(existing.serviceFacility) : existing.serviceFacility || {};
+    let existingBillingProvider = typeof existing.billingProvider === 'string' ? JSON.parse(existing.billingProvider) : existing.billingProvider || {};
+
+    const name = updateFields.name || existing.name;
+    const businessName = updateFields.businessName || existing.businessName;
+    const serviceCategory = updateFields.serviceCategory || existing.serviceCategory;
+    const street = updateFields.street ?? existingAddress.street;
+    const suite = updateFields.suite ?? existingAddress.suite;
+    const city = updateFields.city ?? existingAddress.city;
+    const state = updateFields.state ?? existingAddress.state;
+    const zipCode = updateFields.zipCode ?? existingAddress.zipCode;
+    const phone = updateFields.phone ?? existingContact.phone;
+    const email = updateFields.email ?? existingContact.email;
+    const taxId = updateFields.taxId ?? existingIdentifiers.taxId;
+    const npi = updateFields.npi ?? existingIdentifiers.npi;
+    const renderingName = updateFields.renderingName ?? existingRendering.name;
+    const renderingCredentials = updateFields.renderingCredentials ?? existingRendering.credentials;
+
+    const updatedAddress = { street, suite, city, state, zipCode };
+    const updatedContact = { ...existingContact, phone, email };
+    const updatedIdentifiers = { ...existingIdentifiers, taxId, npi };
+    const updatedRendering = { ...existingRendering, name: renderingName, credentials: renderingCredentials, npi };
+    const updatedServiceFacility = { ...existingServiceFacility, name, address: `${street}, ${suite}, ${city}, ${state} ${zipCode}`, npi };
+    const updatedBillingProvider = { ...existingBillingProvider, name, address: `${street}, ${city}, ${state} ${zipCode}`, phone };
 
     const updated = await prisma.provider.update({
       where: { id },
       data: {
+        name,
+        businessName,
+        serviceCategory,
+        address: updatedAddress,
         contact: updatedContact,
-        // Accept any other fields that map directly to the provider model schema if provided
-        name: updateFields.name || existing.name,
-        businessName: updateFields.businessName || existing.businessName,
+        identifiers: updatedIdentifiers,
+        renderingProvider: updatedRendering,
+        serviceFacility: updatedServiceFacility,
+        billingProvider: updatedBillingProvider,
         status: updateFields.status || existing.status,
       }
     });
@@ -137,5 +162,30 @@ export const updateProvider = async (req, res) => {
   } catch (error) {
     console.error('Error updating provider:', error);
     return res.status(500).json({ error: 'Failed to update provider settings.' });
+  }
+};
+
+/**
+ * Delete provider
+ */
+export const deleteProvider = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existing = await prisma.provider.findUnique({
+      where: { id }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Provider not found.' });
+    }
+
+    await prisma.provider.delete({
+      where: { id }
+    });
+
+    return res.status(200).json({ message: 'Provider deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting provider:', error);
+    return res.status(500).json({ error: 'Failed to delete provider.' });
   }
 };

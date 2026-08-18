@@ -933,3 +933,172 @@ export const getPaymentsList = async (req, res) => {
     return res.status(500).json({ error: 'Failed to retrieve transactions.' });
   }
 };
+
+/**
+ * GET /v1/billing/reports
+ * Comprehensive reports data including provider billing, monthly trend, sessions, and claims status
+ */
+export const getPracticeReports = async (req, res) => {
+  try {
+    const bills = await prisma.bill.findMany({
+      include: {
+        provider: true,
+        serviceLines: true,
+        case: { include: { patient: true } }
+      }
+    });
+
+    const providerMap = {
+      'prov-josmic': { provider: 'JOSMIC', charges: 0, payments: 0, adjustments: 0, balance: 0, sessions: 0, color: '#0d9488' },
+      'prov-davs': { provider: "DAV'S Anatomy", charges: 0, payments: 0, adjustments: 0, balance: 0, sessions: 0, color: '#3b82f6' },
+      'prov-anik': { provider: 'ANIK Laser', charges: 0, payments: 0, adjustments: 0, balance: 0, sessions: 0, color: '#7c3aed' },
+      'prov-counselor': { provider: 'Counselor', charges: 0, payments: 0, adjustments: 0, balance: 0, sessions: 0, color: '#f59e0b' }
+    };
+
+    const monthlyMap = {};
+    const sessionMap = {};
+    const claimStatusCounts = {
+      'Generated': 0,
+      'Submitted': 0,
+      'Approved': 0,
+      'Denied': 0,
+      'Pending': 0
+    };
+
+    let current = 0;
+    let past30 = 0;
+    let past60 = 0;
+    let past90 = 0;
+
+    for (const b of bills) {
+      const totals = typeof b.totals === 'string' ? JSON.parse(b.totals) : b.totals || {};
+      const aging = typeof b.aging === 'string' ? JSON.parse(b.aging) : b.aging || {};
+
+      const chg = totals.totalCharges || 0;
+      const pmt = totals.totalPayments || 0;
+      const adj = totals.totalAdjustments || 0;
+      const bal = totals.balanceDue || (chg - pmt - adj);
+
+      current += (aging.current || 0);
+      past30 += (aging.past30 || 0);
+      past60 += (aging.past60 || 0);
+      past90 += (aging.past90 || 0);
+
+      // Claim Status Approximation based on Bill Status
+      if (b.status === 'FINALIZED' || b.status === 'FINALISED' || b.status === 'FINALISED_DEMO') claimStatusCounts['Generated'] += 1;
+      else if (b.status === 'SUBMITTED') claimStatusCounts['Submitted'] += 1;
+      else if (b.status === 'APPROVED') claimStatusCounts['Approved'] += 1;
+      else if (b.status === 'DENIED') claimStatusCounts['Denied'] += 1;
+      else claimStatusCounts['Pending'] += 1;
+
+      // Provider Billing
+      if (providerMap[b.providerId]) {
+        providerMap[b.providerId].charges += chg;
+        providerMap[b.providerId].payments += pmt;
+        providerMap[b.providerId].adjustments += adj;
+        providerMap[b.providerId].balance += bal;
+        providerMap[b.providerId].sessions += b.serviceLines ? b.serviceLines.length : 0;
+      }
+
+      // Monthly Trend using bill createdAt
+      const date = new Date(b.createdAt);
+      const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      if (!monthlyMap[monthYear]) {
+        monthlyMap[monthYear] = { month: monthYear, billed: 0, collected: 0, outstanding: 0 };
+      }
+      monthlyMap[monthYear].billed += chg;
+      monthlyMap[monthYear].collected += pmt;
+      monthlyMap[monthYear].outstanding += bal;
+
+      // Session Breakdown from Service Lines
+      if (b.serviceLines) {
+        for (const line of b.serviceLines) {
+          const type = line.description || line.cptCode || 'Service';
+          if (!sessionMap[type]) {
+            sessionMap[type] = {
+              type,
+              count: 0,
+              provider: providerMap[b.providerId]?.provider || 'Unknown',
+              charge: 0,
+              cpt: line.cptCode
+            };
+          }
+          sessionMap[type].count += line.units || 1;
+          sessionMap[type].charge += Number(line.charge) || 0;
+        }
+      }
+    }
+
+    const claimStatus = [
+      { name: 'Generated', value: claimStatusCounts['Generated'], color: '#0d9488' },
+      { name: 'Submitted', value: claimStatusCounts['Submitted'], color: '#3b82f6' },
+      { name: 'Approved', value: claimStatusCounts['Approved'], color: '#10b981' },
+      { name: 'Denied', value: claimStatusCounts['Denied'], color: '#ef4444' },
+      { name: 'Pending', value: claimStatusCounts['Pending'], color: '#f59e0b' }
+    ];
+
+    const agingData = [
+      { bucket: 'Current', amount: Number(current.toFixed(2)), color: '#10b981' },
+      { bucket: '1–30 Days', amount: Number(past30.toFixed(2)), color: '#3b82f6' },
+      { bucket: '31–60 Days', amount: Number(past60.toFixed(2)), color: '#f59e0b' },
+      { bucket: '61–90 Days', amount: Number(past90.toFixed(2)), color: '#f97316' },
+      { bucket: '90+ Days', amount: 0, color: '#ef4444' } // Assuming no 90+ bucket logic
+    ];
+
+    const providerBilling = Object.values(providerMap).map(p => ({
+      ...p,
+      charges: Number(p.charges.toFixed(2)),
+      payments: Number(p.payments.toFixed(2)),
+      adjustments: Number(p.adjustments.toFixed(2)),
+      balance: Number(p.balance.toFixed(2))
+    }));
+
+    const monthlyBilling = Object.values(monthlyMap).map(m => ({
+      ...m,
+      billed: Number(m.billed.toFixed(2)),
+      collected: Number(m.collected.toFixed(2)),
+      outstanding: Number(m.outstanding.toFixed(2))
+    }));
+
+    // Ensure at least some default months exist for the graph
+    if (monthlyBilling.length === 0) {
+      const now = new Date();
+      monthlyBilling.push({
+        month: now.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+        billed: 0, collected: 0, outstanding: 0
+      });
+    }
+
+    const sessionBreakdown = Object.values(sessionMap).map(s => ({
+      ...s,
+      charge: Number(s.charge.toFixed(2))
+    }));
+
+    const recentClaims = bills.map(b => {
+      const pat = b.case?.patient;
+      const patientName = pat ? `${pat.firstName} ${pat.lastName}`.trim() : (b.case?.patientName || 'Unknown Patient');
+      const totals = typeof b.totals === 'string' ? JSON.parse(b.totals) : b.totals || {};
+      return {
+        dos: b.createdAt ? new Date(b.createdAt).toLocaleDateString('en-US') : 'N/A',
+        provider: providerMap[b.providerId]?.provider || b.providerId,
+        patient: patientName,
+        dx: 'N/A', // Usually from diagnosis codes, simplified here
+        charge: Number(totals.totalCharges || 0),
+        status: b.status || 'Generated'
+      };
+    });
+
+    return res.status(200).json({
+      providerBilling,
+      monthlyBilling,
+      sessionBreakdown,
+      claimStatus,
+      agingData,
+      recentClaims
+    });
+
+  } catch (error) {
+    console.error('Error generating practice reports:', error);
+    return res.status(500).json({ error: 'Failed to generate practice reports.' });
+  }
+};

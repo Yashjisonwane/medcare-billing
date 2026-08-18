@@ -11,5 +11,15 @@ export const apiCaseService = {
       throw new Error('Failed to retrieve cases.');
     }
     return res.json();
+  },
+
+  async getCaseById(id) {
+    if (!id) return null;
+    const res = await fetch(`${API_BASE}/cases/${id}`);
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error(`Failed to retrieve case ${id}.`);
+    }
+    return res.json();
   }
 };

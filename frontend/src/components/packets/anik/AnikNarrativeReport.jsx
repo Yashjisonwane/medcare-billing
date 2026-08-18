@@ -18,9 +18,9 @@ export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false, packetD
 
       <div className="bg-slate-50 p-4 border border-slate-200 text-xs font-mono grid grid-cols-2 gap-2">
         <div>PATIENT: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{packetData.patientName}</strong>}</div>
-        <div>DOB: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>10/08/1974 (42 Y/O MALE)</strong>}</div>
-        <div>DATE OF ACCIDENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>12/27/2025</strong>}</div>
-        <div>DIAGNOSIS: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>M54.50, M54.2, M25.572</strong>}</div>
+        <div>DOB: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{!packetData ? '10/08/1974 (42 Y/O MALE)' : (packetData.patient?.dob || 'N/A')}</strong>}</div>
+        <div>DATE OF ACCIDENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>{!packetData ? '12/27/2025' : packetData.accidentDate}</strong>}</div>
+        <div>DIAGNOSIS: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>{!packetData ? 'M54.50, M54.2, M25.572' : (packetData.diagnosisCodes ? (Array.isArray(packetData.diagnosisCodes) ? packetData.diagnosisCodes.map(d => d.code || d).join(', ') : packetData.diagnosisCodes) : 'N/A')}</strong>}</div>
       </div>
 
       {reportPage === 1 && (

@@ -1,14 +1,15 @@
 // src/pages/admin/ProviderListPage.jsx
 import React, { useState, useEffect } from 'react';
-import { mockProviderService } from '../../services/mock/mockProviderService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { maskTaxId, maskNpi } from '../../utils/formatters';
-import { Shield, Eye, EyeOff, AlertTriangle, Edit3, Plus, X } from 'lucide-react';
+import { Shield, Eye, EyeOff, AlertTriangle, Edit3, Plus, X, Trash2 } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 
 export const ProviderListPage = () => {
   const [providers, setProviders] = useState({});
   const [showSensitive, setShowSensitive] = useState({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editProviderId, setEditProviderId] = useState(null);
   const { addToast } = useUIStore();
 
   // Form states for adding provider
@@ -28,7 +29,7 @@ export const ProviderListPage = () => {
   const [renderingCredentials, setRenderingCredentials] = useState('');
 
   const loadProviders = () => {
-    mockProviderService.getProviders().then(setProviders);
+    apiProviderService.getProviders().then(setProviders);
   };
 
   useEffect(() => {
@@ -39,6 +40,53 @@ export const ProviderListPage = () => {
     setShowSensitive(prev => ({ ...prev, [provId]: !prev[provId] }));
   };
 
+  const openAddModal = () => {
+    setEditProviderId(null);
+    setName('');
+    setBusinessName('');
+    setServiceCategory('');
+    setStreet('');
+    setSuite('');
+    setCity('');
+    setState('TX');
+    setZipCode('');
+    setPhone('');
+    setEmail('');
+    setTaxId('');
+    setNpi('');
+    setRenderingName('');
+    setRenderingCredentials('');
+    setIsAddModalOpen(true);
+  };
+
+  const handleEditClick = (prov) => {
+    setEditProviderId(prov.id);
+    setName(prov.name || '');
+    setBusinessName(prov.businessName || '');
+    setServiceCategory(prov.serviceCategory || '');
+    
+    const addr = typeof prov.address === 'string' ? JSON.parse(prov.address || '{}') : (prov.address || {});
+    setStreet(addr.street || '');
+    setSuite(addr.suite || '');
+    setCity(addr.city || '');
+    setState(addr.state || 'TX');
+    setZipCode(addr.zipCode || '');
+
+    const contact = typeof prov.contact === 'string' ? JSON.parse(prov.contact || '{}') : (prov.contact || {});
+    setPhone(contact.phone || '');
+    setEmail(contact.email || '');
+
+    const idents = typeof prov.identifiers === 'string' ? JSON.parse(prov.identifiers || '{}') : (prov.identifiers || {});
+    setTaxId(idents.taxId || '');
+    setNpi(idents.npi || '');
+
+    const rendering = typeof prov.renderingProvider === 'string' ? JSON.parse(prov.renderingProvider || '{}') : (prov.renderingProvider || {});
+    setRenderingName(rendering.name || '');
+    setRenderingCredentials(rendering.credentials || '');
+
+    setIsAddModalOpen(true);
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim() || !taxId.trim() || !npi.trim()) {
@@ -47,7 +95,7 @@ export const ProviderListPage = () => {
     }
     const payload = {
       name,
-      businessName,
+      businessName: businessName.trim() || name.trim(),
       serviceCategory,
       street,
       suite,
@@ -62,8 +110,13 @@ export const ProviderListPage = () => {
       renderingCredentials
     };
     try {
-      await mockProviderService.addProvider(payload);
-      addToast('New provider configured successfully!', 'success');
+      if (editProviderId) {
+        await apiProviderService.updateProvider(editProviderId, payload);
+        addToast('Provider updated successfully!', 'success');
+      } else {
+        await apiProviderService.addProvider(payload);
+        addToast('New provider configured successfully!', 'success');
+      }
       setIsAddModalOpen(false);
       
       // Reset form
@@ -88,6 +141,18 @@ export const ProviderListPage = () => {
     }
   };
 
+  const handleDeleteClick = async (provId) => {
+    if (window.confirm('Are you sure you want to permanently delete this provider? This action cannot be undone.')) {
+      try {
+        await apiProviderService.deleteProvider(provId);
+        addToast('Provider deleted successfully!', 'success');
+        loadProviders();
+      } catch (err) {
+        addToast('Failed to delete provider', 'error');
+      }
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -96,7 +161,7 @@ export const ProviderListPage = () => {
           <p className="text-xs text-slate-500">Legal entity identities, Tax IDs, NPI registrations & service categories</p>
         </div>
         <button
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={openAddModal}
           className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center gap-1.5 self-start sm:self-auto border border-teal-500 transition"
         >
           <Plus className="w-4 h-4" /> Add New Provider
@@ -168,13 +233,22 @@ export const ProviderListPage = () => {
                   {isVisible ? 'Hide Identifiers' : 'Show Masked Identifiers'}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => addToast(`Editing provider ${prov.name} (Demo)`, 'info')}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center gap-1 transition"
-                >
-                  <Edit3 className="w-3.5 h-3.5" /> Edit Profile
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEditClick(prov)}
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center gap-1 transition cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" /> Edit Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteClick(prov.id)}
+                    className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl flex items-center gap-1 transition cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                  </button>
+                </div>
               </div>
             </div>
           );
@@ -189,7 +263,8 @@ export const ProviderListPage = () => {
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
               <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <Plus className="w-4 h-4 text-teal-600" /> Configure New Practice Provider
+                {editProviderId ? <Edit3 className="w-4 h-4 text-teal-600" /> : <Plus className="w-4 h-4 text-teal-600" />}
+                {editProviderId ? 'Edit Practice Provider' : 'Configure New Practice Provider'}
               </h2>
               <button onClick={() => setIsAddModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 cursor-pointer">
                 <X className="w-5 h-5" />

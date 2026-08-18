@@ -1,13 +1,13 @@
 // src/pages/admin/AuditLogListPage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockAuditService } from '../../services/mock/mockAuditService';
+import { apiAuditService } from '../../services/api/apiAuditService';
 import { Activity, ShieldAlert } from 'lucide-react';
 
 export const AuditLogListPage = () => {
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
-    mockAuditService.getLogs().then(setLogs);
+    apiAuditService.getLogs().then(setLogs);
   }, []);
 
   return (
@@ -17,10 +17,6 @@ export const AuditLogListPage = () => {
         <p className="text-xs text-on-surface-variant">Immutable activity logs, chart signatures, bill finalisations & demo IP session tracking</p>
       </div>
 
-      <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[11px] text-amber-800 flex items-center gap-2">
-        <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
-        <span>"Frontend audit records are demonstration records only. Real immutable audit logging requires backend implementation."</span>
-      </div>
 
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden p-6 space-y-4">
         <div className="overflow-x-auto">

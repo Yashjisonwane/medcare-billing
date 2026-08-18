@@ -1,6 +1,6 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
-export const mockAuditService = {
+export const apiAuditService = {
   async getLogs() {
     const res = await fetch(`${API_BASE}/audit-logs`);
     if (!res.ok) {

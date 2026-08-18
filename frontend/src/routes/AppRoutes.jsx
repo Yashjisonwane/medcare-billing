@@ -63,6 +63,7 @@ import { PacketBuilderPage } from '../pages/documents/PacketBuilderPage';
 // Admin & Settings Pages
 import { StaffListPage } from '../pages/admin/StaffListPage';
 import { ProviderListPage } from '../pages/admin/ProviderListPage';
+import { ServicesPage } from '../pages/admin/ServicesPage';
 import { AuditLogListPage } from '../pages/admin/AuditLogListPage';
 import { ReportsPage } from '../pages/admin/ReportsPage';
 import { GeneralSettingsPage } from '../pages/settings/GeneralSettingsPage';
@@ -152,7 +153,7 @@ export const AppRoutes = () => {
         {/* Administration & Settings */}
         <Route path="admin/staff" element={<StaffListPage />} />
         <Route path="admin/providers" element={<ProviderListPage />} />
-        <Route path="admin/services" element={<ProviderListPage />} />
+        <Route path="admin/services" element={<ServicesPage />} />
         <Route path="admin/audit-logs" element={<AuditLogListPage />} />
         <Route path="admin/reports" element={<ReportsPage />} />
         <Route path="settings/general" element={<GeneralSettingsPage />} />
