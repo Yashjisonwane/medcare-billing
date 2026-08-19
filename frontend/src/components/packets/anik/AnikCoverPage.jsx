@@ -1,4 +1,4 @@
-﻿// src/components/packets/anik/AnikCoverPage.jsx
+// src/components/packets/anik/AnikCoverPage.jsx
 import React from 'react';
 import { PaperTextField } from '../common/PaperTextField';
 
@@ -63,11 +63,11 @@ export const AnikCoverPage = ({ packetData, onFieldChange, readOnly, blankMode =
           <li>1. Patient & Case Cover Page</li>
           <li>2. Provider Billing Statement (Page 1 - Summary)</li>
           <li>3. Provider Billing Statement (Page 2 - Service Line Ledger)</li>
-          <li>4â€“6. CMS-1500 Health Insurance Claim Forms (DOS: 01/22/2026, 01/24/2026, 01/26/2026)</li>
+          <li>4–6. CMS-1500 Health Insurance Claim Forms (DOS: 01/22/2026, 01/24/2026, 01/26/2026)</li>
           <li>7. ANIK Therapy Assessment Form</li>
-          <li>8â€“10. High-Intensity Laser Therapy Procedure Log Forms</li>
-          <li>11â€“13. Initial Clinical Narrative Evaluation Report</li>
-          <li>14â€“16. Final Medical & Therapy Discharge Report</li>
+          <li>8–10. High-Intensity Laser Therapy Procedure Log Forms</li>
+          <li>11–13. Initial Clinical Narrative Evaluation Report</li>
+          <li>14–16. Final Medical & Therapy Discharge Report</li>
         </ul>
       </div>
 

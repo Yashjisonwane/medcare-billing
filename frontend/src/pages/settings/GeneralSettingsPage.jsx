@@ -4,7 +4,7 @@ import { useUIStore } from '../../store/uiStore';
 import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 'lucide-react';
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
-import { refreshSettingsCache } from '../../utils/settingsCache';
+import { refreshSettingsCache, updateCachedSettings } from '../../utils/settingsCache';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-on-surface mb-1';
@@ -112,6 +112,7 @@ export const GeneralSettingsPage = () => {
         const data = await getGeneralSettings();
         if (data) {
           setSettings(prev => ({ ...prev, ...data }));
+          updateCachedSettings(data);
         }
       } catch (error) {
         // Fallback to local settings
@@ -125,9 +126,6 @@ export const GeneralSettingsPage = () => {
   const set = (field, val) => {
     setSettings(p => {
       const next = { ...p, [field]: val };
-      try {
-        localStorage.setItem('medcare_practice_settings', JSON.stringify(next));
-      } catch (e) {}
       return next;
     });
   };
@@ -136,7 +134,7 @@ export const GeneralSettingsPage = () => {
     e?.preventDefault();
     setIsSaving(true);
     try {
-      localStorage.setItem('medcare_practice_settings', JSON.stringify(settings));
+      updateCachedSettings(settings);
       await updateGeneralSettings(settings).catch(() => {});
       await refreshSettingsCache().catch(() => {});
       addToast('General practice settings updated successfully!', 'success');

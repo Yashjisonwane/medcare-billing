@@ -1,4 +1,4 @@
-﻿// src/components/packets/UnifiedPacketViewer.jsx
+// src/components/packets/UnifiedPacketViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { PACKET_MANIFESTS } from '../../constants/packetManifests';
 import { apiBillingService } from '../../services/api/apiBillingService';
@@ -135,7 +135,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
       return <PrintableBillingStatement bill={blankPracticeMode ? null : bill} pageIndex={pageDef.pageIndex || 0} />;
     }
     if (key === 'CmsRedGridForm') {
-      const claim = cmsClaims[pageDef.claimIndex || 0];
+      const claim = cmsClaims[pageDef.claimIndex || 0] || cmsClaims[0] || null;
       return <CmsRedGridForm claim={claim} blankMode={blankPracticeMode} />;
     }
     

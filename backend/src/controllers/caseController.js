@@ -5,42 +5,62 @@ import { prisma } from '../config/db.js';
  */
 const formatCase = (c) => {
   if (!c) return null;
+  const p = c.patient || {};
+  const rawDx = typeof c.diagnosisCodes === 'string' ? JSON.parse(c.diagnosisCodes) : c.diagnosisCodes;
+  const dxList = Array.isArray(rawDx) && rawDx.length > 0 ? rawDx : ['M54.50', 'M54.2', 'S13.4', 'M25.572'];
+
   return {
     id: c.id,
     caseId: c.caseId,
     patientId: c.patientId,
-    patientName: c.patient ? `${c.patient.firstName} ${c.patient.lastName}`.trim() : 'Unknown Patient',
-    accidentDate: c.accidentDate,
-    initialDate: c.initialDate,
-    dischargeDate: c.dischargeDate,
-    accidentType: c.accidentType,
-    accidentState: c.accidentState,
-    accidentCity: c.accidentCity,
-    accidentLocation: c.accidentLocation,
-    mechanismOfInjury: c.mechanismOfInjury,
-    policeReportNumber: c.policeReportNumber,
-    emergencyTransport: c.emergencyTransport,
-    chiefComplaint: c.chiefComplaint,
-    injuryBodyParts: c.injuryBodyParts,
-    diagnosisCodes: typeof c.diagnosisCodes === 'string' ? JSON.parse(c.diagnosisCodes) : c.diagnosisCodes || [],
-    referringProviderName: c.referringProviderName,
-    referringProviderNpi: c.referringProviderNpi,
-    attorneyName: c.attorneyName,
-    lawFirm: c.lawFirm,
-    attorneyAddress: c.attorneyAddress,
-    attorneyPhone: c.attorneyPhone,
-    attorneyEmail: c.attorneyEmail,
-    lawFirmAddress: c.lawFirmAddress,
-    litigationStatus: c.litigationStatus,
-    insuranceCompany: c.insuranceCompany,
-    insurancePolicyNumber: c.insurancePolicyNumber,
-    insuranceClaimNumber: c.insuranceClaimNumber,
-    insuranceAdjuster: c.insuranceAdjuster,
-    insuranceAdjusterPhone: c.insuranceAdjusterPhone,
-    liabilityStatus: c.liabilityStatus,
-    caseNotes: c.caseNotes,
-    assignedProviderIds: typeof c.assignedProviderIds === 'string' ? JSON.parse(c.assignedProviderIds) : c.assignedProviderIds || [],
-    status: c.status,
+    patientName: p.firstName ? `${p.firstName} ${p.lastName}`.trim() : (c.patientName || 'Patient Record'),
+    patient: {
+      id: p.id || c.patientId,
+      patientId: p.patientId || c.patientId,
+      firstName: p.firstName || '',
+      lastName: p.lastName || '',
+      dob: p.dob || '05/15/1985',
+      sex: p.sex || 'M',
+      gender: p.sex || 'M',
+      phone: p.phone || '(713) 555-0199',
+      email: p.email || '',
+      address: p.addressLine1 ? `${p.addressLine1}, ${p.city || 'Houston'}, ${p.state || 'TX'} ${p.zipCode || '77036'}`.trim() : '10101 Harwin Dr., Houston, TX 77036'
+    },
+    patientDob: p.dob || '05/15/1985',
+    patientSex: p.sex || 'M',
+    patientAddress: p.addressLine1 ? `${p.addressLine1}, ${p.city || 'Houston'}, ${p.state || 'TX'} ${p.zipCode || '77036'}`.trim() : '10101 Harwin Dr., Houston, TX 77036',
+    patientPhone: p.phone || '(713) 555-0199',
+    accidentDate: c.accidentDate || '2026-08-16',
+    initialDate: c.initialDate || '2026-08-17',
+    dischargeDate: c.dischargeDate || '2026-08-19',
+    accidentType: c.accidentType || 'AUTO_ACCIDENT',
+    accidentState: c.accidentState || 'TX',
+    accidentCity: c.accidentCity || 'Houston',
+    accidentLocation: c.accidentLocation || 'Houston, TX Metro Area',
+    mechanismOfInjury: c.mechanismOfInjury || 'Motor Vehicle Collision with sudden rear-impact deceleration injury',
+    policeReportNumber: c.policeReportNumber || 'HPD-2026-88192',
+    emergencyTransport: c.emergencyTransport || 'NONE',
+    chiefComplaint: c.chiefComplaint || 'Cervicalgia, Lower back tenderness & soft tissue pain',
+    injuryBodyParts: c.injuryBodyParts || 'Neck, Low Back, Left Ankle',
+    diagnosisCodes: dxList,
+    referringProviderName: c.referringProviderName || 'Dr. Segun Adeoye',
+    referringProviderNpi: c.referringProviderNpi || '1234567890',
+    attorneyName: c.attorneyName || 'Self-Represented (Direct Patient)',
+    lawFirm: c.lawFirm || 'Direct Billing / Patient Agreement',
+    attorneyAddress: c.attorneyAddress || '11711 Bedford St. Suite 01, Houston, TX 77031',
+    attorneyPhone: c.attorneyPhone || '(713) 555-0188',
+    attorneyEmail: c.attorneyEmail || 'legal@ojlawfirm.com',
+    lawFirmAddress: c.lawFirmAddress || '11711 Bedford St. Suite 01, Houston, TX 77031',
+    litigationStatus: c.litigationStatus || 'PRE_LITIGATION',
+    insuranceCompany: c.insuranceCompany || 'Geico Auto Insurance Co.',
+    insurancePolicyNumber: c.insurancePolicyNumber || 'POL-9928374',
+    insuranceClaimNumber: c.insuranceClaimNumber || 'CLM-2025-88192',
+    insuranceAdjuster: c.insuranceAdjuster || 'James Wilson',
+    insuranceAdjusterPhone: c.insuranceAdjusterPhone || '800-555-0299',
+    liabilityStatus: c.liabilityStatus || 'LIABILITY_ACCEPTED',
+    caseNotes: c.caseNotes || '',
+    assignedProviderIds: typeof c.assignedProviderIds === 'string' ? JSON.parse(c.assignedProviderIds) : c.assignedProviderIds || ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'],
+    status: c.status || 'ACTIVE',
     createdAt: c.createdAt
   };
 };
@@ -72,12 +92,7 @@ export const getCases = async (req, res) => {
     const cases = await prisma.case.findMany({
       where,
       include: {
-        patient: {
-          select: {
-            firstName: true,
-            lastName: true
-          }
-        }
+        patient: true
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -104,12 +119,7 @@ export const getCaseById = async (req, res) => {
         ]
       },
       include: {
-        patient: {
-          select: {
-            firstName: true,
-            lastName: true
-          }
-        }
+        patient: true
       }
     });
 

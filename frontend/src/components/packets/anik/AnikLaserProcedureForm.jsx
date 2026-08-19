@@ -1,4 +1,4 @@
-﻿// src/components/packets/anik/AnikLaserProcedureForm.jsx
+// src/components/packets/anik/AnikLaserProcedureForm.jsx
 import React, { useState } from 'react';
 
 /**
@@ -24,9 +24,9 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
       {/* Demographics Row */}
       <div className="grid grid-cols-4 gap-2 text-xs font-mono border-b border-slate-300 pb-2">
         <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
-        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? '10/08/1974' : (packetData.patient?.dob || 'N/A')}</strong></div>
-        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'M' : (packetData.patient?.sex || 'M')}</strong></div>
-        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? dos : packetData.accidentDate}</strong></div>
+        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? '1988-06-20' : (packetData.patientDob || packetData.patient?.dob || '1988-06-20')}</strong></div>
+        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'M' : (packetData.patientSex || packetData.patient?.sex || 'M')}</strong></div>
+        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode ? '' : (dos || packetData.accidentDate)}</strong></div>
       </div>
 
       {/* Intro Consent & Vitals */}
@@ -119,7 +119,9 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
 
             <div>
               <span className="font-bold block text-slate-900">Treatment Area(s):</span>
-              <p className="font-semibold text-slate-800 underline">Low back, Neck, Left ankle</p>
+              <p className="font-semibold text-slate-800 underline">
+                {blankMode || !packetData ? 'Low back, Neck, Left ankle' : (packetData.injuryBodyParts || packetData.chiefComplaint || 'Low back, Neck, Left ankle')}
+              </p>
             </div>
 
             <div className="space-y-1.5 pt-1">
@@ -147,35 +149,34 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
             <span className="font-bold block text-[10px] uppercase text-slate-700 leading-tight">
               Please check/circle (all that applies)
             </span>
-
             <div className="space-y-1.5 text-xs font-mono">
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>NAD</span>
-                <span className="font-bold text-teal-700 font-sans">âœ“</span>
+                <span className="font-bold text-teal-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>AAO X3</span>
-                <span className="font-bold text-teal-700 font-sans">âœ“</span>
+                <span className="font-bold text-teal-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A1</span>
-                <span className="font-bold text-teal-700 font-sans">âœ“</span>
+                <span className="font-bold text-teal-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A2</span>
-                <span className="font-bold text-teal-700 font-sans">âœ“</span>
+                <span className="font-bold text-teal-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A3</span>
-                <span className="font-bold text-teal-700 font-sans">âœ“</span>
+                <span className="font-bold text-teal-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A4</span>
-                <span className="text-slate-300">â€”</span>
+                <span className="text-slate-300">—</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Treatment A5</span>
-                <span className="text-slate-300">â€”</span>
+                <span className="text-slate-300">—</span>
               </div>
             </div>
           </div>
@@ -186,20 +187,20 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
         <div className="grid grid-cols-2 gap-4 py-2 font-bold text-xs">
           <div className="flex items-center gap-3">
             <span>PROCEDURE TOLERATE:</span>
-            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [âœ“]</span>
+            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [✓]</span>
             <span className="border border-slate-300 px-2 py-0.5 text-slate-400">NO [ ]</span>
           </div>
 
           <div className="flex items-center gap-3">
             <span>DURATION COMPLETED:</span>
-            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [âœ“]</span>
+            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [✓]</span>
             <span className="border border-slate-300 px-2 py-0.5 text-slate-400">NO [ ]</span>
           </div>
         </div>
 
         {/* Post Procedure Instructions */}
         <div className="border-t border-slate-300 pt-2 space-y-1 text-[11px]">
-          <p><strong>Post procedure Instructions:</strong> â€¢ No down time following treatment â€¢ May expect mild inflammation, redness &amp; swelling for a few days â€¢ No Aspirin or NSAIDS (Motrin, Aleve, Advil, etc.) for at least 7 days â€¢ Tylenol or Acetaminophen may be taken for discomfort â€¢ Hydrate very well (at least 64 ounces of water daily).</p>
+          <p><strong>Post procedure Instructions:</strong> • No down time following treatment • May expect mild inflammation, redness &amp; swelling for a few days • No Aspirin or NSAIDS (Motrin, Aleve, Advil, etc.) for at least 7 days • Tylenol or Acetaminophen may be taken for discomfort • Hydrate very well (at least 64 ounces of water daily).</p>
         </div>
 
         {/* Signature Box */}

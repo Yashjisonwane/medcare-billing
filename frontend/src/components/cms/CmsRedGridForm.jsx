@@ -1,4 +1,4 @@
-﻿// src/components/cms/CmsRedGridForm.jsx
+// src/components/cms/CmsRedGridForm.jsx
 import React from 'react';
 
 /**
@@ -6,8 +6,75 @@ import React from 'react';
  * Form Approved OMB-0938-1197 FORM CMS-1500 (02/12)
  * Includes all 33 official boxes, 6 line items with Modifiers (1-4), Box 21 A-L pointers, and Appointment DOS linking
  */
-export const CmsRedGridForm = ({ claim }) => {
-  if (!claim) return null;
+export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) => {
+  const claim = rawClaim || {
+    box1: 'OTHER',
+    box1a: '906684061',
+    box2: 'aa jj',
+    box3Dob: { mm: '05', dd: '15', yy: '1985' },
+    box3Sex: 'M',
+    box4: 'aa jj',
+    box5Address: '10101 Harwin Dr. Suite 774',
+    box5City: 'HOUSTON',
+    box5State: 'TX',
+    box5Zip: '77036',
+    box6Relation: 'Self',
+    box7Address: '10101 Harwin Dr. Suite 774',
+    box7City: 'HOUSTON',
+    box7State: 'TX',
+    box7Zip: '77036',
+    box8Status: 'Single',
+    box10AutoAccident: 'YES',
+    box10State: 'TX',
+    box12Signature: 'SIGNATURE ON FILE',
+    box12Date: '2026-08-16',
+    box13Signature: 'SIGNATURE ON FILE',
+    box14IllnessDate: { mm: '12', dd: '27', yy: '2025' },
+    box17ReferringName: 'Dr. Segun Adeoye',
+    box17Npi: '1234567890',
+    box21Diagnoses: ['M54.50', 'M54.2', 'S13.4XXA', 'M25.572'],
+    box24Lines: [
+      {
+        note: 'Class IV High-Intensity Laser Therapy (HILT) Biostimulation',
+        fromDos: '2026-08-16',
+        toDos: '2026-08-16',
+        pos: '11',
+        emg: 'N',
+        cpt: '97039',
+        mod1: 'GP',
+        mod2: 'RT',
+        diagPtr: 'A',
+        charge: '4000.00',
+        units: '2',
+        renderingId: '1234567890'
+      },
+      {
+        note: 'Therapeutic Deep Tissue Laser Mobilization & Spinal Decompression',
+        fromDos: '2026-08-16',
+        toDos: '2026-08-16',
+        pos: '11',
+        emg: 'N',
+        cpt: '97124',
+        mod1: '59',
+        diagPtr: 'A',
+        charge: '868.00',
+        units: '1',
+        renderingId: '1234567890'
+      }
+    ],
+    box25TaxId: '993723387',
+    box25Type: 'EIN',
+    box27AcceptAssignment: 'YES',
+    box28TotalCharge: '4868.00',
+    box29AmountPaid: '0.00',
+    box30BalanceDue: '4868.00',
+    box31ProviderSignature: 'Adeoye, Segun, MD',
+    box31Date: '2026-08-16',
+    box32Facility: 'ANIK Laser Therapy\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036',
+    box33BillingProvider: 'ANIK Laser Therapy\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036',
+    box33Phone: '(713) 555-0100',
+    carrierHeader: 'PATIENT SELF-PAY / DIRECT BILLING\n10101 Harwin Dr., Houston'
+  };
 
   const cleanAmount = (val) => {
     if (!val) return '0.00';

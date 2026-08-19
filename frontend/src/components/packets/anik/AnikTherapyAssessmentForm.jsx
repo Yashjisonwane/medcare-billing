@@ -1,4 +1,4 @@
-﻿// src/components/packets/anik/AnikTherapyAssessmentForm.jsx
+// src/components/packets/anik/AnikTherapyAssessmentForm.jsx
 import React, { useState, useEffect } from 'react';
 
 /**
@@ -126,11 +126,11 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
                 <tbody>
                   <tr className="border-b border-slate-900">
                     <td className="p-1 border-r border-slate-900 font-bold">{dos}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97010') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97012') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97014') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97035') && 'âœ“'}</td>
-                    <td className="p-1 font-bold text-center">{hasCpt(lines, '97124') ? 'âœ“' : ''}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97010') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97012') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97014') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97035') && '✓'}</td>
+                    <td className="p-1 font-bold text-center">{hasCpt(lines, '97124') ? '✓' : ''}</td>
                   </tr>
                   <tr className="bg-slate-100 font-bold border-b border-slate-900">
                     <td className="p-1 border-r border-slate-900">ROM EXERCISE<br/>97110</td>
@@ -140,12 +140,12 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
                     <td colSpan="2" className="p-1">LASER THERAPY<br/>97039</td>
                   </tr>
                   <tr>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97110') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '99205') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97140') && 'âœ“'}</td>
-                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '99213') && 'âœ“'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97110') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '99205') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '97140') && '✓'}</td>
+                    <td className="p-1 border-r border-slate-900">{hasCpt(lines, '99213') && '✓'}</td>
                     <td colSpan="2" className="p-1 font-bold text-center">
-                      {hasCpt(lines, '97039') ? `âœ“${getCptUnits(lines, '97039')}` : ''}
+                      {hasCpt(lines, '97039') ? `✓${getCptUnits(lines, '97039')}` : ''}
                     </td>
                   </tr>
                 </tbody>
@@ -160,19 +160,19 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`tol-${dos}`} checked={currentTol === 'WELL'} onChange={() => updateAssessment(dos, 'tol', 'WELL')} className="hidden" />
                   <span>{currentTol === 'WELL' ? '__' : '____'}</span>
-                  {currentTol === 'WELL' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentTol === 'WELL' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentTol === 'WELL' ? '__ WELL' : ' WELL'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`tol-${dos}`} checked={currentTol === 'FAIRLY'} onChange={() => updateAssessment(dos, 'tol', 'FAIRLY')} className="hidden" />
                   <span>{currentTol === 'FAIRLY' ? '__' : '____'}</span>
-                  {currentTol === 'FAIRLY' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentTol === 'FAIRLY' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentTol === 'FAIRLY' ? '__ FAIRLY' : ' FAIRLY'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`tol-${dos}`} checked={currentTol === 'POORLY'} onChange={() => updateAssessment(dos, 'tol', 'POORLY')} className="hidden" />
                   <span>{currentTol === 'POORLY' ? '__' : '____'}</span>
-                  {currentTol === 'POORLY' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentTol === 'POORLY' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentTol === 'POORLY' ? '__ POORLY' : ' POORLY'}</span>
                 </label>
               </div>
@@ -182,25 +182,25 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`imp-${dos}`} checked={currentImp === 'IMPROVING'} onChange={() => updateAssessment(dos, 'imp', 'IMPROVING')} className="hidden" />
                   <span>{currentImp === 'IMPROVING' ? '__' : '____'}</span>
-                  {currentImp === 'IMPROVING' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentImp === 'IMPROVING' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentImp === 'IMPROVING' ? '__ IMPROVING' : ' IMPROVING'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`imp-${dos}`} checked={currentImp === 'IMPROVING_SLOWLY'} onChange={() => updateAssessment(dos, 'imp', 'IMPROVING_SLOWLY')} className="hidden" />
                   <span>{currentImp === 'IMPROVING_SLOWLY' ? '__' : '____'}</span>
-                  {currentImp === 'IMPROVING_SLOWLY' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentImp === 'IMPROVING_SLOWLY' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentImp === 'IMPROVING_SLOWLY' ? '__ IMPROVING SLOWLY' : ' IMPROVING SLOWLY'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`imp-${dos}`} checked={currentImp === 'NO_CHANGE'} onChange={() => updateAssessment(dos, 'imp', 'NO_CHANGE')} className="hidden" />
                   <span>{currentImp === 'NO_CHANGE' ? '__' : '____'}</span>
-                  {currentImp === 'NO_CHANGE' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentImp === 'NO_CHANGE' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentImp === 'NO_CHANGE' ? '__ NO CHANGE' : ' NO CHANGE'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`imp-${dos}`} checked={currentImp === 'GETTING_WORSE'} onChange={() => updateAssessment(dos, 'imp', 'GETTING_WORSE')} className="hidden" />
                   <span>{currentImp === 'GETTING_WORSE' ? '__' : '____'}</span>
-                  {currentImp === 'GETTING_WORSE' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentImp === 'GETTING_WORSE' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentImp === 'GETTING_WORSE' ? '__ GETTING WORSE' : ' GETTING WORSE'}</span>
                 </label>
               </div>
@@ -210,19 +210,19 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`care-${dos}`} checked={currentCare === 'CONTINUES_CARE'} onChange={() => updateAssessment(dos, 'care', 'CONTINUES_CARE')} className="hidden" />
                   <span>{currentCare === 'CONTINUES_CARE' ? '__' : '____'}</span>
-                  {currentCare === 'CONTINUES_CARE' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentCare === 'CONTINUES_CARE' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentCare === 'CONTINUES_CARE' ? '__ CONTINUES PRESENT CARE' : ' CONTINUES PRESENT CARE'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`care-${dos}`} checked={currentCare === 'REEVALUATE'} onChange={() => updateAssessment(dos, 'care', 'REEVALUATE')} className="hidden" />
                   <span>{currentCare === 'REEVALUATE' ? '__' : '____'}</span>
-                  {currentCare === 'REEVALUATE' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentCare === 'REEVALUATE' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentCare === 'REEVALUATE' ? '__ REEVALUATE DUE TO CHANGES IN CONDITION' : ' REEVALUATE DUE TO CHANGES IN CONDITION'}</span>
                 </label>
                 <label className="cursor-pointer hover:opacity-80 transition-opacity duration-100">
                   <input type="radio" name={`care-${dos}`} checked={currentCare === '30_DAY_REEVA'} onChange={() => updateAssessment(dos, 'care', '30_DAY_REEVA')} className="hidden" />
                   <span>{currentCare === '30_DAY_REEVA' ? '__' : '____'}</span>
-                  {currentCare === '30_DAY_REEVA' && <strong className="text-slate-900 font-black">âœ“</strong>}
+                  {currentCare === '30_DAY_REEVA' && <strong className="text-slate-900 font-black">✓</strong>}
                   <span>{currentCare === '30_DAY_REEVA' ? '__ 30 DAY RE-EVA' : ' 30 DAY RE-EVA'}</span>
                 </label>
               </div>
