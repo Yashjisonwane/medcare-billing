@@ -69,7 +69,23 @@ export const getAppointments = async (req, res) => {
       orderBy: { startTime: 'asc' }
     });
 
-    return res.status(200).json(appointments.map(formatAppointment));
+    const notes = await prisma.clinicalNote.findMany({
+      select: { patientId: true, providerId: true, date: true }
+    });
+
+    const result = appointments.map(a => {
+      const formatted = formatAppointment(a);
+      // Check if a clinical note exists for this patient, provider, and date
+      const hasNote = notes.some(n => 
+        n.patientId === a.patientId && 
+        n.providerId === a.providerId && 
+        n.date === a.date
+      );
+      formatted.hasClinicalNote = hasNote;
+      return formatted;
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error('Error fetching appointments:', error);
     return res.status(500).json({ error: 'Internal server error fetching appointments.' });

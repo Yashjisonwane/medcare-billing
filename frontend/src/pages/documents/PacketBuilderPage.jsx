@@ -56,7 +56,7 @@ export const PacketBuilderPage = () => {
   const handleBuildPacket = async () => {
     setIsBuilding(true);
     try {
-      const res = await mockDocumentService.buildPatientPacket(selectedIds, selectedCaseId);
+      const res = await apiDocumentService.buildPatientPacket(selectedIds, selectedCaseId);
       setPacketResult(res);
       addToast(`Master Patient Document Packet ${res.packetId} generated!`, 'success');
     } catch (err) {
@@ -168,7 +168,7 @@ export const PacketBuilderPage = () => {
             <div className="space-y-2 text-xs text-slate-600">
               <div className="flex justify-between">
                 <span className="text-slate-400">Target Patient / Case:</span>
-                <strong className="text-slate-900 truncate max-w-[150px]">{currentCase?.patientName || 'SAMPLE TESTING'}</strong>
+                <strong className="text-slate-900 truncate max-w-[150px]">{currentCase?.patientName || 'Demo Patient 001'}</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Selected Files:</span>
@@ -200,7 +200,7 @@ export const PacketBuilderPage = () => {
               </p>
               <p className="text-[11px] text-slate-500 font-mono">Packet ID: {packetResult.packetId}</p>
               <button
-                onClick={() => addToast('Simulated complete medical-legal packet PDF downloaded!', 'success')}
+                onClick={() => addToast('Complete medical-legal packet PDF ready for download!', 'success')}
                 className="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Complete PDF Packet

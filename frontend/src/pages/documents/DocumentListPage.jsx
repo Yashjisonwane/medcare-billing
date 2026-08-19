@@ -20,7 +20,7 @@ export const DocumentListPage = () => {
   const [newDocName, setNewDocName] = useState('');
   const [newDocProvider, setNewDocProvider] = useState('JOSMIC Wellness Center');
   const [newDocType, setNewDocType] = useState('Medical Records');
-  const [newDocStatus, setNewDocStatus] = useState('COMPLETED_DEMO');
+  const [newDocStatus, setNewDocStatus] = useState('COMPLETED');
   const [newDocSize, setNewDocSize] = useState('1.5 MB');
 
   useEffect(() => {
@@ -290,7 +290,9 @@ export const DocumentListPage = () => {
                   >
                     <option value="SIGNED">SIGNED</option>
                     <option value="UNSIGNED">UNSIGNED</option>
-                    <option value="FINALISED_DEMO">FINALISED</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="FINALISED">FINALISED</option>
+                    <option value="UPLOADED">UPLOADED</option>
                     <option value="DRAFT">DRAFT</option>
                   </select>
                 </div>

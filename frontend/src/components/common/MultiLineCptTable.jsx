@@ -1,4 +1,4 @@
-﻿// src/components/common/MultiLineCptTable.jsx
+// src/components/common/MultiLineCptTable.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Trash2, Tag, Info, Sparkles, ChevronDown, Check, Search, X } from 'lucide-react';
@@ -128,7 +128,7 @@ const ModifierPortalDropdown = ({ value, onChange, placeholder = "--", title = "
         >
           {/* Search & Custom Type Input */}
           <div className="p-2 bg-slate-50 border-b border-slate-100 flex items-center gap-1.5">
-            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 pointer-events-none" />
             <input
               type="text"
               autoFocus

@@ -13,7 +13,7 @@ const formatDoc = (d) => {
     documentType: d.documentType || d.type || 'Other',
     providerName: d.providerName || '',
     date: d.date || '',
-    status: d.status || 'UPLOADED_DEMO',
+    status: d.status || 'UPLOADED',
     size: d.size || '1.0 MB',
     url: d.url || '',
     uploadedAt: d.uploadedAt
@@ -72,7 +72,7 @@ export const uploadDocument = async (req, res) => {
         type: data.type || data.documentType || 'Medical Records',
         providerName: data.providerName || 'JOSMIC Wellness Center',
         date: data.date || currentDateStr,
-        status: data.status || 'UPLOADED_DEMO',
+        status: data.status || 'UPLOADED',
         size: data.size || '1.2 MB',
         url: data.url || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
       }

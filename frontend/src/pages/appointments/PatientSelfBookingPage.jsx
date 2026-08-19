@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { mockProviderService } from '../../services/mock/mockProviderService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -263,7 +263,7 @@ export const PatientSelfBookingPage = () => {
 
           <form onSubmit={handleSearchLookup} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3.5 pointer-events-none" />
               <input
                 type="text"
                 required
