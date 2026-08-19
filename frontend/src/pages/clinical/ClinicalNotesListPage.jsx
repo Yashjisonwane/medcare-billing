@@ -1,4 +1,4 @@
-﻿// src/pages/clinical/ClinicalNotesListPage.jsx
+// src/pages/clinical/ClinicalNotesListPage.jsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar, Search, Filter, Stethoscope } from 'lucide-react';
@@ -63,7 +63,7 @@ export const ClinicalNotesListPage = () => {
       {/* â”€â”€ Search & Filter Controls â”€â”€ */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search notes by patient name, title, provider..."

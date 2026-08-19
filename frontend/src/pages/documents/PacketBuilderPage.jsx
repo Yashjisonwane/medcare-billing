@@ -1,8 +1,8 @@
-﻿// src/pages/documents/PacketBuilderPage.jsx
+// src/pages/documents/PacketBuilderPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { mockDocumentService } from '../../services/mock/mockDocumentService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiDocumentService } from '../../services/api/apiDocumentService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { useUIStore } from '../../store/uiStore';
 import { FolderOpen, CheckSquare, Download, Sparkles, ArrowLeft, FileText, CheckCircle2, DollarSign, User, Shield } from 'lucide-react';
@@ -22,8 +22,8 @@ export const PacketBuilderPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockDocumentService.getDocuments().then(setDocs);
-    mockCaseService.getCases().then(res => {
+    apiDocumentService.getDocuments().then(setDocs);
+    apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCases(res);
         if (queryCaseId && res.some(c => c.id === queryCaseId || c.caseId === queryCaseId)) {
@@ -54,7 +54,7 @@ export const PacketBuilderPage = () => {
   const handleBuildPacket = async () => {
     setIsBuilding(true);
     try {
-      const res = await mockDocumentService.buildPatientPacket(selectedIds, selectedCaseId);
+      const res = await apiDocumentService.buildPatientPacket(selectedIds, selectedCaseId);
       setPacketResult(res);
       addToast(`Master Patient Document Packet ${res.packetId} generated!`, 'success');
     } catch (err) {

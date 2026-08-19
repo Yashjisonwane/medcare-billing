@@ -1,4 +1,4 @@
-﻿// src/pages/dashboards/TherapistDashboard.jsx
+// src/pages/dashboards/TherapistDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Activity, Award, PlusCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,21 @@ export const TherapistDashboard = () => {
 
   const eswtCount = notes.filter(n => n.providerId === 'prov-davs' || n.providerName?.toLowerCase().includes('dav')).length;
   const laserCount = notes.filter(n => n.providerId === 'prov-anik' || n.providerName?.toLowerCase().includes('anik') || n.providerName?.toLowerCase().includes('laser')).length;
+
+  const therapeuticNotes = notes.filter(n => 
+    n.providerId === 'prov-davs' || n.providerName?.toLowerCase().includes('dav') ||
+    n.providerId === 'prov-anik' || n.providerName?.toLowerCase().includes('anik') || n.providerName?.toLowerCase().includes('laser')
+  );
+
+  const verifiedVitalsCount = therapeuticNotes.filter(n => {
+    const hasDirectVitals = n.content?.bp && n.content?.hr;
+    const hasNestedVitals = n.content?.vitals?.bp && n.content?.vitals?.hr;
+    return hasDirectVitals || hasNestedVitals;
+  }).length;
+
+  const vitalsCompliance = therapeuticNotes.length > 0 
+    ? Math.round((verifiedVitalsCount / therapeuticNotes.length) * 100) 
+    : 100;
 
   return (
     <div className="space-y-6">
@@ -56,7 +71,7 @@ export const TherapistDashboard = () => {
             <span className="text-xs font-bold text-slate-500">Vitals Check Compliance</span>
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
-          <p className="text-2xl font-bold text-slate-900 font-tabular">100% Verified</p>
+          <p className="text-2xl font-bold text-slate-900 font-tabular">{vitalsCompliance}% Verified</p>
           <p className="text-[11px] text-emerald-600 font-semibold">BP &amp; HR recorded per visit</p>
         </div>
       </div>

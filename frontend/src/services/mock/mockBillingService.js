@@ -1,4 +1,4 @@
-﻿const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
 
 export const mockBillingService = {
   async getFourBillsByCase(caseId = 'CASE-2025-1227') {
@@ -82,11 +82,20 @@ export const mockBillingService = {
   },
 
   async getAgingSummary(providerId = 'ALL') {
-    const res = await fetch(`${API_BASE}/billing/aging?providerId=${providerId}`);
-    if (!res.ok) {
-      throw new Error('Failed to retrieve aging summaries.');
+    try {
+      const res = await fetch(`${API_BASE}/billing/aging?providerId=${providerId}`);
+      if (!res.ok) throw new Error('Failed to retrieve aging summaries.');
+      return await res.json();
+    } catch (error) {
+      console.warn('[mockBillingService] API Error, returning fallback aging data:', error);
+      return {
+        grandTotal: 58004,
+        current: 27090,
+        past30: 1644,
+        past60: 530,
+        past90: 28790
+      };
     }
-    return res.json();
   },
 
   async getOverviewStats() {

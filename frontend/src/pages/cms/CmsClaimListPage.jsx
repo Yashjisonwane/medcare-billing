@@ -1,4 +1,4 @@
-﻿// src/pages/cms/CmsClaimListPage.jsx
+// src/pages/cms/CmsClaimListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
 import { mockBillingService } from '../../services/mock/mockBillingService';
@@ -59,7 +59,7 @@ export const CmsClaimListPage = () => {
           <p className="text-xs text-slate-500">Date-grouped health insurance claims generated from provider bills (Form 02/12)</p>
         </div>
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={search}

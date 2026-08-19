@@ -1,4 +1,4 @@
-﻿// src/pages/treatments/TreatmentSessionsPage.jsx
+// src/pages/treatments/TreatmentSessionsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filter, X, Save } from 'lucide-react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
@@ -306,7 +306,8 @@ export const TreatmentSessionsPage = () => {
           cpt: a.cptCode || 'N/A',
           duration,
           status: a.status || 'Completed',
-          charge
+          charge,
+          hasClinicalNote: !!a.hasClinicalNote
         };
       });
       setSessions(formatted);
@@ -370,7 +371,7 @@ export const TreatmentSessionsPage = () => {
       <div className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -453,14 +454,26 @@ export const TreatmentSessionsPage = () => {
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_COLORS[s.status] || 'bg-slate-100 text-slate-700'}`}>{s.status}</span>
                 </td>
                 <td className="p-3.5 text-center">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Form Complete
-                  </span>
+                  {s.hasClinicalNote ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Form Complete
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                      Missing Form
+                    </span>
+                  )}
                 </td>
                 <td className="p-3.5 text-center">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
-                    Ready ({formatCurrency(s.charge)})
-                  </span>
+                  {s.hasClinicalNote ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                      Ready ({formatCurrency(s.charge)})
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-200">
+                      Pending Form
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}

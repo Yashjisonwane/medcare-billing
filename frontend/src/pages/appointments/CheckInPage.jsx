@@ -1,4 +1,4 @@
-﻿// src/pages/appointments/CheckInPage.jsx
+// src/pages/appointments/CheckInPage.jsx
 import React, { useEffect, useState } from 'react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -217,7 +217,7 @@ export const CheckInPage = () => {
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2 flex-1">
           <div className="relative flex-1 max-w-xs">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3 pointer-events-none" />
             <input
               type="text"
               placeholder="Search patient name, phone, case #..."

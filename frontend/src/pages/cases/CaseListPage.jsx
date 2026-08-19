@@ -1,4 +1,4 @@
-﻿// src/pages/cases/CaseListPage.jsx
+// src/pages/cases/CaseListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockCaseService } from '../../services/mock/mockCaseService';
 import { FileText, PlusCircle, Search, ChevronRight, Eye, FileSpreadsheet, Scale, Calendar } from 'lucide-react';
@@ -49,7 +49,7 @@ export const CaseListPage = () => {
 
       {/* â”€â”€ Search Bar â”€â”€ */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-        <Search className="w-4 h-4 text-slate-400 shrink-0" />
+        <Search className="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" />
         <input
           type="text"
           placeholder="Search by Case ID, patient name, attorney, law firm..."

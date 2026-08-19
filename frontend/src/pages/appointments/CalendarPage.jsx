@@ -1,4 +1,4 @@
-﻿// src/pages/appointments/CalendarPage.jsx
+// src/pages/appointments/CalendarPage.jsx
 import React, { useState, useEffect } from 'react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -137,12 +137,14 @@ export const CalendarPage = () => {
             <ChevronRight className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-            className="px-3 py-2 text-xs font-bold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
-          >
-            Today
-          </button>
+          {selectedDate !== new Date().toISOString().split('T')[0] && (
+            <button
+              onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+              className="px-3 py-2 text-xs font-bold rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 transition cursor-pointer flex items-center gap-1"
+            >
+              Return to Today
+            </button>
+          )}
         </div>
 
         {/* Filters */}
