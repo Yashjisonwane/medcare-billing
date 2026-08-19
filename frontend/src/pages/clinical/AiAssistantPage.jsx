@@ -1,7 +1,7 @@
-﻿// src/pages/clinical/AiAssistantPage.jsx
+// src/pages/clinical/AiAssistantPage.jsx
 import React, { useState, useEffect } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { ROLES } from '../../constants/rolePermissions';
@@ -92,9 +92,10 @@ export const AiAssistantPage = () => {
   const currentClinician = CLINICIANS.find(c => c.id === selectedClinicianId) || CLINICIANS[0];
 
   useEffect(() => {
-    mockCaseService.getCases().then(res => {
-      if (res && res.length > 0) {
-        setCasesList(res);
+    apiCaseService.getCases().then(res => {
+      const raw = Array.isArray(res) ? res : (res?.cases || []);
+      if (raw && raw.length > 0) {
+        setCasesList(raw);
       }
     }).catch(() => {});
   }, []);
@@ -111,7 +112,7 @@ export const AiAssistantPage = () => {
     const found = casesList.find(c => c.id === caseId || c.caseId === caseId);
     if (found) {
       setPatientName(found.patientName || 'Accident Patient');
-      const desc = found.accidentDetails?.description || found.notes || `Neck and lower back pain following vehicle collision on ${found.dateOfInjury || 'recent accident'}`;
+      const desc = found.chiefComplaint || found.notes || `Neck and lower back pain following vehicle collision on ${found.accidentDate || 'recent accident'}`;
       setComplaints(desc);
       addToast(`Loaded accident records for ${found.patientName}!`, 'info');
     }
@@ -121,7 +122,7 @@ export const AiAssistantPage = () => {
     setIsGenerating(true);
     setDraftStatus('draft');
     try {
-      const res = await mockClinicalNoteService.generateAiDraft(promptType, {
+      const res = await apiClinicalNoteService.generateAiDraft(promptType, {
         patientName,
         complaints,
         painLocations: ['Neck', 'Lower Back', 'Left Ankle']
@@ -179,14 +180,14 @@ export const AiAssistantPage = () => {
 
     try {
       // Save directly to live backend database clinical_notes table!
-      await mockClinicalNoteService.createNote({
+      await apiClinicalNoteService.createNote({
         patientId: 'pat-001',
         patientName: targetDraft.patient,
         caseId: 'case-001',
         providerId: targetProviderId,
         providerName: targetProviderName,
         type: 'AI_ASSISTED_SOAP',
-        title: `AI Note: ${targetDraft.type} â€” ${new Date().toLocaleDateString()}`,
+        title: `AI Note: ${targetDraft.type} - ${new Date().toLocaleDateString()}`,
         author: targetDocName,
         signedBy: targetDocName,
         content: {
@@ -208,10 +209,9 @@ export const AiAssistantPage = () => {
     }
   };
 
-
   const handleReject = (draftId) => {
     setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: 'Rejected' } : d));
-    addToast('Draft rejected â€” returned for revision', 'error');
+    addToast('Draft rejected - returned for revision', 'error');
     setSelectedDraft(null);
     setDoctorNotes('');
   };

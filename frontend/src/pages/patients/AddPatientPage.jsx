@@ -1,6 +1,6 @@
-﻿// src/pages/patients/AddPatientPage.jsx
+// src/pages/patients/AddPatientPage.jsx
 import React, { useState } from 'react';
-import { mockPatientService } from '../../services/mock/mockPatientService';
+import { apiPatientService } from '../../services/api/apiPatientService';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -112,62 +112,62 @@ const INITIAL_FORM_DATA = {
   middleName: '',
   lastName: '',
   suffix: '',
-  dob: '1988-06-20',
-  sex: 'M',
+  dob: '',
+  sex: '',
   maritalStatus: 'SINGLE',
-  ssn: '***-**-1234',
-  driversLicense: 'TX-8921820',
+  ssn: '',
+  driversLicense: '',
   driversLicenseState: 'TX',
   language: 'English',
   ethnicity: 'Non-Hispanic',
-  employmentStatus: 'Employed Full-Time',
-  employerName: 'ABC Logistics & Transport',
+  employmentStatus: '',
+  employerName: '',
   
   // 2. Contact & Address & Insurance
-  phone: '713-555-0199',
-  altPhone: '713-555-0100',
-  email: 'patient@example.test',
+  phone: '',
+  altPhone: '',
+  email: '',
   communicationPref: 'SMS',
   address: {
-    street: '10101 Harwin Dr.',
-    suite: 'Suite 200',
-    city: 'Houston',
+    street: '',
+    suite: '',
+    city: '',
     state: 'TX',
-    zipCode: '77036'
+    zipCode: ''
   },
-  emergencyContactName: 'Jane Doe',
-  emergencyContactRelation: 'Spouse',
-  emergencyContactPhone: '713-555-0102',
+  emergencyContactName: '',
+  emergencyContactRelation: '',
+  emergencyContactPhone: '',
   insuranceType: 'Auto Accident / Third-Party PIP',
-  primaryInsuranceCompany: 'Geico Auto Insurance',
-  primaryPolicyNumber: 'POL-TX-9921',
-  primaryGroupNumber: 'GRP-1002',
-  primaryInsuranceMemberId: 'MBR-88219',
-  policyHolderName: 'Self',
-  policyHolderDob: '1988-06-20',
-  insuranceAdjusterName: 'Robert Vance',
-  insuranceAdjusterPhone: '800-555-0199 ext 402',
+  primaryInsuranceCompany: '',
+  primaryPolicyNumber: '',
+  primaryGroupNumber: '',
+  primaryInsuranceMemberId: '',
+  policyHolderName: '',
+  policyHolderDob: '',
+  insuranceAdjusterName: '',
+  insuranceAdjusterPhone: '',
   secondaryInsuranceCompany: '',
   secondaryPolicyNumber: '',
 
   // 3. Practice Providers & Referrals
   assignedProviderIds: ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'],
-  referringAttorney: 'Davis & Associates Injury Law Group',
-  attorneyCaseManager: 'Maria Gonzalez (713-555-0300)',
-  referringProvider: 'Dr. Anthony Nguyen',
-  referringProviderNpi: '1982736451',
-  primaryCareProvider: 'Dr. Sarah Mitchell (Memorial Hermann)',
+  referringAttorney: '',
+  attorneyCaseManager: '',
+  referringProvider: '',
+  referringProviderNpi: '',
+  primaryCareProvider: '',
 
   // 4. Medical, Allergies & Clinical History
-  knownAllergies: 'NKDA (No Known Drug Allergies)',
-  allergyReactionSeverity: 'None / NKDA',
-  currentMedications: 'Ibuprofen 600mg TID PRN for neck pain, Cyclobenzaprine 10mg QHS',
-  pastMedicalHistory: 'Non-contributory prior to MVA. No prior spine surgeries.',
-  selectedInjuryAreas: ['Neck / Cervical Spine', 'Lower Back / Lumbar', 'Whiplash / Myofascial Pain'],
-  accidentDate: '2026-01-15',
-  mechanismOfInjury: 'Motor Vehicle Collision - Driver',
-  patientNotes: 'New MVA injury intake. Patient was restrained driver rear-ended at red light. Referred by attorney lien for comprehensive 4-provider care.',
-  hipaaConsentSigned: true
+  knownAllergies: '',
+  allergyReactionSeverity: '',
+  currentMedications: '',
+  pastMedicalHistory: '',
+  selectedInjuryAreas: [],
+  accidentDate: '',
+  mechanismOfInjury: '',
+  patientNotes: '',
+  hipaaConsentSigned: false
 };
 
 export const AddPatientPage = () => {
@@ -335,8 +335,8 @@ export const AddPatientPage = () => {
 
     setIsLoading(true);
     try {
-      const created = await mockPatientService.createPatient(formData);
-      addToast(`Patient ${created.firstName} ${created.lastName} registered successfully!`, 'success');
+      const created = await apiPatientService.createPatient(formData);
+      addToast(`Patient ${created.firstName} ${created.lastName} registered successfully in database!`, 'success');
       navigate(`/patients/${created.id}/profile`);
     } catch (err) {
       console.error('Failed to register patient:', err);
@@ -512,14 +512,24 @@ export const AddPatientPage = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className={labelCls}>Social Security Number (SSN)</label>
+                  <label className={labelCls}>
+                    Social Security Number (SSN)
+                    <span className="text-[10px] text-slate-400 font-normal ml-1">(Optional / 9 digits)</span>
+                  </label>
                   <input
-                    className={inputCls()}
+                    className={inputCls(errors.ssn)}
                     maxLength={11}
                     value={formData.ssn}
-                    onChange={e => set('ssn', e.target.value)}
-                    placeholder="***-**-1234"
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                      let formatted = digits;
+                      if (digits.length > 5) formatted = `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+                      else if (digits.length > 3) formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+                      set('ssn', formatted);
+                    }}
+                    placeholder="XXX-XX-XXXX"
                   />
+                  {errors.ssn && <p className="text-[10px] text-rose-600 mt-0.5">{errors.ssn}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Driver's License #</label>

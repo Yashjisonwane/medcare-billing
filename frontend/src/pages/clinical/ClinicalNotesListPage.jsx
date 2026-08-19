@@ -1,6 +1,6 @@
 // src/pages/clinical/ClinicalNotesListPage.jsx
 import React, { useEffect, useState, useMemo } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar, Search, Filter, Stethoscope } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CounselorSessionModal } from '../../components/modals/CounselorSessionModal';
@@ -13,7 +13,10 @@ export const ClinicalNotesListPage = () => {
   const navigate = useNavigate();
 
   const loadNotes = () => {
-    mockClinicalNoteService.getNotes().then(res => setNotes(res || [])).catch(() => {});
+    apiClinicalNoteService.getNotes().then(res => {
+      const raw = Array.isArray(res) ? res : (res?.notes || []);
+      setNotes(raw);
+    }).catch(() => {});
   };
 
   useEffect(() => {

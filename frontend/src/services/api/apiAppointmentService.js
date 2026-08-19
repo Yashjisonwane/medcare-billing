@@ -1,6 +1,6 @@
 // src/services/api/apiAppointmentService.js
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
 export const apiAppointmentService = {
   getAllAppointments: async (params = {}) => {

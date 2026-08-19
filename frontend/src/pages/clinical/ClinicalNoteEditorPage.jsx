@@ -1,8 +1,8 @@
 // src/pages/clinical/ClinicalNoteEditorPage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
+import { apiPatientService } from '../../services/api/apiPatientService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -45,11 +45,12 @@ export const ClinicalNoteEditorPage = () => {
   const isNew = !id || id === 'new';
 
   useEffect(() => {
-    mockPatientService.getPatients().then(res => {
-      if (res && res.length > 0) {
-        setPatients(res);
+    apiPatientService.getPatients().then(res => {
+      const raw = Array.isArray(res) ? res : (res?.patients || []);
+      if (raw && raw.length > 0) {
+        setPatients(raw);
         if (isNew) {
-          const found = res.find(p => p.id === queryPatientId) || res[0];
+          const found = raw.find(p => p.id === queryPatientId) || raw[0];
           setFormData(prev => ({
             ...prev,
             patientId: found.id,
@@ -59,24 +60,21 @@ export const ClinicalNoteEditorPage = () => {
       }
     }).catch(() => {});
 
-    mockCaseService.getCases().then(res => {
-      if (res && res.length > 0) {
-        setCases(res);
+    apiCaseService.getCases().then(res => {
+      const raw = Array.isArray(res) ? res : (res?.cases || []);
+      if (raw && raw.length > 0) {
+        setCases(raw);
       }
     }).catch(() => {});
 
     if (!isNew) {
-      mockClinicalNoteService.getNoteById(id).then(res => {
+      apiClinicalNoteService.getNoteById(id).then(res => {
         if (res) {
           setNote(res);
-        } else {
-          // Fallback to note fixture
-          mockClinicalNoteService.getNotes().then(all => {
-            const match = all.find(n => n.id === id) || all[0];
-            setNote(match);
-          });
         }
-      }).catch(() => {});
+      }).catch(() => {
+        addToast('Failed to load note details from backend.', 'error');
+      });
     }
   }, [id, isNew, queryPatientId]);
 
@@ -121,11 +119,12 @@ export const ClinicalNoteEditorPage = () => {
         }
       };
 
-      const createdNote = await mockClinicalNoteService.createNote(newNoteData);
+      const createdNote = await apiClinicalNoteService.createNote(newNoteData);
       setNote(createdNote);
-      addToast('Clinical note created & logged to patient chart!', 'success');
+      addToast('Clinical note created & logged to database!', 'success');
       navigate(`/clinical-notes/${createdNote.id}`);
     } catch (err) {
+      console.error('Save note error:', err);
       addToast('Failed to save clinical note', 'error');
     } finally {
       setIsSaving(false);
@@ -136,15 +135,16 @@ export const ClinicalNoteEditorPage = () => {
     setIsSigning(true);
     try {
       if (!note || !note.id) return;
-      const updated = await mockClinicalNoteService.signNote(
+      const updated = await apiClinicalNoteService.signNote(
         note.id,
         'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=200',
         currentUser?.name || 'Dr. Segun Adeoye'
       );
       setNote(updated);
       setSignatureModalOpen(false);
-      addToast('Clinical chart digitally signed & locked permanently!', 'success');
+      addToast('Clinical chart digitally signed & locked in database permanently!', 'success');
     } catch (err) {
+      console.error('Sign error:', err);
       addToast('Failed to sign chart', 'error');
     } finally {
       setIsSigning(false);
@@ -155,11 +155,12 @@ export const ClinicalNoteEditorPage = () => {
     e.preventDefault();
     if (!addendumText.trim()) return;
     try {
-      const updated = await mockClinicalNoteService.amendNote(note.id, addendumText, currentUser?.name || 'Clinician');
+      const updated = await apiClinicalNoteService.amendNote(note.id, addendumText, currentUser?.name || 'Clinician');
       setNote(updated);
       setAddendumText('');
-      addToast('Addendum recorded permanently!', 'success');
+      addToast('Addendum recorded permanently in database!', 'success');
     } catch (err) {
+      console.error('Addendum error:', err);
       addToast('Failed to record addendum', 'error');
     }
   };

@@ -1,4 +1,4 @@
-﻿// src/store/authStore.js
+// src/store/authStore.js
 import { create } from 'zustand';
 import { apiAuthService } from '../services/api/apiAuthService';
 import { DEMO_ACCOUNTS } from '../constants/rolePermissions';
@@ -76,7 +76,7 @@ export const useAuthStore = create((set, get) => ({
 
     try {
       const token = localStorage.getItem(TOKEN_KEY);
-      const res = await fetch('http://localhost:5001/v1/auth/profile', {
+      const res = await fetch('http://localhost:5000/v1/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

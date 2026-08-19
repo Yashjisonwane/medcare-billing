@@ -1,4 +1,4 @@
-﻿const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
 
 export const apiClinicalNoteService = {
   async getNotes(filters = {}) {
@@ -24,7 +24,10 @@ export const apiClinicalNoteService = {
     return res.json();
   },
 
-  async signNote(id, payload) {
+  async signNote(id, signatureUrl, authorName) {
+    const payload = (typeof signatureUrl === 'object' && signatureUrl !== null)
+      ? signatureUrl
+      : { signatureUrl, authorName };
     const res = await fetch(`${API_BASE}/clinical-notes/${id}/sign`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -34,13 +37,26 @@ export const apiClinicalNoteService = {
     return res.json();
   },
 
-  async amendNote(id, payload) {
+  async amendNote(id, addendumText, authorName) {
+    const payload = (typeof addendumText === 'object' && addendumText !== null)
+      ? addendumText
+      : { addendumText, authorName };
     const res = await fetch(`${API_BASE}/clinical-notes/${id}/amend`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error('Failed to amend clinical note');
+    return res.json();
+  },
+
+  async generateAiDraft(promptType, inputData) {
+    const res = await fetch(`${API_BASE}/clinical-notes/ai-suggest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ promptType, inputData })
+    });
+    if (!res.ok) throw new Error('Failed to generate AI draft');
     return res.json();
   }
 };
