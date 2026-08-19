@@ -1,4 +1,4 @@
-﻿// src/pages/patients/PatientListPage.jsx
+// src/pages/patients/PatientListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin } from 'lucide-react';
@@ -103,7 +103,7 @@ export const PatientListPage = () => {
                         {pat.lastName}, {pat.firstName} {pat.middleName || ''}
                       </h3>
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        ID: {pat.patientId || pat.id} â€¢ DOB: {pat.dob} ({pat.sex})
+                        ID: {pat.patientId || pat.id} • DOB: {pat.dob} ({pat.sex})
                       </p>
                     </div>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">

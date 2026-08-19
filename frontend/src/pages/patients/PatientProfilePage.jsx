@@ -1,4 +1,4 @@
-﻿// src/pages/patients/PatientProfilePage.jsx
+// src/pages/patients/PatientProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { mockCaseService } from '../../services/mock/mockCaseService';
@@ -386,7 +386,7 @@ export const PatientProfilePage = () => {
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      <strong className="text-slate-700">{n.providerName}</strong> â€¢ Provider: {n.author} â€¢ Date of Service: {n.date}
+                      <strong className="text-slate-700">{n.providerName}</strong> • Provider: {n.author} • Date of Service: {n.date}
                     </p>
                   </div>
 
@@ -524,7 +524,7 @@ export const PatientProfilePage = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">{previewDoc.name}</h3>
-                  <p className="text-[11px] text-slate-500 font-mono">Attachment ID: {previewDoc.id} â€¢ {previewDoc.providerName || 'Clinic File'}</p>
+                  <p className="text-[11px] text-slate-500 font-mono">Attachment ID: {previewDoc.id} • {previewDoc.providerName || 'Clinic File'}</p>
                 </div>
               </div>
               <button onClick={() => setPreviewDoc(null)} className="p-2 hover:bg-slate-200 rounded-xl text-slate-500 transition cursor-pointer">
@@ -557,7 +557,7 @@ export const PatientProfilePage = () => {
             </div>
 
             <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">Page 1 of 1 â€¢ 256-bit HIPAA Storage</span>
+              <span className="text-xs text-slate-500 font-mono">Page 1 of 1 • 256-bit HIPAA Storage</span>
               <button
                 type="button"
                 onClick={() => setPreviewDoc(null)}

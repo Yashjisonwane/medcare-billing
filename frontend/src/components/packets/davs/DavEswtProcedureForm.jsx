@@ -1,4 +1,4 @@
-﻿// src/components/packets/davs/DavEswtProcedureForm.jsx
+// src/components/packets/davs/DavEswtProcedureForm.jsx
 import React, { useState } from 'react';
 
 /**
@@ -128,7 +128,7 @@ export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, bla
               </div>
               <div className="pt-1 text-[10px]">
                 <span className="font-bold block">BLT Cream Applied:</span>
-                <span className="font-bold text-emerald-800">YES [âœ“] / NO [ ]</span>
+                <span className="font-bold text-emerald-800">YES [✓] / NO [ ]</span>
               </div>
             </div>
           </div>
@@ -142,31 +142,31 @@ export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, bla
             <div className="space-y-1 text-xs font-mono">
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>NAD</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>AAO X3</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A1</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A2</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A3</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A4</span>
-                <span className="text-slate-300">â€”</span>
+                <span className="text-slate-300">-</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Normal reaction</span>
-                <span className="font-bold text-emerald-700 font-sans">âœ“</span>
+                <span className="font-bold text-emerald-700 font-sans">✓</span>
               </div>
             </div>
           </div>

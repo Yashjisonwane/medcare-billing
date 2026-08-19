@@ -844,7 +844,7 @@ export const PatientSelfBookingPage = () => {
                     </div>
                   </div>
                   <span className="px-2.5 py-1 bg-emerald-200/80 text-emerald-900 text-[10px] font-extrabold rounded-lg font-mono">
-                    SENT âœ“
+                    SENT ✓
                   </span>
                 </div>
 
@@ -862,7 +862,7 @@ export const PatientSelfBookingPage = () => {
                     </div>
                   </div>
                   <span className="px-2.5 py-1 bg-teal-200/80 text-teal-900 text-[10px] font-extrabold rounded-lg font-mono">
-                    SENT âœ“
+                    SENT ✓
                   </span>
                 </div>
               </div>

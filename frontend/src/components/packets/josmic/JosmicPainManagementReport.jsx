@@ -1,10 +1,10 @@
-﻿// src/components/packets/josmic/JosmicPainManagementReport.jsx
+// src/components/packets/josmic/JosmicPainManagementReport.jsx
 import React from 'react';
 
 const CB = ({ checked = false, label, blankMode }) => (
   <span className="inline-flex items-center gap-1 mr-3 text-[11px]">
     <span className="w-3.5 h-3.5 border border-slate-600 inline-flex items-center justify-center text-[10px] font-bold bg-white flex-shrink-0">
-      {!blankMode && checked ? 'âœ“' : ''}
+      {!blankMode && checked ? '✓' : ''}
     </span>
     {label}
   </span>

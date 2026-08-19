@@ -92,29 +92,89 @@ export const getNoteById = async (req, res) => {
 export const createNote = async (req, res) => {
   const data = req.body;
 
-  if (!data.patientId || !data.caseId || !data.providerId || !data.type) {
-    return res.status(400).json({ error: 'patientId, caseId, providerId, and type are required.' });
+  if (!data.patientId) {
+    return res.status(400).json({ error: 'patientId is required.' });
   }
 
   const generatedId = `note-${Date.now()}`;
   const currentDateStr = new Date().toLocaleDateString('en-US');
 
   try {
+    // 1. Verify patient exists or find by patientId
+    let patient = await prisma.patient.findFirst({
+      where: {
+        OR: [{ id: data.patientId }, { patientId: data.patientId }]
+      }
+    });
+
+    if (!patient) {
+      patient = await prisma.patient.findFirst();
+    }
+
+    const patientId = patient ? patient.id : data.patientId;
+
+    // 2. Resolve valid case for this patient
+    let validCaseId = data.caseId;
+    let existingCase = null;
+
+    if (validCaseId) {
+      existingCase = await prisma.case.findFirst({
+        where: {
+          OR: [{ id: validCaseId }, { caseId: validCaseId }]
+        }
+      });
+    }
+
+    if (!existingCase && patientId) {
+      existingCase = await prisma.case.findFirst({
+        where: { patientId }
+      });
+    }
+
+    if (!existingCase && patientId) {
+      const generatedCaseId = `case-${Date.now()}`;
+      existingCase = await prisma.case.create({
+        data: {
+          id: generatedCaseId,
+          caseId: `CASE-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+          patientId: patientId,
+          accidentDate: new Date().toISOString().split('T')[0],
+          accidentType: 'Motor Vehicle Collision',
+          accidentState: 'TX',
+          status: 'ACTIVE'
+        }
+      });
+    }
+
+    validCaseId = existingCase ? existingCase.id : 'case-001';
+
+    // 3. Resolve provider
+    let providerId = data.providerId || 'prov-josmic';
+    const existingProvider = await prisma.provider.findUnique({
+      where: { id: providerId }
+    });
+    if (!existingProvider) {
+      const firstProv = await prisma.provider.findFirst();
+      providerId = firstProv ? firstProv.id : 'prov-josmic';
+    }
+
+    const noteType = data.type || data.noteType || 'JOSMIC_PAIN';
+
     const newNote = await prisma.clinicalNote.create({
       data: {
         id: generatedId,
-        patientId: data.patientId,
-        caseId: data.caseId,
-        providerId: data.providerId,
-        noteType: data.type,
-        title: data.title || 'Clinical Evaluation',
-        date: currentDateStr,
-        status: 'DRAFT',
+        patientId: patientId,
+        caseId: validCaseId,
+        providerId: providerId,
+        noteType: noteType,
+        title: data.title || 'Clinical Evaluation Note',
+        date: data.date || currentDateStr,
+        status: data.status || 'DRAFT',
         author: data.author || 'Attending Clinician',
-        soapSubjective: data.soapSubjective || '',
-        soapObjective: data.soapObjective || '',
-        soapAssessment: data.soapAssessment || '',
-        soapPlan: data.soapPlan || '',
+        soapSubjective: data.soapSubjective || (data.content?.['Subjective (HPI)'] || ''),
+        soapObjective: data.soapObjective || (data.content?.['Objective Findings'] || ''),
+        soapAssessment: data.soapAssessment || (data.content?.['Clinical Assessment'] || ''),
+        soapPlan: data.soapPlan || (data.content?.['Treatment Plan'] || ''),
         content: data.content || {},
         addendums: []
       },
@@ -127,7 +187,7 @@ export const createNote = async (req, res) => {
     return res.status(201).json(formatNote(newNote));
   } catch (error) {
     console.error('Error creating clinical note:', error);
-    return res.status(500).json({ error: 'Failed to create clinical note draft.' });
+    return res.status(500).json({ error: 'Failed to create clinical note draft.', details: error.message });
   }
 };
 

@@ -430,7 +430,7 @@ export const AddPatientPage = () => {
                     required
                     className={inputCls(errors.firstName)}
                     value={formData.firstName}
-                    onChange={e => set('firstName', e.target.value)}
+                    onChange={e => set('firstName', e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                     placeholder="e.g. John"
                   />
                   {errors.firstName && <p className="text-[10px] text-rose-500 mt-0.5">{errors.firstName}</p>}
@@ -440,7 +440,7 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.middleName}
-                    onChange={e => set('middleName', e.target.value)}
+                    onChange={e => set('middleName', e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                     placeholder="e.g. Robert"
                   />
                 </div>
@@ -450,7 +450,7 @@ export const AddPatientPage = () => {
                     required
                     className={inputCls(errors.lastName)}
                     value={formData.lastName}
-                    onChange={e => set('lastName', e.target.value)}
+                    onChange={e => set('lastName', e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                     placeholder="e.g. Smith"
                   />
                   {errors.lastName && <p className="text-[10px] text-rose-500 mt-0.5">{errors.lastName}</p>}
@@ -620,9 +620,9 @@ export const AddPatientPage = () => {
             {/* Section 1: Contact Numbers */}
             <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-3">
               <h3 className={sectionHeaderCls}>
-                <Phone className="w-4 h-4 text-teal-600" /> Contact Numbers &amp; Communication
+                <Phone className="w-4 h-4 text-teal-600" /> Contact Numbers &amp; Email
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className={labelCls}>Primary Mobile Phone *</label>
                   <input
@@ -630,8 +630,14 @@ export const AddPatientPage = () => {
                     required
                     className={inputCls(errors.phone)}
                     value={formData.phone}
-                    onChange={e => set('phone', e.target.value)}
-                    placeholder="713-555-0199"
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      let formatted = digits;
+                      if (digits.length > 6) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                      else if (digits.length > 3) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                      set('phone', formatted);
+                    }}
+                    placeholder="(713) 555-0199"
                   />
                   {errors.phone && <p className="text-[10px] text-rose-500 mt-0.5">{errors.phone}</p>}
                 </div>
@@ -641,8 +647,14 @@ export const AddPatientPage = () => {
                     type="tel"
                     className={inputCls()}
                     value={formData.altPhone}
-                    onChange={e => set('altPhone', e.target.value)}
-                    placeholder="713-555-0100"
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      let formatted = digits;
+                      if (digits.length > 6) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                      else if (digits.length > 3) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                      set('altPhone', formatted);
+                    }}
+                    placeholder="(713) 555-0100"
                   />
                 </div>
                 <div>
@@ -652,19 +664,10 @@ export const AddPatientPage = () => {
                     required
                     className={inputCls(errors.email)}
                     value={formData.email}
-                    onChange={e => set('email', e.target.value)}
+                    onChange={e => set('email', e.target.value.trim())}
                     placeholder="patient@example.test"
                   />
                   {errors.email && <p className="text-[10px] text-rose-500 mt-0.5">{errors.email}</p>}
-                </div>
-                <div>
-                  <label className={labelCls}>Communication Preference</label>
-                  <select className={inputCls()} value={formData.communicationPref} onChange={e => set('communicationPref', e.target.value)}>
-                    <option value="SMS">SMS Text Message</option>
-                    <option value="EMAIL">Email Notification</option>
-                    <option value="PHONE">Phone Call</option>
-                    <option value="PORTAL">Patient Portal</option>
-                  </select>
                 </div>
               </div>
             </div>
@@ -704,7 +707,7 @@ export const AddPatientPage = () => {
                     required
                     className={inputCls(errors.address_city)}
                     value={formData.address.city}
-                    onChange={e => setAddr('city', e.target.value)}
+                    onChange={e => setAddr('city', e.target.value.replace(/[^a-zA-Z\s.-]/g, ''))}
                     placeholder="Houston"
                   />
                   {errors.address_city && <p className="text-[10px] text-rose-500 mt-0.5">{errors.address_city}</p>}
@@ -714,7 +717,7 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.address.state}
-                    onChange={e => setAddr('state', e.target.value)}
+                    onChange={e => setAddr('state', e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2))}
                     placeholder="TX"
                   />
                 </div>
@@ -722,8 +725,9 @@ export const AddPatientPage = () => {
                   <label className={labelCls}>Zip Code</label>
                   <input
                     className={inputCls()}
+                    maxLength={5}
                     value={formData.address.zipCode}
-                    onChange={e => setAddr('zipCode', e.target.value)}
+                    onChange={e => setAddr('zipCode', e.target.value.replace(/\D/g, '').slice(0, 5))}
                     placeholder="77036"
                   />
                 </div>
@@ -790,17 +794,24 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.insuranceAdjusterName}
-                    onChange={e => set('insuranceAdjusterName', e.target.value)}
+                    onChange={e => set('insuranceAdjusterName', e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                     placeholder="e.g. Robert Vance"
                   />
                 </div>
                 <div>
                   <label className={labelCls}>Adjuster Phone / Contact</label>
                   <input
+                    type="tel"
                     className={inputCls()}
                     value={formData.insuranceAdjusterPhone}
-                    onChange={e => set('insuranceAdjusterPhone', e.target.value)}
-                    placeholder="800-555-0199"
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      let formatted = digits;
+                      if (digits.length > 6) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                      else if (digits.length > 3) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                      set('insuranceAdjusterPhone', formatted);
+                    }}
+                    placeholder="(800) 555-0199"
                   />
                 </div>
               </div>
@@ -838,7 +849,7 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.emergencyContactName}
-                    onChange={e => set('emergencyContactName', e.target.value)}
+                    onChange={e => set('emergencyContactName', e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                     placeholder="Jane Doe"
                   />
                 </div>
@@ -864,8 +875,14 @@ export const AddPatientPage = () => {
                     type="tel"
                     className={inputCls()}
                     value={formData.emergencyContactPhone}
-                    onChange={e => set('emergencyContactPhone', e.target.value)}
-                    placeholder="713-555-0102"
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      let formatted = digits;
+                      if (digits.length > 6) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                      else if (digits.length > 3) formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                      set('emergencyContactPhone', formatted);
+                    }}
+                    placeholder="(713) 555-0102"
                   />
                 </div>
               </div>
@@ -970,7 +987,7 @@ export const AddPatientPage = () => {
                 </span>
                 <span className="text-teal-700 font-semibold">
                   {formData.assignedProviderIds.length === 4
-                    ? 'âœ“ Complete Practice Coverage'
+                    ? '✓ Complete Practice Coverage'
                     : `${formData.assignedProviderIds.length} clinic(s) assigned`}
                 </span>
               </div>
@@ -1132,7 +1149,7 @@ export const AddPatientPage = () => {
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
-                        {isSelected ? 'âœ“ ' : '+ '} {area}
+                        {isSelected ? '✓ ' : '+ '} {area}
                       </button>
                     );
                   })}

@@ -1,4 +1,4 @@
-﻿// src/pages/cms/CmsPreviewPage.jsx
+// src/pages/cms/CmsPreviewPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
@@ -141,7 +141,7 @@ export const CmsPreviewPage = () => {
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full font-bold text-xs shrink-0 self-start sm:self-auto">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>âœ“ Ready to File &bull; Generated &amp; Validated</span>
+            <span>✓ Ready to File &bull; Generated &amp; Validated</span>
           </div>
         </div>
 

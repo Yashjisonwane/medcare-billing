@@ -1,4 +1,4 @@
-﻿// src/components/modals/EditProfileModal.jsx
+// src/components/modals/EditProfileModal.jsx
 import React, { useState, useRef } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -88,7 +88,7 @@ export const EditProfileModal = ({ isOpen, onClose }) => {
               <User className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-slate-900">Edit Super Admin Profile</h3>
+              <h3 className="text-sm font-black text-slate-900">{currentUser?.role ? `Edit ${currentUser.role} Profile` : 'Edit Profile'}</h3>
               <p className="text-[10px] text-slate-500">Update your display name, title and avatar photo</p>
             </div>
           </div>

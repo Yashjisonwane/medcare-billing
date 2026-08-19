@@ -168,7 +168,7 @@ model ClinicalNote {
   author                String?   @db.VarChar(100)
   signedBy              String?   @map("signed_by") @db.VarChar(100)
   signedAt              DateTime? @map("signed_at")
-  signatureUrl          String?   @map("signature_url") @db.VarChar(255)
+  signatureUrl          String?   @map("signature_url") @db.MediumText
   soapSubjective        String?   @map("soap_subjective") @db.Text
   soapObjective         String?   @map("soap_objective") @db.Text
   soapAssessment        String?   @map("soap_assessment") @db.Text

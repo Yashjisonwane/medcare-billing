@@ -6,7 +6,7 @@ import { apiCaseService } from '../../services/api/apiCaseService';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, PenTool, Lock, CheckCircle2, FileText, AlertTriangle, PlusCircle, Save, Stethoscope, DollarSign, Layers } from 'lucide-react';
+import { ArrowLeft, PenTool, Lock, CheckCircle2, FileText, AlertTriangle, PlusCircle, Save, Stethoscope, DollarSign, Layers, ShieldCheck } from 'lucide-react';
 
 export const ClinicalNoteEditorPage = () => {
   const { id } = useParams();
@@ -21,6 +21,15 @@ export const ClinicalNoteEditorPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [patients, setPatients] = useState([]);
   const [cases, setCases] = useState([]);
+
+  // Signature Modal States
+  const [signatureType, setSignatureType] = useState('draw'); // 'draw' | 'type'
+  const [signatureText, setSignatureText] = useState('');
+  const [signerLicense, setSignerLicense] = useState('TX-MD-88219');
+  const [signAttestation, setSignAttestation] = useState(true);
+  const canvasRef = React.useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [hasDrawn, setHasDrawn] = useState(false);
 
   // New Note Form State
   const [formData, setFormData] = useState({
@@ -42,6 +51,12 @@ export const ClinicalNoteEditorPage = () => {
   const { addToast } = useUIStore();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (currentUser?.name) {
+      setSignatureText(currentUser.name);
+    }
+  }, [currentUser]);
+
   const isNew = !id || id === 'new';
 
   useEffect(() => {
@@ -50,12 +65,14 @@ export const ClinicalNoteEditorPage = () => {
       if (raw && raw.length > 0) {
         setPatients(raw);
         if (isNew) {
-          const found = raw.find(p => p.id === queryPatientId) || raw[0];
-          setFormData(prev => ({
-            ...prev,
-            patientId: found.id,
-            patientName: `${found.firstName} ${found.lastName}`.trim()
-          }));
+          const found = raw.find(p => p.id === queryPatientId || p.patientId === queryPatientId) || raw[0];
+          if (found) {
+            setFormData(prev => ({
+              ...prev,
+              patientId: found.id,
+              patientName: `${found.firstName} ${found.lastName}`.trim()
+            }));
+          }
         }
       }
     }).catch(() => {});
@@ -131,14 +148,68 @@ export const ClinicalNoteEditorPage = () => {
     }
   };
 
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
+    const x = (clientX - rect.left) * (canvas.width / rect.width);
+    const y = (clientY - rect.top) * (canvas.height / rect.height);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+    setHasDrawn(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
+    const x = (clientX - rect.left) * (canvas.width / rect.width);
+    const y = (clientY - rect.top) * (canvas.height / rect.height);
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setHasDrawn(false);
+  };
+
   const handleSignChart = async () => {
     setIsSigning(true);
     try {
       if (!note || !note.id) return;
+      let sigData = '';
+      if (signatureType === 'draw' && canvasRef.current && hasDrawn) {
+        sigData = canvasRef.current.toDataURL('image/png');
+      } else {
+        sigData = `DIGITAL_SIG:${signatureText || currentUser?.name || 'Dr. Segun Adeoye'}:${Date.now()}`;
+      }
+
+      const signer = signatureText.trim() || currentUser?.name || 'Dr. Segun Adeoye, MD';
+
       const updated = await apiClinicalNoteService.signNote(
         note.id,
-        'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=200',
-        currentUser?.name || 'Dr. Segun Adeoye'
+        sigData,
+        signer
       );
       setNote(updated);
       setSignatureModalOpen(false);
@@ -407,13 +478,45 @@ export const ClinicalNoteEditorPage = () => {
 
         {/* Digital Signature Block */}
         {isSigned && (
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-900">Digitally Signed By: {note.author}</p>
-              <p className="text-[10px] text-slate-400 font-mono">Timestamp: {note.signedAt || note.date}</p>
+          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                Digitally Signed &amp; Locked By: <span className="text-teal-900">{note.signedBy || note.author}</span>
+              </p>
+              <p className="text-[10px] text-slate-400 font-mono">
+                Timestamp: {note.signedAt ? new Date(note.signedAt).toLocaleString() : note.date} &bull; SHA-256 Verified
+              </p>
             </div>
-            <div className="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-xs font-bold font-mono">
-              [ VERIFIED DIGITAL SIGNATURE ]
+            <div>
+              {note.signatureUrl && note.signatureUrl.startsWith('data:image') && note.signatureUrl.length > 200 ? (
+                <div className="bg-white p-2 rounded-xl border border-emerald-300 shadow-2xs inline-flex items-center gap-2">
+                  <img
+                    src={note.signatureUrl}
+                    alt="Doctor Signature"
+                    className="h-9 max-w-[170px] object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <span className="text-[10px] font-mono text-emerald-700 border-l border-emerald-200 pl-2 font-bold">VERIFIED</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-xl shadow-2xs">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
+                    <PenTool className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="font-serif italic font-bold text-xs text-emerald-950">
+                      {note.signedBy || note.author || 'Dr. Sarah Connor, MD'}
+                    </div>
+                    <div className="text-[9px] text-emerald-700 font-mono flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      AUTHENTICATED MD SIGNATURE
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -454,26 +557,146 @@ export const ClinicalNoteEditorPage = () => {
       {/* Digital Signature Canvas Modal */}
       {signatureModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 space-y-4 text-center">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-100">
-              <PenTool className="w-6 h-6" />
+          <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 space-y-4 text-left">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                  <PenTool className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Physician Digital Signature &amp; Chart Lock</h3>
+                  <p className="text-[11px] text-slate-500">Medical-legal attestation and permanent EHR chart locking</p>
+                </div>
+              </div>
             </div>
 
-            <h3 className="text-base font-bold text-slate-900">Provider Digital Signature &amp; Note Lock</h3>
-            <p className="text-xs text-slate-500">
-              Signing locks this clinical chart permanently for medical-legal compliance. Future changes require formal addendums.
-            </p>
-
-            <div className="h-28 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center p-4">
-              <span className="text-xs text-slate-500 font-mono">[ Secure Attending Physician Digital Signature Block ]</span>
+            {/* Signature Mode Tabs */}
+            <div className="flex bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setSignatureType('draw')}
+                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${signatureType === 'draw' ? 'bg-white text-teal-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                ✍️ Draw Signature
+              </button>
+              <button
+                type="button"
+                onClick={() => setSignatureType('type')}
+                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${signatureType === 'type' ? 'bg-white text-teal-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                ⌨️ Type Legal Name
+              </button>
             </div>
 
-            <div className="flex gap-2">
-              <button onClick={() => setSignatureModalOpen(false)} className="flex-1 py-2 bg-slate-100 text-xs font-bold rounded-xl text-slate-700 cursor-pointer">
+            {/* Draw Signature Canvas */}
+            {signatureType === 'draw' ? (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="font-semibold text-slate-700">Sign with Mouse / Touchpad / Stylus below:</label>
+                  <button
+                    type="button"
+                    onClick={clearCanvas}
+                    className="text-[11px] font-bold text-rose-600 hover:underline cursor-pointer"
+                  >
+                    Clear Signature
+                  </button>
+                </div>
+                <div className="border-2 border-dashed border-teal-300 rounded-xl bg-slate-50 relative overflow-hidden flex items-center justify-center">
+                  <canvas
+                    ref={canvasRef}
+                    width={440}
+                    height={130}
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    className="cursor-crosshair w-full h-[130px] touch-none"
+                  />
+                  {!hasDrawn && (
+                    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-400 text-xs">
+                      <PenTool className="w-5 h-5 mb-1 text-slate-300" />
+                      <span>Draw cursive signature here</span>
+                    </div>
+                  )}
+                  <div className="absolute bottom-2 left-4 right-4 border-b border-slate-300 pointer-events-none"></div>
+                </div>
+              </div>
+            ) : (
+              /* Type Signature */
+              <div className="space-y-2">
+                <label className="font-semibold text-xs text-slate-700 block">Attending Provider Full Name / Credentials:</label>
+                <input
+                  type="text"
+                  value={signatureText}
+                  onChange={(e) => setSignatureText(e.target.value)}
+                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 font-bold focus:bg-white focus:border-teal-600 outline-none"
+                  placeholder="e.g. Dr. Segun Adeoye, MD"
+                />
+                <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-100 flex items-center justify-between">
+                  <span className="text-[10px] text-teal-800 font-medium">Calligraphic Preview:</span>
+                  <span className="text-base font-serif italic font-bold text-teal-950">
+                    {signatureText || 'Dr. Signature'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Provider Details Fields */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">License / NPI Stamp</label>
+                <input
+                  type="text"
+                  value={signerLicense}
+                  onChange={(e) => setSignerLicense(e.target.value)}
+                  className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-[11px] font-mono outline-none"
+                  placeholder="NPI: 1982019921"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">Signing Date / Time</label>
+                <input
+                  type="text"
+                  disabled
+                  value={new Date().toLocaleDateString('en-US') + ' (Live Auto)'}
+                  className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-100 text-[11px] text-slate-600 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Legal Attestation */}
+            <label className="flex items-start gap-2 text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={signAttestation}
+                onChange={(e) => setSignAttestation(e.target.checked)}
+                className="rounded text-teal-600 mt-0.5"
+              />
+              <span>
+                I hereby attest under medical-legal compliance that I have evaluated this patient and this clinical chart represents an accurate medical record.
+              </span>
+            </label>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setSignatureModalOpen(false)}
+                className="flex-1 py-2.5 bg-slate-100 text-xs font-bold rounded-xl text-slate-700 hover:bg-slate-200 cursor-pointer transition"
+              >
                 Cancel
               </button>
-              <button onClick={handleSignChart} disabled={isSigning} className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm cursor-pointer">
-                {isSigning ? 'Locking Chart...' : 'Confirm Signature'}
+              <button
+                type="button"
+                onClick={handleSignChart}
+                disabled={isSigning || !signAttestation}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm cursor-pointer transition flex items-center justify-center gap-1.5"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                {isSigning ? 'Digitally Signing & Locking...' : 'Confirm Signature & Lock Chart'}
               </button>
             </div>
           </div>

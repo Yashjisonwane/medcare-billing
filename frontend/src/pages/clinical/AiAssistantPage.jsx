@@ -1,6 +1,7 @@
 // src/pages/clinical/AiAssistantPage.jsx
 import React, { useState, useEffect } from 'react';
 import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
+import { apiPatientService } from '../../services/api/apiPatientService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -8,40 +9,12 @@ import { ROLES } from '../../constants/rolePermissions';
 import {
   Brain, Sparkles, AlertTriangle, ArrowLeft, Copy, Check,
   RefreshCw, ClipboardCheck, Lock, Clock, CheckCircle2,
-  XCircle, Eye, Pen, ShieldCheck, UserCheck
+  XCircle, Eye, Pen, ShieldCheck, UserCheck, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// Simulated initial pending AI drafts
-const INITIAL_DRAFTS = [
-  {
-    id: 'draft-001',
-    patient: 'SAMPLE TESTING',
-    type: 'History of Present Illness (HPI)',
-    generatedAt: '2026-08-04 | 09:14 AM',
-    generatedBy: 'Google Gemini 2.5 Flash',
-    status: 'Pending Review',
-    preview: 'Patient presents with chief complaint of neck and low back pain following a rear-end motor vehicle collision on 12/27/2025. Patient reports 8/10 pain severity at onset...',
-  },
-  {
-    id: 'draft-002',
-    patient: 'SAMPLE TESTING',
-    type: 'Assessment & Plan',
-    generatedAt: '2026-08-04 | 09:22 AM',
-    generatedBy: 'Google Gemini 2.5 Flash',
-    status: 'Pending Review',
-    preview: 'Assessment: Cervical strain (S13.4XXA), Lumbar sprain (S33.5XXA), Left ankle contusion (M25.572). Plan: Continue ESWT protocol and HILT therapy sessions...',
-  },
-  {
-    id: 'draft-003',
-    patient: 'DEMO PATIENT 002',
-    type: 'Progress Narrative Summary',
-    generatedAt: '2026-08-03 | 03:45 PM',
-    generatedBy: 'Google Gemini 2.5 Flash',
-    status: 'Approved',
-    preview: 'Patient demonstrates moderate improvement following session 2. VAS pain score reduced from 8/10 to 5/10. Lumbar flexion improved to 65 degrees...',
-  },
-];
+// Initial empty drafts queue - only real generated drafts from database or Gemini
+const INITIAL_DRAFTS = [];
 
 const STATUS_CONFIG = {
   'Pending Review': { color: 'bg-amber-100 text-amber-700 border-amber-300', icon: Clock },
@@ -63,7 +36,9 @@ export const AiAssistantPage = () => {
   const navigate = useNavigate();
   const isDoctor = currentUser?.role === ROLES.DOCTOR;
 
-  // Registered Cases from Database
+  // Registered Patients & Cases from Database
+  const [patientsList, setPatientsList] = useState([]);
+  const [selectedPatientId, setSelectedPatientId] = useState('');
   const [casesList, setCasesList] = useState([]);
   const [selectedCaseId, setSelectedCaseId] = useState('');
 
@@ -71,8 +46,8 @@ export const AiAssistantPage = () => {
   const [selectedClinicianId, setSelectedClinicianId] = useState('usr-doc');
 
   // Draft Generation Inputs
-  const [patientName, setPatientName] = useState('Demo Patient 001');
-  const [complaints, setComplaints] = useState('Neck and low back pain following rear-end auto accident on 12/27/2025');
+  const [patientName, setPatientName] = useState('');
+  const [complaints, setComplaints] = useState('');
   const [promptType, setPromptType] = useState('HPI');
   const [generatedDraft, setGeneratedDraft] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -92,10 +67,45 @@ export const AiAssistantPage = () => {
   const currentClinician = CLINICIANS.find(c => c.id === selectedClinicianId) || CLINICIANS[0];
 
   useEffect(() => {
+    // Load patients from database
+    apiPatientService.getPatients().then(res => {
+      const raw = Array.isArray(res) ? res : (res?.patients || []);
+      if (raw && raw.length > 0) {
+        setPatientsList(raw);
+        const first = raw[0];
+        setSelectedPatientId(first.id);
+        setPatientName(`${first.firstName} ${first.lastName}`.trim());
+        setComplaints(`Neck, shoulder and lumbar stiffness following collision on ${first.createdAt || 'recent date'}`);
+      }
+    }).catch(() => {});
+
+    // Load cases from database
     apiCaseService.getCases().then(res => {
       const raw = Array.isArray(res) ? res : (res?.cases || []);
       if (raw && raw.length > 0) {
         setCasesList(raw);
+      }
+    }).catch(() => {});
+
+    // Load real database drafts
+    apiClinicalNoteService.getNotes().then(res => {
+      const notes = Array.isArray(res) ? res : (res?.notes || []);
+      const draftNotes = notes
+        .filter(n => n.status === 'DRAFT' || n.status === 'UNSIGNED')
+        .map(n => ({
+          id: n.id,
+          patient: n.patientName || `${n.patient?.firstName || ''} ${n.patient?.lastName || ''}`.trim() || 'Accident Patient',
+          type: n.title || 'Clinical Evaluation Note',
+          generatedAt: n.date || 'Database Draft',
+          generatedBy: n.author || 'Clinical Staff',
+          assignedDoctorName: n.author || 'Dr. Segun Adeoye',
+          assignedDoctorTitle: 'Attending Physician',
+          providerId: n.providerId,
+          status: 'Pending Review',
+          preview: n.soapSubjective ? `Subjective: ${n.soapSubjective}\n\nObjective: ${n.soapObjective}\n\nAssessment: ${n.soapAssessment}\n\nPlan: ${n.soapPlan}` : (n.content?.narrative || 'Clinical draft documentation.')
+        }));
+      if (draftNotes.length > 0) {
+        setDrafts(draftNotes);
       }
     }).catch(() => {});
   }, []);
@@ -105,6 +115,17 @@ export const AiAssistantPage = () => {
       setEditableDraftText(generatedDraft.draftText);
     }
   }, [generatedDraft]);
+
+  const handlePatientSelect = (patId) => {
+    setSelectedPatientId(patId);
+    if (!patId) return;
+    const found = patientsList.find(p => p.id === patId || p.patientId === patId);
+    if (found) {
+      setPatientName(`${found.firstName} ${found.lastName}`.trim());
+      setComplaints(`Neck, shoulder and lower back stiffness with reduced range of motion following motor vehicle collision.`);
+      addToast(`Selected patient: ${found.firstName} ${found.lastName}`, 'info');
+    }
+  };
 
   const handleCaseSelect = (caseId) => {
     setSelectedCaseId(caseId);
@@ -259,7 +280,7 @@ export const AiAssistantPage = () => {
             const bulletContent = trimmed.substring(1).trim().replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             return (
               <div key={idx} className="flex items-start gap-2 pl-3">
-                <span className="text-teal-600 font-bold mt-0.5">â€¢</span>
+                <span className="text-teal-600 font-bold mt-0.5">•</span>
                 <span className="text-slate-700" dangerouslySetInnerHTML={{ __html: bulletContent }} />
               </div>
             );
@@ -345,23 +366,43 @@ export const AiAssistantPage = () => {
               <Brain className="w-4 h-4 text-teal-600" /> Structured Clinical Input
             </h2>
 
-            {/* Quick Case Selector */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-teal-600" /> Choose Registered Patient Case (Auto-Fill)
-              </label>
-              <select
-                value={selectedCaseId}
-                onChange={e => handleCaseSelect(e.target.value)}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-teal-50/50 text-slate-900 font-bold focus:bg-white focus:border-teal-600 outline-none transition cursor-pointer"
-              >
-                <option value="">-- Or type patient details below --</option>
-                {casesList.map(c => (
-                  <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                    {c.patientName || 'Accident Patient'} ({c.caseId || c.id})
-                  </option>
-                ))}
-              </select>
+            {/* Quick Patient & Case Selector */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-teal-600" /> Select Registered Patient
+                </label>
+                <select
+                  value={selectedPatientId}
+                  onChange={e => handlePatientSelect(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-teal-50/40 text-slate-900 font-bold focus:bg-white focus:border-teal-600 outline-none transition cursor-pointer"
+                >
+                  <option value="">-- Choose Patient --</option>
+                  {patientsList.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.firstName} {p.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-teal-600" /> Select Accident Case
+                </label>
+                <select
+                  value={selectedCaseId}
+                  onChange={e => handleCaseSelect(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-bold focus:bg-white focus:border-teal-600 outline-none transition cursor-pointer"
+                >
+                  <option value="">-- Choose Legal Case --</option>
+                  {casesList.map(c => (
+                    <option key={c.id || c.caseId} value={c.id || c.caseId}>
+                      {c.patientName || 'Accident Patient'} ({c.caseId || c.id})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>
@@ -370,7 +411,7 @@ export const AiAssistantPage = () => {
                 type="text"
                 value={patientName}
                 onChange={e => setPatientName(e.target.value)}
-                placeholder="e.g. Patient, yash"
+                placeholder="e.g. John Smith"
                 className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-medium focus:bg-white focus:border-teal-600 outline-none transition"
               />
             </div>
@@ -398,7 +439,7 @@ export const AiAssistantPage = () => {
               >
                 {CLINICIANS.map(cl => (
                   <option key={cl.id} value={cl.id}>
-                    {cl.name} â€” {cl.title}
+                    {cl.name} &mdash; {cl.title}
                   </option>
                 ))}
               </select>
@@ -494,10 +535,21 @@ export const AiAssistantPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="p-12 text-center text-xs text-slate-400 space-y-2">
+                <div className="p-8 text-center text-xs text-slate-400 space-y-3">
                   <Brain className="w-10 h-10 text-slate-300 mx-auto" />
-                  <p className="font-bold text-slate-700">No Draft Generated Yet</p>
-                  <p>Select a patient, choose a reviewing doctor, and click "Generate AI Clinical Draft".</p>
+                  <div>
+                    <p className="font-bold text-slate-700">No Draft Generated Yet</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Click below to generate live AI clinical documentation for {patientName || 'this patient'}.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={isGenerating}
+                    className="px-4 py-2 bg-gradient-to-r from-teal-600 to-blue-700 hover:opacity-90 active:scale-95 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 mx-auto cursor-pointer"
+                  >
+                    {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-emerald-300" />}
+                    {isGenerating ? 'Generating...' : `Generate AI Draft for ${patientName || 'Patient'}`}
+                  </button>
                 </div>
               )}
             </div>
@@ -525,120 +577,147 @@ export const AiAssistantPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ REVIEW QUEUE TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── REVIEW QUEUE TAB ───────────────────────────── */}
       {activeTab === 'review' && (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-          {/* Draft List */}
-          <div className="lg:col-span-2 space-y-3">
-            {drafts.map(draft => {
-              const cfg = STATUS_CONFIG[draft.status] || STATUS_CONFIG['Pending Review'];
-              const StatusIcon = cfg.icon;
-              return (
-                <button
-                  key={draft.id}
-                  onClick={() => setSelectedDraft(draft)}
-                  className={`w-full text-left p-4 rounded-2xl border transition shadow-2xs cursor-pointer ${
-                    selectedDraft?.id === draft.id
-                      ? 'border-teal-500 bg-teal-50/40 ring-1 ring-teal-500'
-                      : 'border-slate-200 bg-white hover:border-teal-300 hover:bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="text-xs font-extrabold text-slate-900">{draft.patient}</p>
-                    <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${cfg.color}`}>
-                      <StatusIcon className="w-3 h-3" /> {draft.status}
-                    </span>
-                  </div>
-                  <p className="text-[11px] font-bold text-teal-800 mb-1">{draft.type}</p>
-                  <p className="text-[10px] text-slate-500 line-clamp-2">{draft.preview}</p>
-                  
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 flex-wrap gap-1">
-                    <span className="flex items-center gap-1 text-[10px] text-teal-800 font-bold bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60">
-                      <ShieldCheck className="w-3 h-3 text-teal-600" />
-                      To: {draft.assignedDoctorName || 'Dr. Segun Adeoye'}
-                    </span>
-                    <span className="text-[10px] text-slate-400">{draft.generatedAt}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Draft Detail / Doctor Review Panel */}
-          <div className="lg:col-span-3">
-            {selectedDraft ? (
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <p className="text-xs font-black text-slate-800">{selectedDraft.patient} â€” {selectedDraft.type}</p>
-                    <p className="text-[10px] text-teal-700 font-bold flex items-center gap-1 mt-0.5">
-                      <ShieldCheck className="w-3 h-3 text-teal-600" />
-                      Assigned Reviewer: {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'} ({selectedDraft.assignedDoctorTitle || 'Attending Physician'})
-                    </p>
-                  </div>
-                  <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border ${(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG['Pending Review']).color}`}>
-                    {selectedDraft.status}
-                  </span>
-                </div>
-
-                {/* Full Draft Content */}
-                <div className="p-5 space-y-4">
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 leading-relaxed max-h-[480px] overflow-y-auto">
-                    {renderFormattedClinicalNote(selectedDraft.preview)}
-                  </div>
-
-                  {/* Doctor Notes/Edits */}
-                  {selectedDraft.status === 'Pending Review' && (
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        <Pen className="w-3.5 h-3.5 inline mr-1 text-teal-600" />
-                        Physician Review Notes / Corrections
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={doctorNotes}
-                        onChange={e => setDoctorNotes(e.target.value)}
-                        placeholder="Add any corrections, amendments, or notes before approving..."
-                        className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:bg-white"
-                      />
-                    </div>
-                  )}
-
-                  {/* Action Buttons â€” for Doctor & Admin on Pending drafts */}
-                  {selectedDraft.status === 'Pending Review' && (
-                    <div className="flex gap-3 pt-2">
-                      <button
-                        onClick={() => handleApprove(selectedDraft.id)}
-                        className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
-                      >
-                        <ShieldCheck className="w-4 h-4" />
-                        Approve &amp; Lock to Database as {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'}
-                      </button>
-                      <button
-                        onClick={() => handleReject(selectedDraft.id)}
-                        className="px-4 py-2.5 bg-red-50 hover:bg-red-100 border border-red-300 text-red-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition cursor-pointer"
-                      >
-                        <XCircle className="w-4 h-4" /> Reject
-                      </button>
-                    </div>
-                  )}
-
-                  {selectedDraft.status === 'Approved' && (
-                    <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs text-emerald-800 font-bold">
-                      <Lock className="w-4 h-4 text-emerald-600" /> Approved &amp; Locked to MySQL Database by {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'}
-                    </div>
-                  )}
-                </div>
+        <>
+          {drafts.length === 0 ? (
+            <div className="bg-white p-12 rounded-2xl border border-dashed border-slate-300 text-center space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto border border-teal-100">
+                <ClipboardCheck className="w-7 h-7" />
               </div>
-            ) : (
-              <div className="h-64 bg-white border border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 text-xs space-y-2 p-6 text-center">
-                <ClipboardCheck className="w-10 h-10 text-slate-300" />
-                <p className="font-bold text-slate-600">Select a draft to review</p>
-                <p className="text-slate-400">Click on any submitted AI draft from the list on the left to review, edit, and approve.</p>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Review Queue is Empty</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                  No pending AI drafts in queue. When you generate and submit clinical drafts for patient charts, they will appear here for physician review and permanent database locking.
+                </p>
               </div>
-            )}
-          </div>
-        </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('generate')}
+                className="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-blue-700 hover:opacity-90 active:scale-95 text-white font-bold text-xs rounded-xl shadow transition inline-flex items-center gap-2 cursor-pointer mt-2"
+              >
+                <Sparkles className="w-4 h-4 text-emerald-300" />
+                Generate AI Draft for Registered Patient
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+              {/* Draft List */}
+              <div className="lg:col-span-2 space-y-3">
+                {drafts.map(draft => {
+                  const cfg = STATUS_CONFIG[draft.status] || STATUS_CONFIG['Pending Review'];
+                  const StatusIcon = cfg.icon;
+                  return (
+                    <button
+                      key={draft.id}
+                      onClick={() => setSelectedDraft(draft)}
+                      className={`w-full text-left p-4 rounded-2xl border transition shadow-2xs cursor-pointer ${
+                        selectedDraft?.id === draft.id
+                          ? 'border-teal-500 bg-teal-50/40 ring-1 ring-teal-500'
+                          : 'border-slate-200 bg-white hover:border-teal-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <p className="text-xs font-extrabold text-slate-900">{draft.patient}</p>
+                        <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${cfg.color}`}>
+                          <StatusIcon className="w-3 h-3" /> {draft.status}
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-bold text-teal-800 mb-1">{draft.type}</p>
+                      <p className="text-[10px] text-slate-500 line-clamp-2">{draft.preview}</p>
+                      
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 flex-wrap gap-1">
+                        <span className="flex items-center gap-1 text-[10px] text-teal-800 font-bold bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60">
+                          <ShieldCheck className="w-3 h-3 text-teal-600" />
+                          To: {draft.assignedDoctorName || 'Dr. Segun Adeoye'}
+                        </span>
+                        <span className="text-[10px] text-slate-400">{draft.generatedAt}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Draft Detail / Doctor Review Panel */}
+              <div className="lg:col-span-3">
+                {selectedDraft ? (
+                  <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+                      <div>
+                        <p className="text-xs font-black text-slate-800">{selectedDraft.patient} — {selectedDraft.type}</p>
+                        <p className="text-[10px] text-teal-700 font-bold flex items-center gap-1 mt-0.5">
+                          <ShieldCheck className="w-3 h-3 text-teal-600" />
+                          Assigned Reviewer: {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'} ({selectedDraft.assignedDoctorTitle || 'Attending Physician'})
+                        </p>
+                      </div>
+                      <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border ${(STATUS_CONFIG[selectedDraft.status] || STATUS_CONFIG['Pending Review']).color}`}>
+                        {selectedDraft.status}
+                      </span>
+                    </div>
+
+                    {/* Full Draft Content */}
+                    <div className="p-5 space-y-4">
+                      <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 leading-relaxed max-h-[480px] overflow-y-auto">
+                        {renderFormattedClinicalNote(selectedDraft.preview)}
+                      </div>
+
+                      {/* Doctor Notes/Edits */}
+                      {selectedDraft.status === 'Pending Review' && (
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                            <Pen className="w-3.5 h-3.5 inline mr-1 text-teal-600" />
+                            Physician Review Notes / Corrections
+                          </label>
+                          <textarea
+                            rows={3}
+                            value={doctorNotes}
+                            onChange={e => setDoctorNotes(e.target.value)}
+                            placeholder="Add any corrections, amendments, or notes before approving..."
+                            className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:bg-white"
+                          />
+                        </div>
+                      )}
+
+                      {/* Action Buttons: for Doctor & Admin on Pending drafts */}
+                      {selectedDraft.status === 'Pending Review' && (
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            onClick={() => handleApprove(selectedDraft.id)}
+                            className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                          >
+                            <ShieldCheck className="w-4 h-4" />
+                            {isDoctor
+                              ? `Approve & Sign Note as ${currentUser?.name || 'Attending Physician'}`
+                              : `Approve & Lock Chart (as ${selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'})`
+                            }
+                          </button>
+                          <button
+                            onClick={() => handleReject(selectedDraft.id)}
+                            className="px-4 py-2.5 bg-red-50 hover:bg-red-100 border border-red-300 text-red-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition cursor-pointer"
+                          >
+                            <XCircle className="w-4 h-4" /> Reject
+                          </button>
+                        </div>
+                      )}
+
+                      {selectedDraft.status === 'Approved' && (
+                        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs text-emerald-800 font-bold">
+                          <Lock className="w-4 h-4 text-emerald-600" /> Approved &amp; Locked to MySQL Database (Physician: {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'})
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-64 bg-white border border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 text-xs space-y-2 p-6 text-center">
+                    <ClipboardCheck className="w-10 h-10 text-slate-300" />
+                    <p className="font-bold text-slate-600">Select a draft to review</p>
+                    <p className="text-slate-400">Click on any submitted AI draft from the list on the left to review, edit, and approve.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
