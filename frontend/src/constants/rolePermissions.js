@@ -1,8 +1,8 @@
-﻿// src/constants/rolePermissions.js
+// src/constants/rolePermissions.js
 
 export const ROLES = {
   SUPER_ADMIN: 'Super Admin',
-  // Clinic Admin removed (Option A â€” merged into Super Admin)
+  // Clinic Admin removed (Option A - merged into Super Admin)
   RECEPTIONIST: 'Receptionist',
   DOCTOR: 'Doctor',
   THERAPIST: 'Therapist',
@@ -62,7 +62,7 @@ export const DEMO_ACCOUNTS = [
 ];
 
 export const ROLE_ROUTE_PERMISSIONS = {
-  [ROLES.SUPER_ADMIN]: ['*'], // Full Access â€” all routes
+  [ROLES.SUPER_ADMIN]: ['*'], // Full Access - all routes
   [ROLES.RECEPTIONIST]: [
     '/dashboard/receptionist',
     '/patients',
@@ -114,12 +114,12 @@ export const ROLE_ROUTE_PERMISSIONS = {
   ],
 };
 
-// â”€â”€â”€ Role-Based Sidebar Navigation Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Role-Based Sidebar Navigation Map ────────────────────────────────
 // Each role sees ONLY the sections & items relevant to their job.
 // Super Admin sees everything.
 
 export const ROLE_SIDEBAR_NAV = {
-  [ROLES.SUPER_ADMIN]: 'ALL',     // special token â€” render all sections
+  [ROLES.SUPER_ADMIN]: 'ALL',     // special token - render all sections
 
   [ROLES.RECEPTIONIST]: [
     {

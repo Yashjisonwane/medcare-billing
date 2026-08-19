@@ -1,6 +1,6 @@
-﻿// src/pages/billing/BillDetailsPage.jsx
+// src/pages/billing/BillDetailsPage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockBillingService } from '../../services/mock/mockBillingService';
+import { apiBillingService } from '../../services/api/apiBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { formatStatus } from '../../utils/formatters';
 import { PrintableStatementModal } from '../../components/billing/PrintableStatementModal';
@@ -21,32 +21,57 @@ export const BillDetailsPage = () => {
   const { addToast } = useUIStore();
   const navigate = useNavigate();
 
+  const loadBill = () => {
+    apiBillingService.getBillById(id).then(setBill).catch(console.error);
+  };
+
   useEffect(() => {
-    mockBillingService.getBillById(id).then(setBill);
+    loadBill();
   }, [id]);
 
   if (!bill) return <div className="p-6 text-xs text-slate-500">Loading provider bill statement...</div>;
 
   const handlePostPayment = async (e) => {
     e.preventDefault();
-    const updated = await mockBillingService.postPayment(bill.id, paymentForm.lineIndex, Number(paymentForm.amount), paymentForm.payerType, paymentForm.referenceNumber);
-    setBill(updated);
-    setShowPaymentModal(false);
-    addToast('Payment posted successfully!', 'success');
+    try {
+      const updated = await apiBillingService.postPayment(bill.id, {
+        lineIndex: paymentForm.lineIndex,
+        amount: Number(paymentForm.amount),
+        type: paymentForm.payerType,
+        checkRef: paymentForm.referenceNumber
+      });
+      setBill(updated);
+      setShowPaymentModal(false);
+      addToast('Payment posted directly to database!', 'success');
+    } catch (err) {
+      addToast('Failed to post payment', 'error');
+    }
   };
 
   const handlePostAdjustment = async (e) => {
     e.preventDefault();
-    const updated = await mockBillingService.postAdjustment(bill.id, adjustmentForm.lineIndex, Number(adjustmentForm.amount), adjustmentForm.reason);
-    setBill(updated);
-    setShowAdjustmentModal(false);
-    addToast('Adjustment posted successfully!', 'success');
+    try {
+      const updated = await apiBillingService.postAdjustment(bill.id, {
+        lineIndex: adjustmentForm.lineIndex,
+        amount: Number(adjustmentForm.amount),
+        reason: adjustmentForm.reason
+      });
+      setBill(updated);
+      setShowAdjustmentModal(false);
+      addToast('Adjustment posted directly to database!', 'success');
+    } catch (err) {
+      addToast('Failed to post adjustment', 'error');
+    }
   };
 
   const handleFinalise = async () => {
-    const updated = await mockBillingService.finaliseBill(bill.id);
-    setBill(updated);
-    addToast('Bill finalized!', 'success');
+    try {
+      const updated = await apiBillingService.finaliseBill(bill.id);
+      setBill(updated);
+      addToast('Bill finalized and locked in database!', 'success');
+    } catch (err) {
+      addToast('Failed to finalise bill', 'error');
+    }
   };
 
   return (

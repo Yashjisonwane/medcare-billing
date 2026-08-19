@@ -1,8 +1,8 @@
-﻿// src/pages/cms/CmsClaimListPage.jsx
+// src/pages/cms/CmsClaimListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { Search, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,12 +14,12 @@ export const CmsClaimListPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockCaseService.getCases().then(async (cases) => {
+    apiCaseService.getCases().then(async (cases) => {
       const allResults = [];
       const targetCases = cases && cases.length > 0 ? cases : [{ id: 'case-001', caseId: 'CASE-2025-1227' }];
       for (const c of targetCases) {
         try {
-          const caseBillsRes = await mockBillingService.getFourBillsByCase(c.id || c.caseId);
+          const caseBillsRes = await apiBillingService.getFourBillsByCase(c.id || c.caseId);
           for (const bill of (caseBillsRes?.allBills || [])) {
             const claims = await mockCms1500Service.getClaimsByBillId(bill.id);
             allResults.push(...claims);

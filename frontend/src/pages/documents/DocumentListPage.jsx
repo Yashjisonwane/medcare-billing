@@ -1,4 +1,4 @@
-﻿// src/pages/documents/DocumentListPage.jsx
+// src/pages/documents/DocumentListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { apiDocumentService } from '../../services/api/apiDocumentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
@@ -161,7 +161,7 @@ export const DocumentListPage = () => {
         </div>
       </div>
 
-      {/* ðŸ”´ FULL UNFILLED BLANK PRACTICE FORM PREVIEW MODAL â€” Mobile Responsive */}
+      {/* Full Blank Practice Form Preview Modal */}
       {previewDoc && (
         <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-6xl h-[95vh] flex flex-col shadow-2xl overflow-hidden">
@@ -174,7 +174,7 @@ export const DocumentListPage = () => {
                 </span>
                 <div className="min-w-0">
                   <h2 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{previewDoc.name}</h2>
-                  <p className="text-[10px] text-slate-400 truncate">{previewDoc.providerName} â€” Clean Form Layout</p>
+                  <p className="text-[10px] text-slate-400 truncate">{previewDoc.providerName} — Clean Form Layout</p>
                 </div>
               </div>
 
@@ -188,14 +188,14 @@ export const DocumentListPage = () => {
               </div>
             </div>
 
-            {/* Modal Body â€” Unfilled Blank Packet Viewer */}
+            {/* Modal Body — Unfilled Blank Packet Viewer */}
             <div className="flex-1 overflow-y-auto p-2 sm:p-4 bg-slate-950/60">
               <UnifiedPacketViewer providerId={getProviderId(previewDoc.providerName)} initialBlank={true} />
             </div>
 
             {/* Modal Footer */}
             <div className="p-3 border-t border-slate-800 bg-slate-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs text-slate-400">
-              <p className="text-[10px] sm:text-xs leading-tight">Unfilled Practice Form â€” Includes Provider Letterhead, Section Headings, Line Grids &amp; Anatomy Diagrams.</p>
+              <p className="text-[10px] sm:text-xs leading-tight">Unfilled Practice Form — Includes Provider Letterhead, Section Headings, Line Grids &amp; Anatomy Diagrams.</p>
               <button onClick={() => setPreviewDoc(null)} className="w-full sm:w-auto px-4 py-1.5 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 flex-shrink-0">
                 Close Preview
               </button>
@@ -205,7 +205,7 @@ export const DocumentListPage = () => {
         </div>
       )}
 
-      {/* ðŸ”´ IMPORT / UPLOAD DOCUMENT MODAL */}
+      {/* IMPORT / UPLOAD DOCUMENT MODAL */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md flex flex-col shadow-2xl overflow-hidden">
@@ -231,7 +231,7 @@ export const DocumentListPage = () => {
                 >
                   {casesList.map(c => (
                     <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                      {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
+                      {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
                     </option>
                   ))}
                 </select>

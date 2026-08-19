@@ -1,4 +1,4 @@
-﻿// src/pages/admin/ReportsPage.jsx
+// src/pages/admin/ReportsPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -236,7 +236,7 @@ export const ReportsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Monthly Area Chart */}
             <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-              <h2 className="text-sm font-bold text-slate-700 mb-4">Monthly Billing Trend (Oct 2025 â€“ Mar 2026)</h2>
+              <h2 className="text-sm font-bold text-slate-700 mb-4">Monthly Billing Trend (Oct 2025 – Mar 2026)</h2>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyBilling}>
@@ -508,8 +508,8 @@ export const ReportsPage = () => {
                   <th className="p-3.5 text-left">Provider</th>
                   <th className="p-3.5 text-right">Total AR</th>
                   <th className="p-3.5 text-right">Current</th>
-                  <th className="p-3.5 text-right">31â€“60 Days</th>
-                  <th className="p-3.5 text-right">61â€“90 Days</th>
+                  <th className="p-3.5 text-right">31–60 Days</th>
+                  <th className="p-3.5 text-right">61–90 Days</th>
                   <th className="p-3.5 text-right">90+ Days</th>
                   <th className="p-3.5 text-center">Risk Level</th>
                 </tr>

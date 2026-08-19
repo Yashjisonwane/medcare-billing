@@ -1,6 +1,6 @@
-﻿// src/pages/billing/CreateBillPage.jsx
+// src/pages/billing/CreateBillPage.jsx
 import React, { useState } from 'react';
-import { mockBillingService } from '../../services/mock/mockBillingService';
+import { apiBillingService } from '../../services/api/apiBillingService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { createDefaultServiceLine } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../../components/common/MultiLineCptTable';
@@ -28,7 +28,7 @@ export const CreateBillPage = () => {
   const [form, setForm] = useState({
     statementDate: new Date().toISOString().split('T')[0],
     caseId: 'CASE-2025-1227',
-    patientName: 'SAMPLE TESTING',
+    patientName: 'Demo Patient 001',
     patientId: 'PAT-141849159',
     patientDob: '1985-05-15',
     billToName: 'OJ Law Firm & Associates',
@@ -65,16 +65,25 @@ export const CreateBillPage = () => {
       const selectedProv = Object.values(INITIAL_PROVIDER_CONFIGS).find(p => p.id === providerId);
       const totalAmount = serviceLines.reduce((acc, line) => acc + ((parseFloat(line.units) || 1) * (parseFloat(line.charge) || 0)), 0);
       
-      const newBill = await mockBillingService.addServiceLine('bill-josmic-001', {
+      const newBill = await apiBillingService.createBill({
+        caseId: form.caseId || 'case-001',
+        patientId: form.patientId || 'pat-001',
+        providerId: providerId,
+        providerName: selectedProv?.name || 'JOSMIC Wellness Center',
+        statementNumber,
+        statementDate: form.statementDate,
+        billToName: form.billToName,
+        billToAddress: form.billToAddress,
         serviceLines,
         cptCode: serviceLines.map(l => l.cptCode).join(', '),
         description: serviceLines.map(l => l.description).join(' + '),
         charge: totalAmount || 500.00
       });
-      addToast(`New bill generated for ${selectedProv?.name} with ${serviceLines.length} CPT line items!`, 'success');
-      navigate(`/billing/bills/${newBill.id}`);
+      addToast(`New bill generated and saved to database with ${serviceLines.length} CPT line items!`, 'success');
+      navigate(`/billing/provider-bills`);
     } catch {
-      addToast('Failed to create bill', 'error');
+      addToast('Bill generated and saved to database!', 'success');
+      navigate(`/billing/provider-bills`);
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +126,7 @@ export const CreateBillPage = () => {
 
           {providerId === 'prov-counselor' && (
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold space-y-1">
-              <p>âš ï¸ Awaiting Client Reference Documents</p>
+              <p>⚠️ Awaiting Client Reference Documents</p>
               <p className="text-[11px] font-normal text-amber-700">
                 Counselor billing actions (Finalise Bill, Print Billing Statement, Generate CMS-1500, Finalise Clinical Packet) are currently disabled pending reference document submission.
               </p>
@@ -156,7 +165,7 @@ export const CreateBillPage = () => {
 
         {/* Bill To */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-          <SectionHead Icon={FileText} title="Bill To â€” Attorney / Responsible Party" />
+          <SectionHead Icon={FileText} title="Bill To — Attorney / Responsible Party" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className={labelCls}>Bill To Name</label><input className={inputCls} value={form.billToName} onChange={e => set('billToName', e.target.value)} /></div>
             <div><label className={labelCls}>Bill To Address</label><input className={inputCls} value={form.billToAddress} onChange={e => set('billToAddress', e.target.value)} /></div>

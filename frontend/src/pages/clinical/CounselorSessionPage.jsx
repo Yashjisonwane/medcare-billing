@@ -1,6 +1,6 @@
-﻿// src/pages/clinical/CounselorSessionPage.jsx
+// src/pages/clinical/CounselorSessionPage.jsx
 import React, { useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -95,14 +95,14 @@ export const CounselorSessionPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const note = await mockClinicalNoteService.createNote({
+      const note = await apiClinicalNoteService.createNote({
         patientId: formData.patientId,
         patientName: formData.patientName,
         caseId: formData.caseId,
         providerId: formData.providerId,
         providerName: formData.providerName,
         type: 'COUNSELOR_GENERIC',
-        title: `Counseling Progress Note (${formData.cptCode}) â€” ${formData.sessionDate}`,
+        title: `Counseling Progress Note (${formData.cptCode}) — ${formData.sessionDate}`,
         author: formData.counselorName,
         content: {
           ...formData,
@@ -111,7 +111,7 @@ export const CounselorSessionPage = () => {
           statementLinked: 'bill-counselor-001'
         }
       });
-      addToast('Counselor Session Note saved and linked to 4-Bill Ledger successfully!', 'success');
+      addToast('Counselor Session Note saved directly to backend database!', 'success');
       navigate('/clinical-notes');
     } catch (err) {
       addToast('Failed to save session note', 'error');
@@ -217,7 +217,7 @@ export const CounselorSessionPage = () => {
               >
                 {CPT_CODES.map(c => (
                   <option key={c.code} value={c.code}>
-                    {c.code} â€” {c.label} ({c.fee})
+                    {c.code} — {c.label} ({c.fee})
                   </option>
                 ))}
               </select>

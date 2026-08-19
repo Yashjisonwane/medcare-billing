@@ -1,9 +1,8 @@
-﻿// src/pages/documents/PacketBuilderPage.jsx
+// src/pages/documents/PacketBuilderPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { mockDocumentService } from '../../services/mock/mockDocumentService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
+import { apiDocumentService } from '../../services/api/apiDocumentService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { useUIStore } from '../../store/uiStore';
 import { FolderOpen, CheckSquare, Download, Sparkles, ArrowLeft, FileText, CheckCircle2, DollarSign, User, Shield } from 'lucide-react';
 
@@ -22,8 +21,11 @@ export const PacketBuilderPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockDocumentService.getDocuments().then(setDocs);
-    mockCaseService.getCases().then(res => {
+    apiDocumentService.getDocuments().then(res => {
+      if (Array.isArray(res)) setDocs(res);
+    }).catch(() => {});
+
+    apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCases(res);
         if (queryCaseId && res.some(c => c.id === queryCaseId || c.caseId === queryCaseId)) {
@@ -32,7 +34,7 @@ export const PacketBuilderPage = () => {
           setSelectedCaseId(res[0].id || 'case-001');
         }
       }
-    });
+    }).catch(() => {});
   }, [queryCaseId]);
 
   const toggleSelect = (id) => {
@@ -104,7 +106,7 @@ export const PacketBuilderPage = () => {
           >
             {cases.map(c => (
               <option key={c.id} value={c.id}>
-                {c.caseId || c.id} â€” {c.patientName}
+                {c.caseId || c.id} — {c.patientName}
               </option>
             ))}
           </select>
