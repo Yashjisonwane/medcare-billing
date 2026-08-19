@@ -1,4 +1,4 @@
-// src/components/modals/EditProfileModal.jsx
+﻿// src/components/modals/EditProfileModal.jsx
 import React, { useState, useRef } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -22,6 +22,8 @@ export const EditProfileModal = ({ isOpen, onClose }) => {
   const [title, setTitle] = useState(currentUser?.title || 'Super Admin / System Administrator');
   const [email, setEmail] = useState(currentUser?.email || 'admin@example.test');
   const [avatar, setAvatar] = useState(currentUser?.avatar || PRESET_AVATARS[0]);
+
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!isOpen) return null;
 
@@ -49,8 +51,6 @@ export const EditProfileModal = ({ isOpen, onClose }) => {
     };
     reader.readAsDataURL(file);
   };
-
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();

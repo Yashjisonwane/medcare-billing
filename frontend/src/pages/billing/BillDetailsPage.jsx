@@ -1,4 +1,4 @@
-// src/pages/billing/BillDetailsPage.jsx
+﻿// src/pages/billing/BillDetailsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';

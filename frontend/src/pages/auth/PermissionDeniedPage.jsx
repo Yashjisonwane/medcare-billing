@@ -1,4 +1,4 @@
-// src/pages/auth/PermissionDeniedPage.jsx
+﻿// src/pages/auth/PermissionDeniedPage.jsx
 import React from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -22,7 +22,7 @@ export const PermissionDeniedPage = () => {
           <ShieldAlert className="w-9 h-9" />
         </div>
 
-        <h2 className="text-2xl font-extrabold text-on-surface">403 — Access Restricted</h2>
+        <h2 className="text-2xl font-extrabold text-on-surface">403 â€” Access Restricted</h2>
         
         <p className="text-xs text-on-surface-variant leading-relaxed">
           Your current role (<strong className="text-secondary-container">{currentUser?.role || 'User'}</strong>) does not have permission to view this section.

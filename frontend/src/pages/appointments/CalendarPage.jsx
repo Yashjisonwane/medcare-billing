@@ -1,7 +1,8 @@
-// src/pages/appointments/CalendarPage.jsx
+﻿// src/pages/appointments/CalendarPage.jsx
 import React, { useState, useEffect } from 'react';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { ScheduleAppointmentModal } from '../../components/modals/ScheduleAppointmentModal';
 import { AppointmentDetailsModal } from '../../components/modals/AppointmentDetailsModal';
 import { EditAppointmentModal } from '../../components/modals/EditAppointmentModal';
@@ -26,17 +27,40 @@ export const CalendarPage = () => {
   const [viewingApt, setViewingApt] = useState(null);
   const [editingApt, setEditingApt] = useState(null);
 
+  const [providersList, setProvidersList] = useState([]);
+
+  useEffect(() => {
+    fetchProviders();
+  }, []);
+
   useEffect(() => {
     fetchAppointments();
   }, [selectedDate, selectedProvider]);
+
+  const fetchProviders = async () => {
+    try {
+      const data = await apiProviderService.getProviders();
+      setProvidersList(Object.values(data));
+    } catch {
+      console.error('Failed to load providers.');
+    }
+  };
 
   const fetchAppointments = async () => {
     setLoading(true);
     try {
       const filters = { date: selectedDate };
       if (selectedProvider !== 'ALL') filters.providerId = selectedProvider;
-      const data = await mockAppointmentService.getAppointments(filters);
-      setApts(data);
+      const data = await apiAppointmentService.getAllAppointments();
+      // Apply filters client-side since API only has getAllAppointments for now
+      let filteredData = data;
+      if (filters.date) {
+        filteredData = filteredData.filter(a => a.date === filters.date);
+      }
+      if (filters.providerId && filters.providerId !== 'ALL') {
+        filteredData = filteredData.filter(a => a.providerId === filters.providerId);
+      }
+      setApts(filteredData);
     } catch {
       addToast('Failed to load appointments.', 'error');
     } finally {
@@ -65,7 +89,7 @@ export const CalendarPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* ── Top Header & Actions ── */}
+      {/* â”€â”€ Top Header & Actions â”€â”€ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Appointment Calendar &amp; Schedule</h1>
@@ -81,7 +105,7 @@ export const CalendarPage = () => {
         </div>
       </div>
 
-      {/* ── Date Navigator & Channel Filter Bar ── */}
+      {/* â”€â”€ Date Navigator & Channel Filter Bar â”€â”€ */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
@@ -129,8 +153,8 @@ export const CalendarPage = () => {
             onChange={(e) => setSelectedProvider(e.target.value)}
             className="px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:bg-white focus:border-teal-600 outline-none cursor-pointer"
           >
-            <option value="ALL">All Care Providers (4 Practices)</option>
-            {Object.values(INITIAL_PROVIDER_CONFIGS).map(p => (
+            <option value="ALL">All Care Providers</option>
+            {providersList.map(p => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
@@ -148,7 +172,7 @@ export const CalendarPage = () => {
         </div>
       </div>
 
-      {/* ── Appointments List / Schedule View ── */}
+      {/* â”€â”€ Appointments List / Schedule View â”€â”€ */}
       {loading ? (
         <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200 animate-pulse">
           Loading schedule and bookings for {selectedDate}...
@@ -182,7 +206,7 @@ export const CalendarPage = () => {
                   <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
                     <div className="flex items-center gap-1.5 text-slate-900 font-extrabold text-xs">
                       <Clock className="w-3.5 h-3.5 text-teal-600" />
-                      <span>{apt.startTime} – {apt.endTime}</span>
+                      <span>{apt.startTime} â€“ {apt.endTime}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -247,7 +271,7 @@ export const CalendarPage = () => {
         </div>
       )}
 
-      {/* ── Modals ── */}
+      {/* â”€â”€ Modals â”€â”€ */}
       {showBookModal && (
         <ScheduleAppointmentModal
           isOpen={showBookModal}

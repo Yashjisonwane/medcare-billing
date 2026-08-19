@@ -1,4 +1,4 @@
-// src/pages/admin/ProviderListPage.jsx
+﻿// src/pages/admin/ProviderListPage.jsx
 import React, { useState, useEffect } from 'react';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { maskTaxId, maskNpi } from '../../utils/formatters';
@@ -255,7 +255,7 @@ export const ProviderListPage = () => {
         })}
       </div>
 
-      {/* 🔴 ADD NEW PROVIDER DIALOG MODAL */}
+      {/* ðŸ”´ ADD NEW PROVIDER DIALOG MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden">

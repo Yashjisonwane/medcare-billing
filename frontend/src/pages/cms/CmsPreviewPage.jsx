@@ -1,4 +1,4 @@
-// src/pages/cms/CmsPreviewPage.jsx
+﻿// src/pages/cms/CmsPreviewPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
@@ -136,12 +136,12 @@ export const CmsPreviewPage = () => {
               <FileCheck className="w-4 h-4 text-teal-400" />
             </div>
             <span className="text-xs text-slate-300">
-              <strong className="text-white">Standard HCFA CMS-1500 (02/12):</strong> Form mapped to Box 1–33 NUCC Compliance
+              <strong className="text-white">Standard HCFA CMS-1500 (02/12):</strong> Form mapped to Box 1â€“33 NUCC Compliance
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full font-bold text-xs shrink-0 self-start sm:self-auto">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>✓ Ready to File &bull; Generated &amp; Validated</span>
+            <span>âœ“ Ready to File &bull; Generated &amp; Validated</span>
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export const CmsPreviewPage = () => {
 
           <div>
             <p className="text-xs font-bold text-white">
-              Claim <span className="text-teal-400">{activeClaimIndex + 1}</span> of <span className="text-teal-400">{claims.length}</span> — DOS: <strong className="text-white">{currentClaim.dosDisplay}</strong>
+              Claim <span className="text-teal-400">{activeClaimIndex + 1}</span> of <span className="text-teal-400">{claims.length}</span> â€” DOS: <strong className="text-white">{currentClaim.dosDisplay}</strong>
             </p>
             <p className="text-[10px] text-slate-400 truncate">{bill.providerName} | Total: <strong className="text-teal-300">${currentClaim.box28TotalCharge}</strong></p>
           </div>
@@ -196,7 +196,7 @@ export const CmsPreviewPage = () => {
 
       </div>
 
-      {/* CLAIM CANVAS VIEWER — Responsive Container */}
+      {/* CLAIM CANVAS VIEWER â€” Responsive Container */}
       <div className="overflow-x-auto p-2 sm:p-6 bg-slate-950 rounded-2xl border border-slate-800 flex justify-center print:bg-white print:p-0 print:border-none min-h-[500px]">
         
         {/* Single Claim View mode */}

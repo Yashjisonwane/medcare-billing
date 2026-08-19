@@ -1,4 +1,4 @@
-// src/pages/cases/CaseListPage.jsx
+﻿// src/pages/cases/CaseListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockCaseService } from '../../services/mock/mockCaseService';
 import { FileText, PlusCircle, Search, ChevronRight, Eye, FileSpreadsheet, Scale, Calendar } from 'lucide-react';
@@ -25,7 +25,7 @@ export const CaseListPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* ── Top Header & Actions ── */}
+      {/* â”€â”€ Top Header & Actions â”€â”€ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Accident &amp; Legal Cases</h1>
@@ -47,7 +47,7 @@ export const CaseListPage = () => {
         </div>
       </div>
 
-      {/* ── Search Bar ── */}
+      {/* â”€â”€ Search Bar â”€â”€ */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
         <Search className="w-4 h-4 text-slate-400 shrink-0" />
         <input
@@ -59,7 +59,7 @@ export const CaseListPage = () => {
         />
       </div>
 
-      {/* ── Cases List (Mobile Cards + Desktop Table) ── */}
+      {/* â”€â”€ Cases List (Mobile Cards + Desktop Table) â”€â”€ */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {cases.length === 0 ? (
           <div className="p-8 text-center space-y-3">

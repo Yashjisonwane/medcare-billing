@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { mockProviderService } from '../../services/mock/mockProviderService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -251,7 +251,7 @@ export const PatientSelfBookingPage = () => {
         </div>
       </div>
 
-      {/* ── MODE: LOOKUP MY BOOKINGS ── */}
+      {/* â”€â”€ MODE: LOOKUP MY BOOKINGS â”€â”€ */}
       {mode === 'lookup' && (
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div>
@@ -368,7 +368,7 @@ export const PatientSelfBookingPage = () => {
         </div>
       )}
 
-      {/* ── MODE: BOOK NEW VISIT ── */}
+      {/* â”€â”€ MODE: BOOK NEW VISIT â”€â”€ */}
       {mode === 'book' && (
         <>
           {/* Step Indicator Bar */}
@@ -564,7 +564,7 @@ export const PatientSelfBookingPage = () => {
                         <div className="text-xs font-bold text-slate-900">{p.name}</div>
                         <div className="text-[11px] text-slate-500">{p.serviceCategory || p.subtitle || 'Specialized Clinic Center'}</div>
                         <div className="text-[10px] text-teal-700 font-medium mt-1">
-                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> · Fee: <span className="font-bold text-slate-900">{p.fee || '$1,214.00'}</span>
+                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> Â· Fee: <span className="font-bold text-slate-900">{p.fee || '$1,214.00'}</span>
                         </div>
                       </div>
                     </div>
@@ -844,7 +844,7 @@ export const PatientSelfBookingPage = () => {
                     </div>
                   </div>
                   <span className="px-2.5 py-1 bg-emerald-200/80 text-emerald-900 text-[10px] font-extrabold rounded-lg font-mono">
-                    SENT ✓
+                    SENT âœ“
                   </span>
                 </div>
 
@@ -862,7 +862,7 @@ export const PatientSelfBookingPage = () => {
                     </div>
                   </div>
                   <span className="px-2.5 py-1 bg-teal-200/80 text-teal-900 text-[10px] font-extrabold rounded-lg font-mono">
-                    SENT ✓
+                    SENT âœ“
                   </span>
                 </div>
               </div>

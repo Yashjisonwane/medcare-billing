@@ -1,4 +1,4 @@
-// src/pages/treatments/TreatmentSessionsPage.jsx
+﻿// src/pages/treatments/TreatmentSessionsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filter, X, Save } from 'lucide-react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
@@ -23,7 +23,7 @@ const formatCurrency = (v) => `$${Number(v).toFixed(2).replace(/\B(?=(\d{3})+(?!
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 text-slate-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';
 
-// ─── Schedule Session Modal ───────────────────────────────────────────────────
+// â”€â”€â”€ Schedule Session Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
     patientName: '',
@@ -264,7 +264,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const TreatmentSessionsPage = () => {
   const [search, setSearch] = useState('');
   const [filterProvider, setFilterProvider] = useState('ALL');

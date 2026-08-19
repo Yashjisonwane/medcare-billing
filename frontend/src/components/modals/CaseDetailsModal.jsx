@@ -1,4 +1,4 @@
-// src/components/modals/CaseDetailsModal.jsx
+﻿// src/components/modals/CaseDetailsModal.jsx
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { 

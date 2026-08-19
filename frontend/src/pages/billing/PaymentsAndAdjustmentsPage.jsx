@@ -1,4 +1,4 @@
-// src/pages/billing/PaymentsAndAdjustmentsPage.jsx
+﻿// src/pages/billing/PaymentsAndAdjustmentsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Plus, Search, CheckCircle, XCircle, Clock, X, Save, DollarSign, FileText, AlertCircle, Building2, User, Shield } from 'lucide-react';
 import { formatCurrency } from '../../utils/billingCalculations';
@@ -10,7 +10,7 @@ import { useUIStore } from '../../store/uiStore';
 const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-800 mb-1';
 
-// ─── Dynamic Post New Payment Modal ───────────────────────────────────────────
+// â”€â”€â”€ Dynamic Post New Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PostPaymentModal = ({ onClose, onSuccess }) => {
   const { addToast } = useUIStore();
   const [saving, setSaving] = useState(false);
@@ -174,10 +174,10 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
             <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Payment Type *</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { val: 'INSURANCE', label: '🏛 Insurance Payment' },
-                { val: 'PATIENT', label: '👤 Patient Payment' },
-                { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
-                { val: 'WORKERS_COMP', label: '🏗 Workers\' Comp' },
+                { val: 'INSURANCE', label: 'ðŸ› Insurance Payment' },
+                { val: 'PATIENT', label: 'ðŸ‘¤ Patient Payment' },
+                { val: 'ATTORNEY', label: 'âš–ï¸ Attorney Settlement' },
+                { val: 'WORKERS_COMP', label: 'ðŸ— Workers\' Comp' },
               ].map(opt => (
                 <label 
                   key={opt.val} 
@@ -206,7 +206,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
                 >
                   {casesList.map(c => (
                     <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                      {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
+                      {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
                     </option>
                   ))}
                 </select>
@@ -232,8 +232,8 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
                       const isPaid = bal <= 0;
                       return (
                         <option key={b.id} value={b.id}>
-                          {isPaid ? '✅ [PAID IN FULL] ' : '⏳ [BALANCE DUE] '}
-                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) — {isPaid ? '$0.00 (Settled)' : formatCurrency(bal)}
+                          {isPaid ? 'âœ… [PAID IN FULL] ' : 'â³ [BALANCE DUE] '}
+                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) â€” {isPaid ? '$0.00 (Settled)' : formatCurrency(bal)}
                         </option>
                       );
                     })
@@ -267,7 +267,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
               <div className="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-xl text-[11px] text-emerald-800 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
-                  यह स्टेटमेंट पूरी तरह चुकता (<strong>Paid in Full / $0.00</strong>) है। यदि अन्य किसी प्रोवाइडर पर बकाया है, तो ड्रॉपडाउन से पेंडिंग स्टेटमेंट चुनें।
+                  à¤¯à¤¹ à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤®à¥‡à¤‚à¤Ÿ à¤ªà¥‚à¤°à¥€ à¤¤à¤°à¤¹ à¤šà¥à¤•à¤¤à¤¾ (<strong>Paid in Full / $0.00</strong>) à¤¹à¥ˆà¥¤ à¤¯à¤¦à¤¿ à¤…à¤¨à¥à¤¯ à¤•à¤¿à¤¸à¥€ à¤ªà¥à¤°à¥‹à¤µà¤¾à¤‡à¤¡à¤° à¤ªà¤° à¤¬à¤•à¤¾à¤¯à¤¾ à¤¹à¥ˆ, à¤¤à¥‹ à¤¡à¥à¤°à¥‰à¤ªà¤¡à¤¾à¤‰à¤¨ à¤¸à¥‡ à¤ªà¥‡à¤‚à¤¡à¤¿à¤‚à¤— à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤®à¥‡à¤‚à¤Ÿ à¤šà¥à¤¨à¥‡à¤‚à¥¤
                 </span>
               </div>
             )}
@@ -388,7 +388,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// ─── Dynamic Post Adjustment / Write-Off Modal ────────────────────────────────
+// â”€â”€â”€ Dynamic Post Adjustment / Write-Off Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   const { addToast } = useUIStore();
   const [saving, setSaving] = useState(false);
@@ -485,7 +485,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
             <select value={form.caseId} onChange={e => handleCaseSelect(e.target.value)} className={inputCls}>
               {casesList.map(c => (
                 <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                  {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
+                  {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
                 </option>
               ))}
             </select>
@@ -506,7 +506,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
             >
               {availableStatements.map(b => (
                 <option key={b.id} value={b.id}>
-                  {b.providerName} (Statement #{b.statementNumber || 'N/A'}) — Balance: {formatCurrency(b.totals?.balanceDue || 0)}
+                  {b.providerName} (Statement #{b.statementNumber || 'N/A'}) â€” Balance: {formatCurrency(b.totals?.balanceDue || 0)}
                 </option>
               ))}
             </select>
@@ -542,7 +542,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// ─── Main Payments & Adjustments Ledger Page ───────────────────────────────────
+// â”€â”€â”€ Main Payments & Adjustments Ledger Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const PaymentsAndAdjustmentsPage = () => {
   const [activeTab, setActiveTab] = useState('payments');
   const [search, setSearch] = useState('');

@@ -1,7 +1,7 @@
-// src/services/api/apiAuthService.js
+﻿// src/services/api/apiAuthService.js
 import { DEMO_ACCOUNTS } from '../../constants/rolePermissions';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
 const STORAGE_KEY = 'medpractice_auth_session';
 const TOKEN_KEY = 'medpractice_auth_token';
 
@@ -92,7 +92,7 @@ export const apiAuthService = {
   },
 
   /**
-   * Logout — clear all stored session data
+   * Logout â€” clear all stored session data
    */
   async logout() {
     localStorage.removeItem(STORAGE_KEY);

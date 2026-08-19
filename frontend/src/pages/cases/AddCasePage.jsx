@@ -1,4 +1,4 @@
-// src/pages/cases/AddCasePage.jsx
+﻿// src/pages/cases/AddCasePage.jsx
 import React, { useState, useEffect } from 'react';
 import { mockCaseService } from '../../services/mock/mockCaseService';
 import { mockPatientService } from '../../services/mock/mockPatientService';

@@ -1,6 +1,6 @@
-// src/pages/dashboards/DoctorDashboard.jsx
+﻿// src/pages/dashboards/DoctorDashboard.jsx
 import React, { useEffect, useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { Brain, FileCheck, Award, FileText, PlusCircle, Sparkles, ChevronRight, PenTool } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ export const DoctorDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockClinicalNoteService.getNotes().then(setNotes);
+    apiClinicalNoteService.getNotes().then(setNotes).catch(console.error);
   }, []);
 
   return (

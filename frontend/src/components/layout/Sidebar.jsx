@@ -1,4 +1,4 @@
-// src/components/layout/Sidebar.jsx
+﻿// src/components/layout/Sidebar.jsx
 import React, { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -119,7 +119,7 @@ export const Sidebar = ({ onCloseMobile }) => {
   return (
     <aside className="w-64 h-full bg-slate-900 border-r border-slate-800 flex flex-col justify-between text-slate-300 font-sans text-xs select-none">
       
-      {/* ── MOBILE ONLY HEADER (Close button) ── */}
+      {/* â”€â”€ MOBILE ONLY HEADER (Close button) â”€â”€ */}
       <div className="lg:hidden p-3 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/40">
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Navigation Menu</span>
         <button
@@ -131,7 +131,7 @@ export const Sidebar = ({ onCloseMobile }) => {
         </button>
       </div>
 
-      {/* ── SCROLLABLE NAVIGATION ITEMS (Starts directly from top on desktop) ── */}
+      {/* â”€â”€ SCROLLABLE NAVIGATION ITEMS (Starts directly from top on desktop) â”€â”€ */}
       <div className="flex-1 overflow-y-auto overscroll-contain py-4 px-3 space-y-5">
         {navSections.map((section, idx) => (
           <div key={idx} className="space-y-1">
@@ -170,7 +170,7 @@ export const Sidebar = ({ onCloseMobile }) => {
         ))}
       </div>
 
-      {/* ── LOGGED-IN USER FOOTER AT THE VERY BOTTOM ── */}
+      {/* â”€â”€ LOGGED-IN USER FOOTER AT THE VERY BOTTOM â”€â”€ */}
       <div className="p-3 border-t border-slate-800 bg-slate-950/60 shrink-0">
         <div className="p-2 rounded-xl bg-slate-800/70 border border-slate-800 hover:border-teal-500/50 hover:bg-slate-800 transition flex items-center justify-between gap-2.5">
           <div

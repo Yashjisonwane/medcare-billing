@@ -1,4 +1,4 @@
-// src/components/modals/CreateBillModal.jsx
+﻿// src/components/modals/CreateBillModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockBillingService } from '../../services/mock/mockBillingService';
@@ -180,7 +180,7 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
             >
               {casesList.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.caseId || c.id} — {c.patientName}
+                  {c.caseId || c.id} â€” {c.patientName}
                 </option>
               ))}
             </select>

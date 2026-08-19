@@ -1,19 +1,19 @@
-// src/pages/dashboards/TherapistDashboard.jsx
+﻿// src/pages/dashboards/TherapistDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Activity, Award, PlusCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 
 export const TherapistDashboard = () => {
   const [notes, setNotes] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockClinicalNoteService.getNotes().then(setNotes).catch(() => {});
+    apiClinicalNoteService.getNotes().then(setNotes).catch(() => {});
   }, []);
 
-  const eswtCount = notes.filter(n => n.providerId === 'prov-davs' || n.providerName?.toLowerCase().includes('dav')).length || 3;
-  const laserCount = notes.filter(n => n.providerId === 'prov-anik' || n.providerName?.toLowerCase().includes('anik') || n.providerName?.toLowerCase().includes('laser')).length || 3;
+  const eswtCount = notes.filter(n => n.providerId === 'prov-davs' || n.providerName?.toLowerCase().includes('dav')).length;
+  const laserCount = notes.filter(n => n.providerId === 'prov-anik' || n.providerName?.toLowerCase().includes('anik') || n.providerName?.toLowerCase().includes('laser')).length;
 
   return (
     <div className="space-y-6">
@@ -66,7 +66,7 @@ export const TherapistDashboard = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-on-surface flex items-center gap-2">
               <Activity className="w-5 h-5 text-secondary-container" />
-              DAV'S Anatomy — ESWT Radial Device Form
+              DAV'S Anatomy â€” ESWT Radial Device Form
             </h2>
             <button onClick={() => navigate('/clinical-notes/davs-eswt')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1">
               Open Form <ChevronRight className="w-4 h-4" />
@@ -81,7 +81,7 @@ export const TherapistDashboard = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-on-surface flex items-center gap-2">
               <Award className="w-5 h-5 text-purple-600" />
-              ANIK Laser Therapy — Procedure Form
+              ANIK Laser Therapy â€” Procedure Form
             </h2>
             <button onClick={() => navigate('/clinical-notes/anik-laser')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1">
               Open Form <ChevronRight className="w-4 h-4" />

@@ -1,4 +1,4 @@
-// src/components/packets/UnifiedPacketViewer.jsx
+﻿// src/components/packets/UnifiedPacketViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { PACKET_MANIFESTS } from '../../constants/packetManifests';
 import { apiBillingService } from '../../services/api/apiBillingService';
@@ -186,7 +186,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
             </p>
           </div>
 
-          {/* Action Buttons — Responsive row on mobile */}
+          {/* Action Buttons â€” Responsive row on mobile */}
           <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
             <button
               onClick={toggleBlankPracticeMode}
@@ -265,7 +265,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
             </div>
           </div>
 
-          {/* Section Category Tabs — Horizontal Touch Scroll */}
+          {/* Section Category Tabs â€” Horizontal Touch Scroll */}
           <div className="flex items-center gap-1 overflow-x-auto text-[11px] font-semibold text-slate-300 py-1 scrollbar-none">
             {['ALL', 'COVER', 'BILLING', 'CMS-1500', 'ASSESSMENT', 'PROCEDURE', 'NARRATIVE'].map(tab => (
               <button
@@ -287,11 +287,11 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
       {qaMode && (
         <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs font-bold text-amber-900 flex items-center gap-2 print:hidden">
           <AlertCircle className="w-4 h-4 text-amber-600" />
-          <span>Reference Sample — Displaying sample reference PDF overlays.</span>
+          <span>Reference Sample â€” Displaying sample reference PDF overlays.</span>
         </div>
       )}
 
-      {/* CANVAS RENDERING CONTAINER — Fully Responsive Wrapper */}
+      {/* CANVAS RENDERING CONTAINER â€” Fully Responsive Wrapper */}
       <div className="overflow-x-auto p-2 sm:p-6 bg-slate-950 rounded-2xl border border-slate-800 flex justify-center print:bg-white print:p-0 print:border-none min-h-[450px]">
         
         {/* MODE 1: FULL PACKET CONTINUOUS SCROLL */}
@@ -302,7 +302,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
             {filteredPages.map((pageDef) => (
               <div key={pageDef.id} className="relative group w-full flex flex-col items-center">
                 <div className="text-[10px] font-mono text-slate-400 font-bold mb-1 print:hidden self-center">
-                  PAGE {pageDef.pageNumber} OF {manifest.totalPages} — {pageDef.title}
+                  PAGE {pageDef.pageNumber} OF {manifest.totalPages} â€” {pageDef.title}
                 </div>
                 
                 {/* Scaled Sheet Container */}

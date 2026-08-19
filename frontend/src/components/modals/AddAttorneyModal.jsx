@@ -1,4 +1,4 @@
-// src/components/modals/AddAttorneyModal.jsx
+﻿// src/components/modals/AddAttorneyModal.jsx
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { mockAttorneyService } from '../../services/mock/mockAttorneyService';

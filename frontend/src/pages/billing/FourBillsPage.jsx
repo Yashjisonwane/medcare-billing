@@ -1,4 +1,4 @@
-// src/pages/billing/FourBillsPage.jsx
+﻿// src/pages/billing/FourBillsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiBillingService } from '../../services/api/apiBillingService';
@@ -85,7 +85,7 @@ export const FourBillsPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* ── Top Navigation & Breadcrumb ── */}
+      {/* â”€â”€ Top Navigation & Breadcrumb â”€â”€ */}
       <div className="flex items-center gap-2 flex-wrap">
         <button 
           onClick={() => navigate(-1)} 
@@ -118,7 +118,7 @@ export const FourBillsPage = () => {
         </button>
       </div>
 
-      {/* ── Header Title & Dynamic Case Selector ── */}
+      {/* â”€â”€ Header Title & Dynamic Case Selector â”€â”€ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Provider Bills Ledger</h1>
@@ -134,7 +134,7 @@ export const FourBillsPage = () => {
             {casesList.length > 0 ? (
               casesList.map((c) => (
                 <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                  {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
+                  {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
                 </option>
               ))
             ) : (
@@ -151,7 +151,7 @@ export const FourBillsPage = () => {
         </div>
       </div>
 
-      {/* ── Patient & Case Context Banner ── */}
+      {/* â”€â”€ Patient & Case Context Banner â”€â”€ */}
       {caseData && (
         <div className="bg-slate-900 text-white p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-sm space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-800 pb-3">
@@ -167,7 +167,7 @@ export const FourBillsPage = () => {
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 Accident Date: <strong className="text-white font-mono">{caseData.accidentDate || 'N/A'}</strong>
-                {caseData.initialDate && <> • Admission: <strong className="text-white font-mono">{caseData.initialDate}</strong></>}
+                {caseData.initialDate && <> â€¢ Admission: <strong className="text-white font-mono">{caseData.initialDate}</strong></>}
               </p>
             </div>
             <div>
@@ -203,7 +203,7 @@ export const FourBillsPage = () => {
         </div>
       )}
 
-      {/* ── Dynamic Provider Bill Statements ── */}
+      {/* â”€â”€ Dynamic Provider Bill Statements â”€â”€ */}
       {bills.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
           <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto border border-teal-100">
@@ -280,7 +280,7 @@ export const FourBillsPage = () => {
         </div>
       )}
 
-      {/* ── Interactive Create Bill Modal ── */}
+      {/* â”€â”€ Interactive Create Bill Modal â”€â”€ */}
       <CreateBillModal
         isOpen={showCreateBillModal}
         onClose={() => setShowCreateBillModal(false)}

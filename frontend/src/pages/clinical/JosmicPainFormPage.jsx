@@ -1,6 +1,7 @@
-// src/pages/clinical/JosmicPainFormPage.jsx
-import React, { useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+﻿// src/pages/clinical/JosmicPainFormPage.jsx
+import React, { useState, useEffect } from 'react';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
+import { apiPatientService } from '../../services/api/apiPatientService';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, FileText, CheckSquare, PenTool } from 'lucide-react';
@@ -13,7 +14,8 @@ const PAIN_LOCATIONS = [
 ];
 
 export const JosmicPainFormPage = () => {
-  const [patientName, setPatientName] = useState('Demo Patient 001');
+  const [patients, setPatients] = useState([]);
+  const [selectedPatientId, setSelectedPatientId] = useState('');
   const [chiefComplaint, setChiefComplaint] = useState('Motor vehicle collision resulting in severe neck and lower back pain');
   const [selectedLocations, setSelectedLocations] = useState(['Neck', 'Lower back', 'Left ankle']);
   const [painScale, setPainScale] = useState(7);
@@ -22,6 +24,13 @@ export const JosmicPainFormPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useUIStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    apiPatientService.getPatients().then(data => {
+      setPatients(data);
+      if (data.length > 0) setSelectedPatientId(data[0].id);
+    }).catch(console.error);
+  }, []);
 
   const toggleLocation = (loc) => {
     if (selectedLocations.includes(loc)) {
@@ -35,9 +44,12 @@ export const JosmicPainFormPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const note = await mockClinicalNoteService.createNote({
-        patientId: 'pat-001',
-        patientName,
+      const selectedPatient = patients.find(p => p.id === selectedPatientId);
+      const patientNameToSave = selectedPatient ? `${selectedPatient.firstName} ${selectedPatient.lastName}` : 'Unknown Patient';
+      
+      const note = await apiClinicalNoteService.createNote({
+        patientId: selectedPatientId || 'pat-001',
+        patientName: patientNameToSave,
         caseId: 'case-001',
         providerId: 'prov-josmic',
         providerName: 'JOSMIC Wellness Center',
@@ -68,7 +80,7 @@ export const JosmicPainFormPage = () => {
       </button>
 
       <div>
-        <h1 className="text-2xl font-bold text-on-surface">JOSMIC Wellness Center — Pain Management Consultation Form</h1>
+        <h1 className="text-2xl font-bold text-on-surface">JOSMIC Wellness Center â€” Pain Management Consultation Form</h1>
         <p className="text-xs text-on-surface-variant">Structured consultation, 24 anatomical pain location grid, HPI pain scale & diagnostic plan</p>
       </div>
 
@@ -76,8 +88,23 @@ export const JosmicPainFormPage = () => {
         {/* Section 1: Patient Header */}
         <div className="space-y-4">
           <h2 className="text-sm font-bold text-on-surface border-b border-outline-variant pb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-secondary-container" /> Section 1 — Chief Complaint & HPI
+            <FileText className="w-4 h-4 text-secondary-container" /> Section 1 â€” Patient & Chief Complaint
           </h2>
+
+          <div>
+            <label className="block text-xs font-bold text-on-surface mb-1">Select Patient *</label>
+            <select
+              value={selectedPatientId}
+              onChange={(e) => setSelectedPatientId(e.target.value)}
+              className="w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface"
+              required
+            >
+              <option value="" disabled>Select a patient</option>
+              {patients.map(p => (
+                <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label className="block text-xs font-bold text-on-surface mb-1">Chief Complaint *</label>
@@ -113,9 +140,9 @@ export const JosmicPainFormPage = () => {
             className="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary-container"
           />
           <div className="flex justify-between text-[10px] text-on-surface-variant font-bold">
-            <span>0 — No Pain</span>
-            <span>5 — Moderate</span>
-            <span>10 — Unbearable</span>
+            <span>0 â€” No Pain</span>
+            <span>5 â€” Moderate</span>
+            <span>10 â€” Unbearable</span>
           </div>
         </div>
 

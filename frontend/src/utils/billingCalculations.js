@@ -1,4 +1,4 @@
-// src/utils/billingCalculations.js
+﻿// src/utils/billingCalculations.js
 import { getCachedSettings } from './settingsCache';
 
 export const calculateLineItemBalance = (item) => {

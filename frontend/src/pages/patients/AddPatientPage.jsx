@@ -1,4 +1,4 @@
-// src/pages/patients/AddPatientPage.jsx
+﻿// src/pages/patients/AddPatientPage.jsx
 import React, { useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { useUIStore } from '../../store/uiStore';
@@ -935,7 +935,7 @@ export const AddPatientPage = () => {
                             </span>
                           </div>
                           <p className="text-[11px] font-medium text-slate-600 mt-0.5">{prov.specialty}</p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">Attending: {prov.provider} • {prov.pos}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">Attending: {prov.provider} â€¢ {prov.pos}</p>
                           <p className="text-[10px] text-slate-500 italic mt-1">{prov.scope}</p>
                         </div>
                       </div>
@@ -960,7 +960,7 @@ export const AddPatientPage = () => {
                 </span>
                 <span className="text-teal-700 font-semibold">
                   {formData.assignedProviderIds.length === 4
-                    ? '✓ Complete Practice Coverage'
+                    ? 'âœ“ Complete Practice Coverage'
                     : `${formData.assignedProviderIds.length} clinic(s) assigned`}
                 </span>
               </div>
@@ -1122,7 +1122,7 @@ export const AddPatientPage = () => {
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
                       >
-                        {isSelected ? '✓ ' : '+ '} {area}
+                        {isSelected ? 'âœ“ ' : '+ '} {area}
                       </button>
                     );
                   })}
@@ -1202,10 +1202,10 @@ export const AddPatientPage = () => {
                 <div className="bg-white p-3 rounded-xl border border-slate-200">
                   <span className="text-[10px] text-slate-400 block font-semibold">PATIENT IDENTITY</span>
                   <strong className="text-slate-900 truncate block">
-                    {formData.firstName || '—'} {formData.middleName ? `${formData.middleName} ` : ''}{formData.lastName || '—'} {formData.suffix}
+                    {formData.firstName || 'â€”'} {formData.middleName ? `${formData.middleName} ` : ''}{formData.lastName || 'â€”'} {formData.suffix}
                   </strong>
                   <span className="text-[10px] text-slate-500 block">
-                    DOB: {formData.dob || '—'} ({formData.sex})
+                    DOB: {formData.dob || 'â€”'} ({formData.sex})
                   </span>
                   <span className="text-[10px] text-slate-500 block">
                     DL: {formData.driversLicense} ({formData.driversLicenseState})
@@ -1214,8 +1214,8 @@ export const AddPatientPage = () => {
 
                 <div className="bg-white p-3 rounded-xl border border-slate-200">
                   <span className="text-[10px] text-slate-400 block font-semibold">CONTACT &amp; ADDRESS</span>
-                  <strong className="text-slate-900 truncate block">{formData.phone || '—'}</strong>
-                  <span className="text-[10px] text-slate-500 truncate block">{formData.email || '—'}</span>
+                  <strong className="text-slate-900 truncate block">{formData.phone || 'â€”'}</strong>
+                  <span className="text-[10px] text-slate-500 truncate block">{formData.email || 'â€”'}</span>
                   <span className="text-[10px] text-slate-500 truncate block">
                     {formData.address.street}, {formData.address.city}
                   </span>

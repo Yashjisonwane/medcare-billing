@@ -1,4 +1,4 @@
-// src/pages/documents/PacketBuilderPage.jsx
+﻿// src/pages/documents/PacketBuilderPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { mockDocumentService } from '../../services/mock/mockDocumentService';
@@ -104,7 +104,7 @@ export const PacketBuilderPage = () => {
           >
             {cases.map(c => (
               <option key={c.id} value={c.id}>
-                {c.caseId || c.id} — {c.patientName}
+                {c.caseId || c.id} â€” {c.patientName}
               </option>
             ))}
           </select>

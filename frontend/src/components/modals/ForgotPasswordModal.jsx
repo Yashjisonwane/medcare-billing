@@ -1,4 +1,4 @@
-// src/components/modals/ForgotPasswordModal.jsx
+﻿// src/components/modals/ForgotPasswordModal.jsx
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { mockAuthService } from '../../services/mock/mockAuthService';

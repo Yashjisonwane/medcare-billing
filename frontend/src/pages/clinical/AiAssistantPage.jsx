@@ -1,4 +1,4 @@
-// src/pages/clinical/AiAssistantPage.jsx
+﻿// src/pages/clinical/AiAssistantPage.jsx
 import React, { useState, useEffect } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { mockCaseService } from '../../services/mock/mockCaseService';
@@ -186,7 +186,7 @@ export const AiAssistantPage = () => {
         providerId: targetProviderId,
         providerName: targetProviderName,
         type: 'AI_ASSISTED_SOAP',
-        title: `AI Note: ${targetDraft.type} — ${new Date().toLocaleDateString()}`,
+        title: `AI Note: ${targetDraft.type} â€” ${new Date().toLocaleDateString()}`,
         author: targetDocName,
         signedBy: targetDocName,
         content: {
@@ -211,7 +211,7 @@ export const AiAssistantPage = () => {
 
   const handleReject = (draftId) => {
     setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: 'Rejected' } : d));
-    addToast('Draft rejected — returned for revision', 'error');
+    addToast('Draft rejected â€” returned for revision', 'error');
     setSelectedDraft(null);
     setDoctorNotes('');
   };
@@ -259,7 +259,7 @@ export const AiAssistantPage = () => {
             const bulletContent = trimmed.substring(1).trim().replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             return (
               <div key={idx} className="flex items-start gap-2 pl-3">
-                <span className="text-teal-600 font-bold mt-0.5">•</span>
+                <span className="text-teal-600 font-bold mt-0.5">â€¢</span>
                 <span className="text-slate-700" dangerouslySetInnerHTML={{ __html: bulletContent }} />
               </div>
             );
@@ -336,7 +336,7 @@ export const AiAssistantPage = () => {
         </button>
       </div>
 
-      {/* ── GENERATE TAB ─────────────────────────────── */}
+      {/* â”€â”€ GENERATE TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {activeTab === 'generate' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Input */}
@@ -398,7 +398,7 @@ export const AiAssistantPage = () => {
               >
                 {CLINICIANS.map(cl => (
                   <option key={cl.id} value={cl.id}>
-                    {cl.name} — {cl.title}
+                    {cl.name} â€” {cl.title}
                   </option>
                 ))}
               </select>
@@ -525,7 +525,7 @@ export const AiAssistantPage = () => {
         </div>
       )}
 
-      {/* ── REVIEW QUEUE TAB ─────────────────────────────── */}
+      {/* â”€â”€ REVIEW QUEUE TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {activeTab === 'review' && (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
           {/* Draft List */}
@@ -570,7 +570,7 @@ export const AiAssistantPage = () => {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <p className="text-xs font-black text-slate-800">{selectedDraft.patient} — {selectedDraft.type}</p>
+                    <p className="text-xs font-black text-slate-800">{selectedDraft.patient} â€” {selectedDraft.type}</p>
                     <p className="text-[10px] text-teal-700 font-bold flex items-center gap-1 mt-0.5">
                       <ShieldCheck className="w-3 h-3 text-teal-600" />
                       Assigned Reviewer: {selectedDraft.assignedDoctorName || 'Dr. Segun Adeoye'} ({selectedDraft.assignedDoctorTitle || 'Attending Physician'})
@@ -604,7 +604,7 @@ export const AiAssistantPage = () => {
                     </div>
                   )}
 
-                  {/* Action Buttons — for Doctor & Admin on Pending drafts */}
+                  {/* Action Buttons â€” for Doctor & Admin on Pending drafts */}
                   {selectedDraft.status === 'Pending Review' && (
                     <div className="flex gap-3 pt-2">
                       <button

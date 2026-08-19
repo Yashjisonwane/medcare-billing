@@ -1,4 +1,4 @@
-// src/components/billing/PrintableStatementModal.jsx
+﻿// src/components/billing/PrintableStatementModal.jsx
 import React from 'react';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { Printer, X, ShieldCheck } from 'lucide-react';

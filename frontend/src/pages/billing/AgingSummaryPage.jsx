@@ -1,4 +1,4 @@
-// src/pages/billing/AgingSummaryPage.jsx
+﻿// src/pages/billing/AgingSummaryPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
@@ -66,13 +66,13 @@ const PATIENT_AGING = [
 ];
 
 const RECENT_ACTIVITY = [
-  { date: '08/02/2026', type: 'Payment Posted', provider: 'JOSMIC Wellness Center', amount: 0, note: 'No payment received — balance open at 30 days', icon: 'warn' },
-  { date: '07/28/2026', type: 'Statement Issued', provider: "DAV'S Anatomy", amount: 9870.00, note: 'Bill issued to OJ Lawal — 90+ days aging', icon: 'doc' },
+  { date: '08/02/2026', type: 'Payment Posted', provider: 'JOSMIC Wellness Center', amount: 0, note: 'No payment received â€” balance open at 30 days', icon: 'warn' },
+  { date: '07/28/2026', type: 'Statement Issued', provider: "DAV'S Anatomy", amount: 9870.00, note: 'Bill issued to OJ Lawal â€” 90+ days aging', icon: 'doc' },
   { date: '07/15/2026', type: 'Statement Issued', provider: 'ANIK Laser Therapy', amount: 18920.00, note: 'Laser therapy claim submitted to attorney lien', icon: 'doc' },
-  { date: '07/10/2026', type: 'Config Alert', provider: 'Counselor Practice', amount: 0, note: 'Billing config incomplete — NPI & CPT pending', icon: 'alert' },
+  { date: '07/10/2026', type: 'Config Alert', provider: 'Counselor Practice', amount: 0, note: 'Billing config incomplete â€” NPI & CPT pending', icon: 'alert' },
   { date: '06/25/2026', type: 'Adjustment Applied', provider: "DAV'S Anatomy", amount: -200.00, note: 'Write-off for duplicate eye glass charge', icon: 'check' },
   { date: '06/18/2026', type: 'Insurance Follow-up', provider: 'ANIK Laser Therapy', amount: 0, note: 'Attorney lien demand letter sent (90d overdue)', icon: 'warn' },
-  { date: '06/01/2026', type: 'Case Opened', provider: 'All Providers', amount: 0, note: 'CASE-2025-1227 initiated — MVA accident 12/27/2025', icon: 'check' },
+  { date: '06/01/2026', type: 'Case Opened', provider: 'All Providers', amount: 0, note: 'CASE-2025-1227 initiated â€” MVA accident 12/27/2025', icon: 'check' },
 ];
 
 const riskBadge = (risk) => {
@@ -261,7 +261,7 @@ export const AgingSummaryPage = () => {
         </div>
       </div>
 
-      {/* Patient Aging & Recent Activity — 2 column layout */}
+      {/* Patient Aging & Recent Activity â€” 2 column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {/* Patient-Level Aging */}
@@ -279,13 +279,13 @@ export const AgingSummaryPage = () => {
                   <div className="flex items-center justify-between mb-1.5">
                     <div>
                       <p className="text-xs font-bold text-slate-900">{p.name}</p>
-                      <p className="text-[10px] text-slate-400">{p.patientId} · {p.caseId}</p>
+                      <p className="text-[10px] text-slate-400">{p.patientId} Â· {p.caseId}</p>
                     </div>
                     <span className="text-sm font-bold text-slate-900 font-tabular">{formatCurrency(p.total)}</span>
                   </div>
                   <div className="flex gap-2 text-[10px] text-slate-500 flex-wrap mb-2">
-                    <span>🏛 {p.attorney}</span>
-                    <span>🛡 {p.insurance}</span>
+                    <span>ðŸ› {p.attorney}</span>
+                    <span>ðŸ›¡ {p.insurance}</span>
                   </div>
                   {/* Mini aging bar */}
                   <div className="flex h-1.5 rounded-full overflow-hidden gap-px">

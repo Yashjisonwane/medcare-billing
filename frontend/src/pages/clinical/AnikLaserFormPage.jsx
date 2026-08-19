@@ -1,4 +1,4 @@
-// src/pages/clinical/AnikLaserFormPage.jsx
+﻿// src/pages/clinical/AnikLaserFormPage.jsx
 import React, { useState } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { useUIStore } from '../../store/uiStore';
@@ -52,7 +52,7 @@ export const AnikLaserFormPage = () => {
       </button>
 
       <div>
-        <h1 className="text-2xl font-bold text-on-surface">ANIK Laser Therapy — Class IV Laser Procedure Form</h1>
+        <h1 className="text-2xl font-bold text-on-surface">ANIK Laser Therapy â€” Class IV Laser Procedure Form</h1>
         <p className="text-xs text-on-surface-variant">Vitals verification, Wavelength (800nm), Duration (900s), Output (10.5W) & Total Energy (236,250 Joules)</p>
       </div>
 

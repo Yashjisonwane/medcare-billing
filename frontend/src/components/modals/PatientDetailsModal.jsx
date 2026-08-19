@@ -1,4 +1,4 @@
-// src/components/modals/PatientDetailsModal.jsx
+﻿// src/components/modals/PatientDetailsModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { 
@@ -280,7 +280,7 @@ export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {
                 <div key={n.id} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <strong className="text-slate-900 block">{n.title}</strong>
-                    <span className="text-slate-500 text-[11px]">{n.providerName} — Author: {n.author} ({n.date})</span>
+                    <span className="text-slate-500 text-[11px]">{n.providerName} â€” Author: {n.author} ({n.date})</span>
                   </div>
                   <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-bold text-[10px] self-start sm:self-auto">
                     {n.status}

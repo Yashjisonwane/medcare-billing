@@ -1,4 +1,4 @@
-// src/pages/appointments/ScheduleAppointmentPage.jsx
+﻿// src/pages/appointments/ScheduleAppointmentPage.jsx
 import React, { useState } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -174,8 +174,8 @@ export const ScheduleAppointmentPage = () => {
                   }
                 }}
               >
-                <option value="INITIAL">Initial Visit (New Patient E&amp;M — e.g. 99204)</option>
-                <option value="SUBSEQUENT">Subsequent / Follow-up Visit (Established E&amp;M — e.g. 99214)</option>
+                <option value="INITIAL">Initial Visit (New Patient E&amp;M â€” e.g. 99204)</option>
+                <option value="SUBSEQUENT">Subsequent / Follow-up Visit (Established E&amp;M â€” e.g. 99214)</option>
               </select>
             </div>
 
@@ -190,7 +190,7 @@ export const ScheduleAppointmentPage = () => {
                 if (provKey === 'counselor' || activeServices.length === 0) {
                   return (
                     <div className="p-2 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 font-semibold">
-                      ⚠️ {provKey === 'counselor' ? 'Counseling Billing Disabled' : 'Configuration Pending'}
+                      âš ï¸ {provKey === 'counselor' ? 'Counseling Billing Disabled' : 'Configuration Pending'}
                     </div>
                   );
                 }
@@ -260,12 +260,12 @@ export const ScheduleAppointmentPage = () => {
               return (
                 <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-950 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
-                    <span className="text-base">{closedCheck.isWeekend ? '📅' : '🇺🇸'}</span>
-                    <span>Clinic Closed — {closedCheck.reason}</span>
+                    <span className="text-base">{closedCheck.isWeekend ? 'ðŸ“…' : 'ðŸ‡ºðŸ‡¸'}</span>
+                    <span>Clinic Closed â€” {closedCheck.reason}</span>
                   </div>
                   <p className="text-[11px] text-amber-800 leading-relaxed">
                     {closedCheck.isWeekend
-                      ? 'Routine appointments are not scheduled on Saturdays and Sundays because the clinic is closed on weekends. Please pick a Monday–Friday date or toggle Admin Override.'
+                      ? 'Routine appointments are not scheduled on Saturdays and Sundays because the clinic is closed on weekends. Please pick a Mondayâ€“Friday date or toggle Admin Override.'
                       : 'Routine patient appointments are restricted on US Federal Holidays. Please choose an alternate business day or enable admin override.'}
                   </p>
                   <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-950 pt-1">

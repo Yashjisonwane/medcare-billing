@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { mockCaseService } from '../../services/mock/mockCaseService';
@@ -185,7 +185,7 @@ export const SuperAdminDashboard = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900">Recent Operational Audit Activity</h2>
           <button onClick={() => navigate('/admin/audit-logs')} className="text-xs font-bold text-teal-600 hover:underline">
-            View All Audit Logs →
+            View All Audit Logs â†’
           </button>
         </div>
 

@@ -1,4 +1,4 @@
-// src/constants/providerConfigs.js
+﻿// src/constants/providerConfigs.js
 
 export const INITIAL_PROVIDER_CONFIGS = {
   josmic: {
@@ -219,7 +219,7 @@ export const INITIAL_PROVIDER_CONFIGS = {
     status: 'ACTIVE',
     isPlaceholder: false,
     cptCode: '90834 / 90791',
-    fee: '$180.00 – $350.00',
+    fee: '$180.00 â€“ $350.00',
     address: {
       street: '10101 Harwin Dr.',
       suite: 'Suite 110',

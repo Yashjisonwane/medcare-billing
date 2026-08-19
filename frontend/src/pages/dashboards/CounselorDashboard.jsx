@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Brain, FileText, Calendar, PlusCircle, DollarSign, CheckCircle2, 
   ChevronRight, Users, Clock, Stethoscope, Tag, HeartPulse, Printer

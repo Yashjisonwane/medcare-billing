@@ -1,5 +1,5 @@
-// frontend/src/services/mock/mockAttorneyService.js
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+﻿// frontend/src/services/mock/mockAttorneyService.js
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
 
 const FALLBACK_ATTORNEYS = [
   {

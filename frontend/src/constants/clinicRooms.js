@@ -1,4 +1,4 @@
-// src/constants/clinicRooms.js
+﻿// src/constants/clinicRooms.js
 
 export const DEFAULT_CLINIC_ROOMS = [
   // JOSMIC Wellness Center

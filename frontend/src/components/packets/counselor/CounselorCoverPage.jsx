@@ -1,4 +1,4 @@
-// src/components/packets/counselor/CounselorCoverPage.jsx
+﻿// src/components/packets/counselor/CounselorCoverPage.jsx
 import React from 'react';
 
 export const CounselorCoverPage = ({ blankMode = false, packetData = null }) => {

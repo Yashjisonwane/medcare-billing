@@ -1,4 +1,4 @@
-// src/components/packets/davs/DavProgressNote.jsx
+﻿// src/components/packets/davs/DavProgressNote.jsx
 import React from 'react';
 
 export const DavProgressNote = ({ notePage = 1, blankMode = false, packetData = null }) => {

@@ -1,4 +1,4 @@
-// src/store/uiStore.js
+﻿// src/store/uiStore.js
 import { create } from 'zustand';
 
 export const useUIStore = create((set) => ({

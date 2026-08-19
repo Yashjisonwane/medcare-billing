@@ -1,4 +1,4 @@
-// src/services/mock/mockAuthService.js
+﻿// src/services/mock/mockAuthService.js
 import { DEMO_ACCOUNTS } from '../../constants/rolePermissions';
 
 const STORAGE_KEY = 'medpractice_auth_session';

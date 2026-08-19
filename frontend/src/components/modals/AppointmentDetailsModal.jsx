@@ -1,4 +1,4 @@
-// src/components/modals/AppointmentDetailsModal.jsx
+﻿// src/components/modals/AppointmentDetailsModal.jsx
 import React from 'react';
 import { Modal } from './Modal';
 import { Calendar, Clock, User, Phone, MapPin, CheckCircle2, AlertCircle, Edit3, Tag, FileText, DollarSign, Shield, Stethoscope } from 'lucide-react';

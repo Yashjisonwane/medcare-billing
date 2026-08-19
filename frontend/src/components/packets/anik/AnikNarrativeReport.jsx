@@ -1,4 +1,4 @@
-// src/components/packets/anik/AnikNarrativeReport.jsx
+﻿// src/components/packets/anik/AnikNarrativeReport.jsx
 import React from 'react';
 
 export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
@@ -62,7 +62,7 @@ export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false, packetD
           <div className="border-t border-slate-300 pt-4 font-mono text-xs">
             <p className="font-bold text-slate-900">EVALUATING CLINICIAN:</p>
             <p className="mt-4 font-bold text-slate-900 underline">Adeoye, Segun, DC / HILT Specialist</p>
-            <p className="text-[10px] text-slate-500">ANIK Laser Therapy Center — License #R7637</p>
+            <p className="text-[10px] text-slate-500">ANIK Laser Therapy Center â€” License #R7637</p>
           </div>
         </div>
       )}

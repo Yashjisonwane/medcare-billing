@@ -1,4 +1,4 @@
-// src/components/packets/common/PrintableBillingStatement.jsx
+﻿// src/components/packets/common/PrintableBillingStatement.jsx
 import React from 'react';
 import { formatCurrency } from '../../../utils/billingCalculations';
 

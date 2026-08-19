@@ -1,4 +1,4 @@
-// src/components/packets/common/PaperCheckbox.jsx
+﻿// src/components/packets/common/PaperCheckbox.jsx
 import React from 'react';
 
 /**

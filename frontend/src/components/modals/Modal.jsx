@@ -1,4 +1,4 @@
-// src/components/modals/Modal.jsx
+﻿// src/components/modals/Modal.jsx
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-// src/components/common/DynamicDiagnosisPicker.jsx
+﻿// src/components/common/DynamicDiagnosisPicker.jsx
 import React, { useState } from 'react';
 import { Plus, X, Search, Activity, Sparkles, Check, Tag } from 'lucide-react';
 import { COMMON_ICD10_CODES } from '../../constants/servicesCatalog';

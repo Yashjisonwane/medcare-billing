@@ -1,4 +1,4 @@
-// src/components/modals/CounselorSessionModal.jsx
+﻿// src/components/modals/CounselorSessionModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
@@ -86,7 +86,7 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
         providerId: 'prov-counselor',
         providerName: 'Counselor Practice (Hope Behavioral Health)',
         type: 'COUNSELOR_GENERIC',
-        title: `Counseling Progress Note (${formData.cptCode || '90834'}) — ${formData.sessionDate}`,
+        title: `Counseling Progress Note (${formData.cptCode || '90834'}) â€” ${formData.sessionDate}`,
         author: formData.counselorName,
         content: { ...formData, patientName: selectedCase.patientName, isSigned: true }
       });

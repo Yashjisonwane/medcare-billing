@@ -1,4 +1,4 @@
-// src/pages/billing/BillingOverviewPage.jsx
+﻿// src/pages/billing/BillingOverviewPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
@@ -28,7 +28,7 @@ export const BillingOverviewPage = () => {
         <p className="text-xs text-slate-500">Practice-wide financial summary across all 4 provider billing ledgers</p>
       </div>
 
-      {/* KPI Cards — Responsive text & padding */}
+      {/* KPI Cards â€” Responsive text & padding */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: 'Total Billed', value: formatCurrency(kpis.totalBilled || 0), icon: DollarSign, color: 'teal' },
@@ -57,9 +57,9 @@ export const BillingOverviewPage = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {[
             { label: 'Current', value: aging.current, color: 'emerald' },
-            { label: '1–30 Days', value: aging.past30, color: 'blue' },
-            { label: '31–60 Days', value: aging.past60, color: 'amber' },
-            { label: '61–90 Days', value: 0, color: 'orange' },
+            { label: '1â€“30 Days', value: aging.past30, color: 'blue' },
+            { label: '31â€“60 Days', value: aging.past60, color: 'amber' },
+            { label: '61â€“90 Days', value: 0, color: 'orange' },
             { label: '90+ Days', value: aging.past90, color: 'red' },
           ].map(b => (
             <div key={b.label} className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-center min-w-0">
@@ -70,14 +70,14 @@ export const BillingOverviewPage = () => {
         </div>
       </div>
 
-      {/* Provider Billing Summary — Touch scrollable table */}
+      {/* Provider Billing Summary â€” Touch scrollable table */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-2">
             <Layers className="w-4 h-4 text-teal-500" /> Provider Billing Summary
           </h2>
           <button onClick={() => navigate('/billing/provider-bills')} className="text-xs font-bold text-teal-600 hover:underline cursor-pointer">
-            Open Provider Bills Ledger →
+            Open Provider Bills Ledger â†’
           </button>
         </div>
         <div className="overflow-x-auto">

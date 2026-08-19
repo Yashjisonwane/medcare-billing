@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+﻿import React, { useEffect, useState } from 'react';
+import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { mockReminderService } from '../../services/mock/mockReminderService';
 import { Users, Calendar, Bell, PlusCircle, CheckCircle2, Clock, Sparkles, Edit3, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +18,8 @@ export const ReceptionistDashboard = () => {
   const navigate = useNavigate();
 
   const loadData = () => {
-    mockAppointmentService.getAppointments().then(setApts);
-    mockReminderService.getLogs().then(setReminderLogs);
+    apiAppointmentService.getAllAppointments().then(setApts).catch(err => console.error("Error fetching appointments:", err));
+    mockReminderService.getLogs().then(setReminderLogs).catch(err => console.error("Error fetching reminders:", err));
   };
 
   useEffect(() => {
@@ -27,8 +27,12 @@ export const ReceptionistDashboard = () => {
   }, []);
 
   const handleCheckIn = async (aptId) => {
-    await mockAppointmentService.updateStatus(aptId, 'CHECKED_IN');
-    loadData();
+    try {
+      await apiAppointmentService.updateStatus(aptId, 'CHECKED_IN');
+      loadData();
+    } catch (err) {
+      console.error("Error checking in:", err);
+    }
   };
 
   return (
@@ -94,7 +98,7 @@ export const ReceptionistDashboard = () => {
             <p className="text-xs text-slate-500">Check in patients, edit visits or assign exam rooms</p>
           </div>
           <button onClick={() => navigate('/appointments/checkin')} className="text-xs font-bold text-teal-600 hover:underline">
-            Open Dedicated Check-in Screen →
+            Open Dedicated Check-in Screen â†’
           </button>
         </div>
 

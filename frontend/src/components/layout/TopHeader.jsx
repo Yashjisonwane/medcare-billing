@@ -1,4 +1,4 @@
-// src/components/layout/TopHeader.jsx
+﻿// src/components/layout/TopHeader.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -43,7 +43,7 @@ export const TopHeader = () => {
 
   return (
     <div className="w-full h-full px-3 sm:px-6 flex items-center justify-between text-white select-none gap-4">
-      {/* ── Left section: Sidebar Toggle & Full Branding Title ── */}
+      {/* â”€â”€ Left section: Sidebar Toggle & Full Branding Title â”€â”€ */}
       <div className="flex items-center gap-3 sm:gap-4 shrink-0">
         {/* Toggle Button */}
         <button
@@ -81,7 +81,7 @@ export const TopHeader = () => {
         </div>
       </div>
 
-      {/* ── Center Section: Provider Filter & Global Search ── */}
+      {/* â”€â”€ Center Section: Provider Filter & Global Search â”€â”€ */}
       <div className="hidden lg:flex items-center justify-center flex-1 max-w-xl mx-4 min-w-0">
         <div className="flex items-center gap-3 w-full">
           {/* Provider Dropdown */}
@@ -119,7 +119,7 @@ export const TopHeader = () => {
         </div>
       </div>
 
-      {/* ── Right Section: Role Pill + Notification Bell + User Profile ── */}
+      {/* â”€â”€ Right Section: Role Pill + Notification Bell + User Profile â”€â”€ */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
         {/* Role Badge Pill */}
         <div className="hidden md:flex items-center gap-1.5 bg-slate-800 border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full text-teal-300 shrink-0">

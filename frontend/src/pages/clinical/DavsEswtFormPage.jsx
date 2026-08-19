@@ -1,6 +1,6 @@
-// src/pages/clinical/DavsEswtFormPage.jsx
+﻿// src/pages/clinical/DavsEswtFormPage.jsx
 import React, { useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Activity, CheckCircle2 } from 'lucide-react';
@@ -26,7 +26,7 @@ export const DavsEswtFormPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const note = await mockClinicalNoteService.createNote({
+      const note = await apiClinicalNoteService.createNote({
         patientId: 'pat-001',
         patientName: formData.patientName,
         caseId: 'case-001',
@@ -53,7 +53,7 @@ export const DavsEswtFormPage = () => {
       </button>
 
       <div>
-        <h1 className="text-2xl font-bold text-on-surface">DAV'S Anatomy — Shockwave Therapy (ESWT) Radial Device Form</h1>
+        <h1 className="text-2xl font-bold text-on-surface">DAV'S Anatomy â€” Shockwave Therapy (ESWT) Radial Device Form</h1>
         <p className="text-xs text-on-surface-variant">Vitals verification, Bar setting (3.0), Hz (10 Hz), Wave Count (3000) & BLT cream application</p>
       </div>
 

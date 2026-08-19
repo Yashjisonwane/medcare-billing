@@ -1,4 +1,4 @@
-// src/pages/admin/ReportsPage.jsx
+﻿// src/pages/admin/ReportsPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -12,13 +12,13 @@ import {
 import { useUIStore } from '../../store/uiStore';
 import { apiBillingService } from '../../services/api/apiBillingService';
 
-// ── Shared formatting ─────────────────────────────────────────────────────────
+// â”€â”€ Shared formatting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
 const formatCurrency = (v) => `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 const COLORS = ['#0d9488', '#3b82f6', '#7c3aed', '#f59e0b'];
 
-// ── Custom Tooltip ──────────────────────────────────────────────────────────
+// â”€â”€ Custom Tooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CurrencyTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
     return (
@@ -35,7 +35,7 @@ const CurrencyTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+// â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const ReportsPage = () => {
   const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('billing');
@@ -118,7 +118,7 @@ export const ReportsPage = () => {
   return (
     <div className="space-y-6">
 
-      {/* ── Header ── */}
+      {/* â”€â”€ Header â”€â”€ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -145,7 +145,7 @@ export const ReportsPage = () => {
         </div>
       </div>
 
-      {/* ── KPI Summary Cards ── */}
+      {/* â”€â”€ KPI Summary Cards â”€â”€ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total Amount Billed', value: formatCurrency(totalBilled), sub: 'Across all 4 providers', icon: DollarSign, color: 'teal' },
@@ -169,7 +169,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* ── Secondary KPIs ── */}
+      {/* â”€â”€ Secondary KPIs â”€â”€ */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total CMS-1500 Claims', value: totalClaims, icon: FileText, color: 'blue' },
@@ -192,7 +192,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* ── Tabs ── */}
+      {/* â”€â”€ Tabs â”€â”€ */}
       <div className="flex border-b border-slate-200 gap-1">
         {TABS.map(tab => {
           const Icon = tab.icon;
@@ -210,7 +210,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* ── BILLING SUMMARY TAB ── */}
+      {/* â”€â”€ BILLING SUMMARY TAB â”€â”€ */}
       {activeTab === 'billing' && (
         <div className="space-y-5">
           {/* Provider Charges Bar Chart */}
@@ -236,7 +236,7 @@ export const ReportsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Monthly Area Chart */}
             <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-              <h2 className="text-sm font-bold text-slate-700 mb-4">Monthly Billing Trend (Oct 2025 – Mar 2026)</h2>
+              <h2 className="text-sm font-bold text-slate-700 mb-4">Monthly Billing Trend (Oct 2025 â€“ Mar 2026)</h2>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyBilling}>
@@ -347,7 +347,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* ── TREATMENT SESSIONS TAB ── */}
+      {/* â”€â”€ TREATMENT SESSIONS TAB â”€â”€ */}
       {activeTab === 'sessions' && (
         <div className="space-y-5">
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
@@ -408,7 +408,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* ── CMS CLAIMS TAB ── */}
+      {/* â”€â”€ CMS CLAIMS TAB â”€â”€ */}
       {activeTab === 'claims' && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -466,7 +466,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* ── AR AGING TAB ── */}
+      {/* â”€â”€ AR AGING TAB â”€â”€ */}
       {activeTab === 'aging' && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -508,8 +508,8 @@ export const ReportsPage = () => {
                   <th className="p-3.5 text-left">Provider</th>
                   <th className="p-3.5 text-right">Total AR</th>
                   <th className="p-3.5 text-right">Current</th>
-                  <th className="p-3.5 text-right">31–60 Days</th>
-                  <th className="p-3.5 text-right">61–90 Days</th>
+                  <th className="p-3.5 text-right">31â€“60 Days</th>
+                  <th className="p-3.5 text-right">61â€“90 Days</th>
                   <th className="p-3.5 text-right">90+ Days</th>
                   <th className="p-3.5 text-center">Risk Level</th>
                 </tr>

@@ -1,4 +1,4 @@
-// src/components/cms/CmsRedGridForm.jsx
+﻿// src/components/cms/CmsRedGridForm.jsx
 import React from 'react';
 
 /**
@@ -54,7 +54,7 @@ export const CmsRedGridForm = ({ claim }) => {
         printColorAdjust: 'exact'
       }}
     >
-      {/* 🔴 OFFICIAL NUCC 02/12 HEADER */}
+      {/* ðŸ”´ OFFICIAL NUCC 02/12 HEADER */}
       <div className="flex border-b-2 border-[#b91c1c] pb-1.5 items-start justify-between">
         <div className="w-[490px] pr-2">
           <div className="flex items-baseline gap-2">
@@ -78,7 +78,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 1: BOX 1 & 1a */}
+      {/* ðŸ”´ ROW 1: BOX 1 & 1a */}
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[490px] p-1 border-r-2 border-[#b91c1c]">
           <span>1. MEDICARE &nbsp; MEDICAID &nbsp; TRICARE &nbsp; CHAMPVA &nbsp; GROUP HEALTH &nbsp; FECA &nbsp; OTHER</span>
@@ -99,7 +99,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 2: BOXES 2, 3, 4 */}
+      {/* ðŸ”´ ROW 2: BOXES 2, 3, 4 */}
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[300px] p-1 border-r border-[#b91c1c]">
           <span>2. PATIENT'S NAME (Last Name, First Name, Middle Initial)</span>
@@ -123,7 +123,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 3: BOXES 5, 6, 7 */}
+      {/* ðŸ”´ ROW 3: BOXES 5, 6, 7 */}
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[300px] p-1 border-r border-[#b91c1c]">
           <span>5. PATIENT'S ADDRESS (No., Street)</span>
@@ -156,7 +156,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 4: BOXES 8 - 11 */}
+      {/* ðŸ”´ ROW 4: BOXES 8 - 11 */}
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[300px] p-1 border-r border-[#b91c1c]">
           <span>8. RESERVED FOR NUCC USE</span>
@@ -187,7 +187,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 5: BOXES 12 & 13 SIGNATURES */}
+      {/* ðŸ”´ ROW 5: BOXES 12 & 13 SIGNATURES */}
       <div className="flex border-b-2 border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[490px] p-1.5 border-r-2 border-[#b91c1c]">
           <span>12. PATIENT'S OR AUTHORIZED PERSON'S SIGNATURE (Release of Info)</span>
@@ -212,7 +212,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 6: BOXES 14 - 20 (LINKED TO APPOINTMENT / MVA DATE) */}
+      {/* ðŸ”´ ROW 6: BOXES 14 - 20 (LINKED TO APPOINTMENT / MVA DATE) */}
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[245px] p-1 border-r border-[#b91c1c]">
           <span>14. DATE OF CURRENT ILLNESS, INJURY (MVA Date)</span>
@@ -237,7 +237,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 7: BOX 21 DIAGNOSIS CODES (BOX 21 A THROUGH L) */}
+      {/* ðŸ”´ ROW 7: BOX 21 DIAGNOSIS CODES (BOX 21 A THROUGH L) */}
       <div className="border-b-2 border-[#b91c1c] p-1.5 text-[8px] font-bold text-[#991b1b]">
         <div className="flex justify-between items-center">
           <span>21. DIAGNOSIS OR NATURE OF ILLNESS OR INJURY (ICD-10-CM Pointers A - L)</span>
@@ -311,7 +311,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 8: BOX 24 SERVICE LINE TABLE (6 OFFICIAL ROWS WITH MODIFIERS 1-4 & APPOINTMENT DOS) */}
+      {/* ðŸ”´ ROW 8: BOX 24 SERVICE LINE TABLE (6 OFFICIAL ROWS WITH MODIFIERS 1-4 & APPOINTMENT DOS) */}
       <div className="border-b-2 border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         {/* Table Column Headers */}
         <div className="grid grid-cols-12 bg-red-50/50 p-1 border-b border-[#b91c1c] text-center text-[7px] leading-tight">
@@ -406,7 +406,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 9: FOOTER BOXES 25 - 30 */}
+      {/* ðŸ”´ ROW 9: FOOTER BOXES 25 - 30 */}
       <div className="grid grid-cols-12 border-b-2 border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="col-span-3 p-1 border-r border-[#b91c1c]">
           <span>25. FEDERAL TAX I.D. NUMBER</span>
@@ -440,7 +440,7 @@ export const CmsRedGridForm = ({ claim }) => {
         </div>
       </div>
 
-      {/* 🔴 ROW 10: BOXES 31, 32, 33 */}
+      {/* ðŸ”´ ROW 10: BOXES 31, 32, 33 */}
       <div className="grid grid-cols-12 text-[8px] font-bold text-[#991b1b] p-1 font-mono">
         <div className="col-span-4 border-r border-[#b91c1c] pr-2">
           <span>31. SIGNATURE OF PHYSICIAN OR SUPPLIER</span>

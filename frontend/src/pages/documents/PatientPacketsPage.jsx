@@ -1,4 +1,4 @@
-// src/pages/documents/PatientPacketsPage.jsx
+﻿// src/pages/documents/PatientPacketsPage.jsx
 import React, { useState } from 'react';
 import { UnifiedPacketViewer } from '../../components/packets/UnifiedPacketViewer';
 import { FileText, ShieldAlert, CheckCircle2, Clock } from 'lucide-react';

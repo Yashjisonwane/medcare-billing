@@ -1,4 +1,4 @@
-// src/constants/usHolidays.js
+﻿// src/constants/usHolidays.js
 
 export const US_FEDERAL_HOLIDAYS = [
   { id: 'hol-new-year', name: "New Year's Day", month: 1, day: 1, type: 'FIXED' },
@@ -126,7 +126,7 @@ export const isClinicClosed = (dateStr) => {
       isClosed: true,
       isWeekend: true,
       isHoliday: false,
-      reason: `Weekend (${weekendCheck.dayName}) — Clinic is closed`
+      reason: `Weekend (${weekendCheck.dayName}) â€” Clinic is closed`
     };
   }
 
@@ -136,7 +136,7 @@ export const isClinicClosed = (dateStr) => {
       isClosed: true,
       isWeekend: false,
       isHoliday: true,
-      reason: `US Federal Holiday (${holidayCheck.name}) — Clinic is closed`,
+      reason: `US Federal Holiday (${holidayCheck.name}) â€” Clinic is closed`,
       holidayName: holidayCheck.name
     };
   }

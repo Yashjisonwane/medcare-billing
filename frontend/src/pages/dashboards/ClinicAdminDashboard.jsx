@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { Calendar, FileCheck, Users, Receipt, PlusCircle, ChevronRight } from 'lucide-react';

@@ -1,4 +1,4 @@
-// src/utils/settingsCache.js
+﻿// src/utils/settingsCache.js
 // A lightweight cache that loads general settings once and provides them app-wide.
 // This avoids prop-drilling settings into every utility function like formatCurrency.
 

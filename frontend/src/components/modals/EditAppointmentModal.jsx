@@ -1,4 +1,4 @@
-// src/components/modals/EditAppointmentModal.jsx
+﻿// src/components/modals/EditAppointmentModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
@@ -400,7 +400,7 @@ export const EditAppointmentModal = ({ isOpen, onClose, appointment, onAppointme
         {closedCheck.isClosed && (
           <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-950 space-y-1.5 text-xs">
             <div className="flex items-center gap-2 font-bold text-amber-900">
-              <span>{closedCheck.isWeekend ? '📅' : '🇺🇸'}</span>
+              <span>{closedCheck.isWeekend ? 'ðŸ“…' : 'ðŸ‡ºðŸ‡¸'}</span>
               <span>Clinic Closed: {closedCheck.reason}</span>
             </div>
             <label className="flex items-center gap-2 cursor-pointer font-bold text-amber-950 pt-1">

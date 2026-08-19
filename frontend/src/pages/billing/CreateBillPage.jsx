@@ -1,4 +1,4 @@
-// src/pages/billing/CreateBillPage.jsx
+﻿// src/pages/billing/CreateBillPage.jsx
 import React, { useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
@@ -117,7 +117,7 @@ export const CreateBillPage = () => {
 
           {providerId === 'prov-counselor' && (
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-bold space-y-1">
-              <p>⚠️ Awaiting Client Reference Documents</p>
+              <p>âš ï¸ Awaiting Client Reference Documents</p>
               <p className="text-[11px] font-normal text-amber-700">
                 Counselor billing actions (Finalise Bill, Print Billing Statement, Generate CMS-1500, Finalise Clinical Packet) are currently disabled pending reference document submission.
               </p>
@@ -156,7 +156,7 @@ export const CreateBillPage = () => {
 
         {/* Bill To */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-          <SectionHead Icon={FileText} title="Bill To — Attorney / Responsible Party" />
+          <SectionHead Icon={FileText} title="Bill To â€” Attorney / Responsible Party" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className={labelCls}>Bill To Name</label><input className={inputCls} value={form.billToName} onChange={e => set('billToName', e.target.value)} /></div>
             <div><label className={labelCls}>Bill To Address</label><input className={inputCls} value={form.billToAddress} onChange={e => set('billToAddress', e.target.value)} /></div>

@@ -1,4 +1,4 @@
-// src/pages/auth/ForgotPasswordPage.jsx
+﻿// src/pages/auth/ForgotPasswordPage.jsx
 import React, { useState } from 'react';
 import { mockAuthService } from '../../services/mock/mockAuthService';
 import { useNavigate } from 'react-router-dom';

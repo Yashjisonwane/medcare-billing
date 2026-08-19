@@ -1,4 +1,4 @@
-// src/pages/patients/PatientListPage.jsx
+﻿// src/pages/patients/PatientListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin } from 'lucide-react';
@@ -31,7 +31,7 @@ export const PatientListPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* ── Top Header & Register Action ── */}
+      {/* â”€â”€ Top Header & Register Action â”€â”€ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Patient Registry</h1>
@@ -45,7 +45,7 @@ export const PatientListPage = () => {
         </button>
       </div>
 
-      {/* ── Search & Filter Controls ── */}
+      {/* â”€â”€ Search & Filter Controls â”€â”€ */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -72,7 +72,7 @@ export const PatientListPage = () => {
         </div>
       </div>
 
-      {/* ── Patient List (Responsive: Desktop Table + Mobile Cards) ── */}
+      {/* â”€â”€ Patient List (Responsive: Desktop Table + Mobile Cards) â”€â”€ */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-xs text-slate-500">Loading patient registry...</div>
@@ -103,7 +103,7 @@ export const PatientListPage = () => {
                         {pat.lastName}, {pat.firstName} {pat.middleName || ''}
                       </h3>
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        ID: {pat.patientId || pat.id} • DOB: {pat.dob} ({pat.sex})
+                        ID: {pat.patientId || pat.id} â€¢ DOB: {pat.dob} ({pat.sex})
                       </p>
                     </div>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
@@ -219,7 +219,7 @@ export const PatientListPage = () => {
         )}
       </div>
 
-      {/* ── Modals ── */}
+      {/* â”€â”€ Modals â”€â”€ */}
       <AddPatientModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}

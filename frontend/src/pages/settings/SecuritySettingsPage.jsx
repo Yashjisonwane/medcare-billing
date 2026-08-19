@@ -1,4 +1,4 @@
-// src/pages/settings/SecuritySettingsPage.jsx
+﻿// src/pages/settings/SecuritySettingsPage.jsx
 import React, { useState } from 'react';
 import { useUIStore } from '../../store/uiStore';
 import { ShieldCheck, Lock, Save } from 'lucide-react';

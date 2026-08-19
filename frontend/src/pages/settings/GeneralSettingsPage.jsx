@@ -1,4 +1,4 @@
-// src/pages/settings/GeneralSettingsPage.jsx
+﻿// src/pages/settings/GeneralSettingsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../../store/uiStore';
 import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 'lucide-react';
@@ -154,7 +154,7 @@ export const GeneralSettingsPage = () => {
     }
     setIsSendingTestEmail(true);
     try {
-      const res = await fetch('http://localhost:5000/v1/notifications/test-email', {
+      const res = await fetch('http://localhost:5001/v1/notifications/test-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientEmail: testEmailRecipient })
@@ -224,7 +224,7 @@ export const GeneralSettingsPage = () => {
                   { name: 'Shockwave Therapy', provider: "DAV'S Anatomy", enabled: true, cpt: '0101T (Confirmed)', fee: '$1,000.00', duration: '30 min', template: "DAV'S ESWT Therapy Record", status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
                   { name: 'Trigger Point Injection', provider: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '20552 (Pending)', fee: 'Pricing Pending', duration: '30 min', template: 'Trigger Point Form (Pending)', status: 'CONFIGURATION_PENDING', statusBadge: 'bg-amber-100 text-amber-800 border-amber-200' },
                   { name: 'TECAR Therapy', provider: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '97039-RF (Pending)', fee: 'Pricing Pending', duration: '45 min', template: 'TECAR Procedure Form (Pending)', status: 'CONFIGURATION_PENDING', statusBadge: 'bg-rose-100 text-rose-800 border-rose-200' },
-                  { name: 'Counseling', provider: 'Counselor Practice (Hope Behavioral Health)', enabled: true, cpt: '90834 / 90791', fee: '$180.00 – $350.00', duration: '45 min', template: 'Behavioral Health Progress Note', status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+                  { name: 'Counseling', provider: 'Counselor Practice (Hope Behavioral Health)', enabled: true, cpt: '90834 / 90791', fee: '$180.00 â€“ $350.00', duration: '45 min', template: 'Behavioral Health Progress Note', status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
                 ].map(srv => (
                   <tr key={srv.name} className="hover:bg-slate-50">
                     <td className="p-2.5 font-bold text-slate-900">{srv.name}</td>
@@ -300,8 +300,8 @@ export const GeneralSettingsPage = () => {
             </div>
             <div><label className={labelCls}>Default Currency</label>
               <select className={inputCls} value={settings.currency} onChange={e => set('currency', e.target.value)}>
-                <option value="USD">USD ($) — US Dollar</option>
-                <option value="CAD">CAD (C$) — Canadian Dollar</option>
+                <option value="USD">USD ($) â€” US Dollar</option>
+                <option value="CAD">CAD (C$) â€” Canadian Dollar</option>
               </select>
             </div>
             <div><label className={labelCls}>Date Format</label>
@@ -365,7 +365,7 @@ export const GeneralSettingsPage = () => {
 
           <div className="pt-3 border-t border-outline-variant/50 space-y-2">
             <h4 className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-              <span>🇺🇸</span> Official US Federal Holidays (Auto Holiday Off Calendar)
+              <span>ðŸ‡ºðŸ‡¸</span> Official US Federal Holidays (Auto Holiday Off Calendar)
             </h4>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -438,7 +438,7 @@ export const GeneralSettingsPage = () => {
           <div className="mt-4 p-4 rounded-xl border border-teal-200 bg-teal-50/40 space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="text-xs font-extrabold text-teal-900 flex items-center gap-1.5">
-                <span>📧</span> Live Email Dispatcher &amp; Connection Tester
+                <span>ðŸ“§</span> Live Email Dispatcher &amp; Connection Tester
               </h4>
               <span className="text-[10px] text-teal-700 font-medium">Plug &amp; Play Backend Ready</span>
             </div>
@@ -459,7 +459,7 @@ export const GeneralSettingsPage = () => {
                 disabled={isSendingTestEmail}
                 className="w-full sm:w-auto px-4 py-2 bg-teal-700 hover:bg-teal-800 active:scale-95 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
               >
-                {isSendingTestEmail ? 'Sending Test...' : '⚡ Send Test Email'}
+                {isSendingTestEmail ? 'Sending Test...' : 'âš¡ Send Test Email'}
               </button>
             </div>
           </div>

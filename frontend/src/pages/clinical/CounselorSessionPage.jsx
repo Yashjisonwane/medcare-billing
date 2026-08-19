@@ -1,4 +1,4 @@
-// src/pages/clinical/CounselorSessionPage.jsx
+﻿// src/pages/clinical/CounselorSessionPage.jsx
 import React, { useState } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { useUIStore } from '../../store/uiStore';
@@ -102,7 +102,7 @@ export const CounselorSessionPage = () => {
         providerId: formData.providerId,
         providerName: formData.providerName,
         type: 'COUNSELOR_GENERIC',
-        title: `Counseling Progress Note (${formData.cptCode}) — ${formData.sessionDate}`,
+        title: `Counseling Progress Note (${formData.cptCode}) â€” ${formData.sessionDate}`,
         author: formData.counselorName,
         content: {
           ...formData,
@@ -217,7 +217,7 @@ export const CounselorSessionPage = () => {
               >
                 {CPT_CODES.map(c => (
                   <option key={c.code} value={c.code}>
-                    {c.code} — {c.label} ({c.fee})
+                    {c.code} â€” {c.label} ({c.fee})
                   </option>
                 ))}
               </select>

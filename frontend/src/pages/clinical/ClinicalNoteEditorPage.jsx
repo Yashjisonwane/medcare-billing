@@ -1,4 +1,4 @@
-// src/pages/clinical/ClinicalNoteEditorPage.jsx
+﻿// src/pages/clinical/ClinicalNoteEditorPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
@@ -164,7 +164,7 @@ export const ClinicalNoteEditorPage = () => {
     }
   };
 
-  // ── Render New Note Form ──
+  // â”€â”€ Render New Note Form â”€â”€
   if (isNew && !note) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
@@ -204,7 +204,7 @@ export const ClinicalNoteEditorPage = () => {
                 >
                   {cases.map(c => (
                     <option key={c.id} value={c.caseId || c.id}>
-                      {c.caseId || c.id} — {c.patientName}
+                      {c.caseId || c.id} â€” {c.patientName}
                     </option>
                   ))}
                 </select>

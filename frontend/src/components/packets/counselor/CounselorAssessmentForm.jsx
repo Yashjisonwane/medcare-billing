@@ -1,4 +1,4 @@
-// src/components/packets/counselor/CounselorAssessmentForm.jsx
+﻿// src/components/packets/counselor/CounselorAssessmentForm.jsx
 import React from 'react';
 
 export const CounselorAssessmentForm = ({ blankMode = false, packetData = null }) => {
@@ -36,7 +36,7 @@ export const CounselorAssessmentForm = ({ blankMode = false, packetData = null }
           {packetData ? (
             packetData.diagnosisCodes?.map((code, index) => (
               <div key={index} className="flex justify-between">
-                <span><strong>{code}</strong> — Diagnosed condition</span>
+                <span><strong>{code}</strong> â€” Diagnosed condition</span>
                 <span className="font-bold text-slate-600">{index === 0 ? 'PRIMARY' : `CODE ${index + 1}`}</span>
               </div>
             )) || <div className="text-slate-500">No diagnosis codes provided</div>

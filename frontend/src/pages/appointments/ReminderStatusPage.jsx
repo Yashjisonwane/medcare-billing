@@ -1,4 +1,4 @@
-// src/pages/appointments/ReminderStatusPage.jsx
+﻿// src/pages/appointments/ReminderStatusPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockReminderService } from '../../services/mock/mockReminderService';
 import { useUIStore } from '../../store/uiStore';

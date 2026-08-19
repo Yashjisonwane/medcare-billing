@@ -1,4 +1,4 @@
-// src/components/modals/AddCaseModal.jsx
+﻿// src/components/modals/AddCaseModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { mockCaseService } from '../../services/mock/mockCaseService';
@@ -500,10 +500,10 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
                   <option value="">-- Choose Registered Law Firm or Type Below --</option>
                   {attorneys.map(a => (
                     <option key={a.id} value={a.id}>
-                      {a.firm} ({a.name}) — {a.phone}
+                      {a.firm} ({a.name}) â€” {a.phone}
                     </option>
                   ))}
-                  <option value="__NEW__">➕ Register New Law Firm...</option>
+                  <option value="__NEW__">âž• Register New Law Firm...</option>
                 </select>
               </div>
 

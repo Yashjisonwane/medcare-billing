@@ -1,8 +1,8 @@
-// src/components/packets/anik/AnikLaserProcedureForm.jsx
+﻿// src/components/packets/anik/AnikLaserProcedureForm.jsx
 import React, { useState } from 'react';
 
 /**
- * ANIK Laser Therapy Procedure Form (Radial Device) — Sample PDF Pages 8, 9, 10
+ * ANIK Laser Therapy Procedure Form (Radial Device) â€” Sample PDF Pages 8, 9, 10
  */
 export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, blankMode = false, packetData = null }) => {
   const [nerveBlock, setNerveBlock] = useState('NO');
@@ -42,7 +42,7 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
           <div><strong>SESSIONS:</strong> <span className="border border-slate-800 px-2 py-0.5 ml-1 font-bold">3</span></div>
         </div>
 
-        {/* ── 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) ── */}
+        {/* â”€â”€ 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) â”€â”€ */}
         <div className="border-2 border-slate-800 rounded-lg overflow-hidden grid grid-cols-12 text-xs">
           
           {/* Column 1: Human Body Anatomical Diagram */}
@@ -151,31 +151,31 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
             <div className="space-y-1.5 text-xs font-mono">
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>NAD</span>
-                <span className="font-bold text-teal-700 font-sans">✓</span>
+                <span className="font-bold text-teal-700 font-sans">âœ“</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>AAO X3</span>
-                <span className="font-bold text-teal-700 font-sans">✓</span>
+                <span className="font-bold text-teal-700 font-sans">âœ“</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A1</span>
-                <span className="font-bold text-teal-700 font-sans">✓</span>
+                <span className="font-bold text-teal-700 font-sans">âœ“</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A2</span>
-                <span className="font-bold text-teal-700 font-sans">✓</span>
+                <span className="font-bold text-teal-700 font-sans">âœ“</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A3</span>
-                <span className="font-bold text-teal-700 font-sans">✓</span>
+                <span className="font-bold text-teal-700 font-sans">âœ“</span>
               </div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
                 <span>Treatment A4</span>
-                <span className="text-slate-300">—</span>
+                <span className="text-slate-300">â€”</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Treatment A5</span>
-                <span className="text-slate-300">—</span>
+                <span className="text-slate-300">â€”</span>
               </div>
             </div>
           </div>
@@ -186,20 +186,20 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
         <div className="grid grid-cols-2 gap-4 py-2 font-bold text-xs">
           <div className="flex items-center gap-3">
             <span>PROCEDURE TOLERATE:</span>
-            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [✓]</span>
+            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [âœ“]</span>
             <span className="border border-slate-300 px-2 py-0.5 text-slate-400">NO [ ]</span>
           </div>
 
           <div className="flex items-center gap-3">
             <span>DURATION COMPLETED:</span>
-            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [✓]</span>
+            <span className="border border-slate-700 px-2 py-0.5 bg-teal-50 text-teal-900">YES [âœ“]</span>
             <span className="border border-slate-300 px-2 py-0.5 text-slate-400">NO [ ]</span>
           </div>
         </div>
 
         {/* Post Procedure Instructions */}
         <div className="border-t border-slate-300 pt-2 space-y-1 text-[11px]">
-          <p><strong>Post procedure Instructions:</strong> • No down time following treatment • May expect mild inflammation, redness &amp; swelling for a few days • No Aspirin or NSAIDS (Motrin, Aleve, Advil, etc.) for at least 7 days • Tylenol or Acetaminophen may be taken for discomfort • Hydrate very well (at least 64 ounces of water daily).</p>
+          <p><strong>Post procedure Instructions:</strong> â€¢ No down time following treatment â€¢ May expect mild inflammation, redness &amp; swelling for a few days â€¢ No Aspirin or NSAIDS (Motrin, Aleve, Advil, etc.) for at least 7 days â€¢ Tylenol or Acetaminophen may be taken for discomfort â€¢ Hydrate very well (at least 64 ounces of water daily).</p>
         </div>
 
         {/* Signature Box */}
