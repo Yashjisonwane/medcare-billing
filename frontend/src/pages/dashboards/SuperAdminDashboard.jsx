@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { mockBillingService } from '../../services/mock/mockBillingService';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { mockCaseService } from '../../services/mock/mockCaseService';
@@ -7,6 +7,7 @@ import { apiAuditService } from '../../services/api/apiAuditService';
 import { mockReminderService } from '../../services/mock/mockReminderService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 import { formatStatus } from '../../utils/formatters';
 import { DollarSign, Users, FileText, Activity, ShieldCheck, ArrowUpRight, ChevronRight, AlertTriangle, Bell, Clock, CheckSquare, Sparkles, PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +17,7 @@ import { ScheduleAppointmentModal } from '../../components/modals/ScheduleAppoin
 import { useUIStore } from '../../store/uiStore';
 
 export const SuperAdminDashboard = () => {
+  const settings = useSettings();
   const [aging, setAging] = useState({ grandTotal: 0, past90: 0 });
   const [patientCount, setPatientCount] = useState(0);
   const [caseCount, setCaseCount] = useState(0);

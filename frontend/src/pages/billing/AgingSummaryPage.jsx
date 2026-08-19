@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiBillingService } from '../../services/api/apiBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 import { ArrowLeft, TrendingUp, TrendingDown, Clock, AlertTriangle, CheckCircle, XCircle, BarChart2, FileText, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -104,6 +105,7 @@ const ActivityIcon = ({ type }) => {
 };
 
 export const AgingSummaryPage = () => {
+  const settings = useSettings();
   const [aging, setAging] = useState({
     current: 109034,
     past30: 430,

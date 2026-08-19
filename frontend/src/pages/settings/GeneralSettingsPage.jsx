@@ -4,7 +4,7 @@ import { useUIStore } from '../../store/uiStore';
 import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 'lucide-react';
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
-import { refreshSettingsCache, updateCachedSettings } from '../../utils/settingsCache';
+import { refreshSettingsCache } from '../../utils/settingsCache';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-on-surface mb-1';
@@ -112,7 +112,6 @@ export const GeneralSettingsPage = () => {
         const data = await getGeneralSettings();
         if (data) {
           setSettings(prev => ({ ...prev, ...data }));
-          updateCachedSettings(data);
         }
       } catch (error) {
         // Fallback to local settings
@@ -126,6 +125,10 @@ export const GeneralSettingsPage = () => {
   const set = (field, val) => {
     setSettings(p => {
       const next = { ...p, [field]: val };
+      try {
+        localStorage.setItem('medcare_practice_settings', JSON.stringify(next));
+      } catch (e) {}
+      refreshSettingsCache(next);
       return next;
     });
   };
@@ -134,9 +137,9 @@ export const GeneralSettingsPage = () => {
     e?.preventDefault();
     setIsSaving(true);
     try {
-      updateCachedSettings(settings);
+      localStorage.setItem('medcare_practice_settings', JSON.stringify(settings));
+      await refreshSettingsCache(settings);
       await updateGeneralSettings(settings).catch(() => {});
-      await refreshSettingsCache().catch(() => {});
       addToast('General practice settings updated successfully!', 'success');
     } catch (error) {
       addToast('Failed to save settings', 'error');
@@ -326,11 +329,16 @@ export const GeneralSettingsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div><label className={labelCls}>Timezone</label>
               <select className={inputCls} value={settings.timezone} onChange={e => set('timezone', e.target.value)}>
-                <option value="America/Chicago">America/Chicago (CT - Texas)</option>
-                <option value="America/New_York">America/New_York (ET)</option>
-                <option value="America/Denver">America/Denver (MT)</option>
-                <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
-                <option value="America/Phoenix">America/Phoenix (AZ)</option>
+                <option value="America/Chicago">America/Chicago (CT - Texas / Central)</option>
+                <option value="America/New_York">America/New_York (ET - Eastern)</option>
+                <option value="America/Denver">America/Denver (MT - Mountain)</option>
+                <option value="America/Los_Angeles">America/Los_Angeles (PT - Pacific)</option>
+                <option value="America/Phoenix">America/Phoenix (AZ - Arizona)</option>
+                <option value="Asia/Kolkata">Asia/Kolkata (IST - India +05:30)</option>
+                <option value="Europe/London">Europe/London (GMT/BST - UK)</option>
+                <option value="Europe/Paris">Europe/Paris (CET - Europe)</option>
+                <option value="Asia/Dubai">Asia/Dubai (GST - UAE +04:00)</option>
+                <option value="UTC">UTC (Coordinated Universal Time)</option>
               </select>
             </div>
             <div><label className={labelCls}>Default Currency</label>

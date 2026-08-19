@@ -22,6 +22,17 @@ export const apiDocumentService = {
     return res.json();
   },
 
+  async deleteDocument(id) {
+    const res = await fetch(`${API_BASE}/documents/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to delete document.');
+    }
+    return res.json();
+  },
+
   async buildPatientPacket(selectedDocIds, caseId) {
     const res = await fetch(`${API_BASE}/documents/packet`, {
       method: 'POST',

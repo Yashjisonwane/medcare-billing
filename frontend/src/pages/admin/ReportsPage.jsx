@@ -11,11 +11,9 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { apiBillingService } from '../../services/api/apiBillingService';
+import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 
-// â”€â”€ Shared formatting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-
-const formatCurrency = (v) => `$${Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 const COLORS = ['#0d9488', '#3b82f6', '#7c3aed', '#f59e0b'];
 
 // â”€â”€ Custom Tooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -37,6 +35,7 @@ const CurrencyTooltip = ({ active, payload, label }) => {
 
 // â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const ReportsPage = () => {
+  const settings = useSettings();
   const { addToast } = useUIStore();
   const [activeTab, setActiveTab] = useState('billing');
   const [providerBilling, setProviderBilling] = useState([]);

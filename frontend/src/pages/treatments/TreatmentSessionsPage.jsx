@@ -4,7 +4,6 @@ import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filt
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
-import { formatCurrency } from '../../utils/billingCalculations';
 
 const STATUS_COLORS = {
   Completed: 'bg-emerald-100 text-emerald-700',
@@ -12,6 +11,9 @@ const STATUS_COLORS = {
   Cancelled: 'bg-red-100 text-red-700',
   'No Show': 'bg-amber-100 text-amber-700',
 };
+
+import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 
 const PROVIDER_COLORS = {
   ANIK: 'bg-violet-100 text-violet-700',
@@ -265,6 +267,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
 // â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export const TreatmentSessionsPage = () => {
+  const settings = useSettings();
   const [search, setSearch] = useState('');
   const [filterProvider, setFilterProvider] = useState('ALL');
   const [showScheduleModal, setShowScheduleModal] = useState(false);

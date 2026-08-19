@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiDocumentService } from '../../services/api/apiDocumentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
-import { FolderOpen, Eye, X, Printer, Upload, Edit, FileText, CheckCircle2 } from 'lucide-react';
+import { FolderOpen, Eye, X, Printer, Upload, Edit, FileText, CheckCircle2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UnifiedPacketViewer } from '../../components/packets/UnifiedPacketViewer';
 import { useUIStore } from '../../store/uiStore';
@@ -32,6 +32,18 @@ export const DocumentListPage = () => {
       }
     }).catch(console.error);
   }, []);
+
+  const handleDeleteDoc = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete "${name}" from the repository?`)) return;
+    try {
+      await apiDocumentService.deleteDocument(id);
+      addToast(`Document "${name}" removed from repository.`, 'info');
+      setDocs(prev => prev.filter(d => d.id !== id));
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to delete document', 'error');
+    }
+  };
 
   const getProviderId = (providerName) => {
     if (providerName?.includes('ANIK')) return 'prov-anik';
@@ -152,6 +164,13 @@ export const DocumentListPage = () => {
                       className="px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg inline-flex items-center gap-1 transition shadow-sm text-[11px]"
                     >
                       <Edit className="w-3.5 h-3.5" /> Fill / Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteDoc(doc.id, doc.name)}
+                      className="px-2 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg inline-flex items-center gap-1 transition text-[11px]"
+                      title="Delete from repository"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </td>
                 </tr>

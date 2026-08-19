@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { apiBillingService } from '../../services/api/apiBillingService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 import { Receipt, DollarSign, FileCheck, Clock, PlusCircle, ChevronRight, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const BillingStaffDashboard = () => {
+  const settings = useSettings();
   const [aging, setAging] = useState({ grandTotal: 138784, past90: 28790 });
   const [fourBills, setFourBills] = useState([]);
   const [currentCase, setCurrentCase] = useState(null);

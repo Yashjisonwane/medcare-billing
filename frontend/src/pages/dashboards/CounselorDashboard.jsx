@@ -10,8 +10,10 @@ import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { apiBillingService } from '../../services/api/apiBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 
 export const CounselorDashboard = () => {
+  const settings = useSettings();
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [notes, setNotes] = useState([]);
   const [cases, setCases] = useState([]);

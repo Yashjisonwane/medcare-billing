@@ -43,81 +43,39 @@ export const calculateBillLedgerTotals = (serviceLines = []) => {
   };
 };
 
-export const formatCurrency = (amount, customCurrency = null) => {
-  // Read the user's currency preference from the settings cache
-  let currencyCode = customCurrency || 'USD';
-  if (!customCurrency) {
-    try {
-      const settings = getCachedSettings();
-      if (settings && settings.currency) {
-        currencyCode = settings.currency;
-      }
-    } catch (e) {
-      // fallback to USD if cache not loaded yet
+export const formatCurrency = (amount) => {
+  let currencyCode = 'USD';
+  try {
+    const settings = getCachedSettings();
+    if (settings && settings.currency) {
+      currencyCode = settings.currency;
     }
+  } catch (e) {
+    // fallback to USD
   }
 
-  // Map currency codes to matching locales for proper symbol rendering
-  const localeMap = {
-    USD: 'en-US',
-    CAD: 'en-CA',
-    EUR: 'de-DE',
-    GBP: 'en-GB',
-    INR: 'en-IN',
-    MXN: 'es-MX',
-    AUD: 'en-AU',
-    JPY: 'ja-JP',
-    CHF: 'de-CH',
-    AED: 'ar-AE',
-    NZD: 'en-NZ',
-    SGD: 'en-SG',
-    BRL: 'pt-BR'
-  };
-  const locale = localeMap[currencyCode] || 'en-US';
-
   const num = Number(amount) || 0;
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currencyCode,
+  const formattedNum = Math.abs(num).toLocaleString('en-US', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num);
+    maximumFractionDigits: 2
+  });
+
+  const prefix = num < 0 ? '-' : '';
+
+  if (currencyCode === 'CAD') {
+    return `${prefix}C$${formattedNum}`;
+  }
+  return `${prefix}$${formattedNum}`;
 };
 
-export const formatDate = (dateInput, customOptions = {}) => {
+export const formatDateTime = (dateInput, options = {}) => {
   if (!dateInput) return '';
   const date = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput) : dateInput;
-  if (isNaN(date?.getTime())) return String(dateInput);
+  if (isNaN(date.getTime())) return String(dateInput);
 
-  let timezone = 'America/Chicago';
-  try {
-    const settings = getCachedSettings();
-    if (settings && settings.timezone) {
-      timezone = settings.timezone;
-    }
-  } catch (e) {}
-
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    ...customOptions
-  }).format(date);
-};
-
-export const formatDateTime = (dateInput, customOptions = {}) => {
-  if (!dateInput) return '';
-  const date = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput) : dateInput;
-  if (isNaN(date?.getTime())) return String(dateInput);
-
-  let timezone = 'America/Chicago';
-  let timeFormat = '12H';
-  try {
-    const settings = getCachedSettings();
-    if (settings && settings.timezone) timezone = settings.timezone;
-    if (settings && settings.timeFormat) timeFormat = settings.timeFormat;
-  } catch (e) {}
+  const settings = getCachedSettings();
+  const timezone = settings.timezone || 'America/Chicago';
+  const timeFormat = settings.timeFormat || '12H';
 
   return new Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
@@ -127,6 +85,24 @@ export const formatDateTime = (dateInput, customOptions = {}) => {
     hour: 'numeric',
     minute: '2-digit',
     hour12: timeFormat === '12H',
-    ...customOptions
+    ...options
   }).format(date);
 };
+
+export const formatDate = (dateInput, options = {}) => {
+  if (!dateInput) return '';
+  const date = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput) : dateInput;
+  if (isNaN(date.getTime())) return String(dateInput);
+
+  const settings = getCachedSettings();
+  const timezone = settings.timezone || 'America/Chicago';
+
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    ...options
+  }).format(date);
+};
+

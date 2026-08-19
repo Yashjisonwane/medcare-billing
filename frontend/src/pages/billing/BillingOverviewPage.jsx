@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { apiBillingService } from '../../services/api/apiBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useSettings } from '../../utils/settingsCache';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, TrendingUp, Clock, CheckCircle, AlertCircle, Layers } from 'lucide-react';
 
 export const BillingOverviewPage = () => {
+  const settings = useSettings();
   const [data, setData] = useState({
     kpis: { totalBilled: 139484, amountCollected: 650, totalAdjustments: 50, outstandingBalance: 138784, past90Overdue: 28790 },
     agingBuckets: { current: 109034, past30: 430, past60: 530, past90: 28790, grandTotal: 138784 },

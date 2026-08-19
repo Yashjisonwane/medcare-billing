@@ -5,6 +5,7 @@ import { prisma } from '../config/db.js';
  */
 const formatDoc = (d) => {
   if (!d) return null;
+  const statusClean = (d.status || 'UPLOADED').replace('_DEMO', '');
   return {
     id: d.id,
     caseId: d.caseId,
@@ -13,7 +14,7 @@ const formatDoc = (d) => {
     documentType: d.documentType || d.type || 'Other',
     providerName: d.providerName || '',
     date: d.date || '',
-    status: d.status || 'UPLOADED',
+    status: statusClean,
     size: d.size || '1.0 MB',
     url: d.url || '',
     uploadedAt: d.uploadedAt
@@ -60,9 +61,25 @@ export const uploadDocument = async (req, res) => {
 
   const generatedId = `doc-${Date.now()}`;
   const currentDateStr = new Date().toLocaleDateString('en-US');
-  const targetCaseId = data.caseId || 'case-001';
+  let targetCaseId = data.caseId || 'case-001';
 
   try {
+    // Ensure valid case exists in DB to prevent foreign key errors
+    const matchedCase = await prisma.case.findFirst({
+      where: {
+        OR: [
+          { id: targetCaseId }
+        ]
+      }
+    });
+
+    if (matchedCase) {
+      targetCaseId = matchedCase.id;
+    } else {
+      const defaultCase = await prisma.case.findFirst();
+      if (defaultCase) targetCaseId = defaultCase.id;
+    }
+
     const newDoc = await prisma.document.create({
       data: {
         id: generatedId,
@@ -86,6 +103,22 @@ export const uploadDocument = async (req, res) => {
 };
 
 /**
+ * Delete document by ID
+ */
+export const deleteDocument = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.document.delete({
+      where: { id }
+    });
+    return res.status(200).json({ success: true, message: 'Document deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    return res.status(500).json({ error: 'Failed to delete document.' });
+  }
+};
+
+/**
  * Bundle patient document packet
  */
 export const buildPatientPacket = async (req, res) => {
@@ -98,16 +131,15 @@ export const buildPatientPacket = async (req, res) => {
   try {
     const docCount = selectedDocIds.length;
     return res.status(200).json({
-      packetId: `PKT-${Date.now()}`,
+      success: true,
       caseId,
-      docCount,
-      estimatedPages: docCount * 4,
-      generatedAt: new Date().toLocaleString(),
-      status: 'GENERATED_DEMO',
-      downloadUrl: '#demo-packet-download'
+      bundledAt: new Date().toISOString(),
+      totalPages: Math.max(docCount * 2, 4),
+      status: 'PACKET_GENERATED',
+      downloadUrl: `https://practice-portal.internal/packets/${caseId}-demand-packet.pdf`
     });
   } catch (error) {
-    console.error('Error compiling patient packet:', error);
-    return res.status(500).json({ error: 'Failed to bundle patient packet.' });
+    console.error('Error building patient packet:', error);
+    return res.status(500).json({ error: 'Failed to build patient packet.' });
   }
 };

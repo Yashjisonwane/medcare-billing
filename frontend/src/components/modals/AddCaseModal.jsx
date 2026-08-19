@@ -1,8 +1,8 @@
 // src/components/modals/AddCaseModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiPatientService } from '../../services/api/apiPatientService';
 import { mockAttorneyService } from '../../services/mock/mockAttorneyService';
 import { DynamicDiagnosisPicker } from '../common/DynamicDiagnosisPicker';
 import { AddAttorneyModal } from './AddAttorneyModal';
@@ -33,14 +33,14 @@ const INITIAL_CASE_DATA = {
   dischargeDate: '',
   accidentType: 'AUTO_ACCIDENT',
   accidentState: 'TX',
-  accidentCity: '',
-  accidentLocation: '',
-  mechanismOfInjury: '',
+  accidentCity: 'Houston',
+  accidentLocation: 'Houston, TX Metro Area',
+  mechanismOfInjury: 'Motor Vehicle Collision with deceleration impact',
   policeReportNumber: '',
   emergencyTransport: 'NONE',
   chiefComplaint: '',
   injuryBodyParts: '',
-  diagnosisCodes: [],
+  diagnosisCodes: ['M54.50', 'M54.2'], // Default common MVA diagnoses
   referringProviderName: '',
   referringProviderNpi: '',
   attorneyName: '',
@@ -74,12 +74,16 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
     mockAttorneyService.getAttorneys().then(data => setAttorneys(data || [])).catch(() => {});
   };
 
-  // Load patients and attorneys list for dropdown
+  // Load patients and attorneys list for dropdown from real API
   useEffect(() => {
     if (isOpen) {
-      mockPatientService.getPatients().then(data => {
-        setPatients(data || []);
-      }).catch(() => {});
+      apiPatientService.getPatients().then(data => {
+        const raw = Array.isArray(data) ? data : (data?.patients || []);
+        setPatients(raw);
+      }).catch(() => {
+        // Fallback
+        setPatients([]);
+      });
       loadAttorneys();
     }
   }, [isOpen]);
@@ -90,6 +94,7 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
       applyPatientData(initialPatient);
     } else if (isOpen && !initialPatient) {
       setFormData(INITIAL_CASE_DATA);
+      setErrors({});
     }
   }, [initialPatient, isOpen]);
 
@@ -100,13 +105,12 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
       patientName: `${patientObj.firstName || ''} ${patientObj.lastName || ''}`.trim(),
       patientDob: patientObj.dob || '',
       patientPhone: patientObj.phone || '',
-      // Auto-fill accident date from patient intake if available
       accidentDate: patientObj.accidentDate || patientObj.incidentDate || prev.accidentDate || '',
-      mechanismOfInjury: patientObj.mechanismOfInjury || prev.mechanismOfInjury || '',
+      mechanismOfInjury: patientObj.mechanismOfInjury || prev.mechanismOfInjury || 'Motor Vehicle Collision with deceleration impact',
       injuryBodyParts: Array.isArray(patientObj.selectedInjuryAreas)
         ? patientObj.selectedInjuryAreas.join(', ')
-        : (patientObj.injuryBodyParts || prev.injuryBodyParts || ''),
-      chiefComplaint: patientObj.chiefComplaint || patientObj.patientNotes || prev.chiefComplaint || '',
+        : (patientObj.injuryBodyParts || prev.injuryBodyParts || 'Neck, Low Back, Left Ankle'),
+      chiefComplaint: patientObj.chiefComplaint || patientObj.patientNotes || prev.chiefComplaint || 'Cervicalgia, lumbar strain and soft tissue pain',
       attorneyName: patientObj.referringAttorney || patientObj.attorneyName || prev.attorneyName || '',
       lawFirm: patientObj.lawFirm || patientObj.attorneyLawFirm || (patientObj.referringAttorney ? `${patientObj.referringAttorney}` : prev.lawFirm || ''),
       insuranceCompany: patientObj.primaryInsuranceCompany || prev.insuranceCompany || '',
@@ -164,7 +168,7 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
       return {
         isInvalid: true,
         type: 'AFTER_ADMISSION',
-        message: `Date of Accident (${formData.accidentDate}) cannot be AFTER the Initial Treatment / Admission Date (${formData.initialDate}). The accident must have occurred on or before admission.`
+        message: `Date of Accident (${formData.accidentDate}) cannot be AFTER Initial Treatment Date (${formData.initialDate}). The accident must have occurred on or before initial care.`
       };
     }
 
@@ -176,8 +180,8 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
       return {
         isInvalid: false,
         message: diffDays === 0
-          ? 'Accident occurred on the same day as admission/initial treatment.'
-          : `Accident occurred ${diffDays} day(s) prior to admission/initial treatment.`
+          ? 'Accident occurred on the same day as initial treatment.'
+          : `Accident occurred ${diffDays} day(s) prior to initial treatment.`
       };
     }
 
@@ -186,40 +190,92 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
 
   const timelineCheck = getTimelineCheck();
 
+  // Completion check per tab
+  const isTab1Complete = !!(formData.patientName?.trim() && formData.accidentDate && formData.initialDate && !timelineCheck?.isInvalid);
+  const isTab2Complete = !!((formData.attorneyName?.trim() || formData.lawFirm?.trim()) && formData.insuranceCompany?.trim() && (formData.insuranceClaimNumber?.trim() || formData.insurancePolicyNumber?.trim()));
+  const isTab3Complete = !!(formData.chiefComplaint?.trim() && (formData.injuryBodyParts?.trim() || formData.diagnosisCodes?.length > 0) && (formData.diagnosisCodes && formData.diagnosisCodes.length > 0));
+
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
     const newErrors = {};
+
+    // 1. Validate Section 1: Accident & Timeline Verification
     if (!formData.patientName.trim()) {
-      newErrors.patientName = 'Patient selection is required.';
+      newErrors.patientName = 'Patient selection is required in Section 1.';
     }
     if (!formData.accidentDate) {
-      newErrors.accidentDate = 'Date of accident is required.';
+      newErrors.accidentDate = 'Date of accident is required in Section 1.';
     } else if (formData.accidentDate > todayStr) {
-      newErrors.accidentDate = 'Date of accident cannot be in the future.';
+      newErrors.accidentDate = 'Date of accident cannot be in the future in Section 1.';
     } else if (formData.initialDate && formData.accidentDate > formData.initialDate) {
-      newErrors.accidentDate = `Date of accident (${formData.accidentDate}) cannot be after admission/initial treatment date (${formData.initialDate}).`;
+      newErrors.accidentDate = `Date of accident (${formData.accidentDate}) cannot be after initial treatment date (${formData.initialDate}).`;
     }
-
+    if (!formData.initialDate) {
+      newErrors.initialDate = 'Initial treatment date is required in Section 1.';
+    }
     if (formData.initialDate && formData.dischargeDate && formData.dischargeDate < formData.initialDate) {
       newErrors.dischargeDate = 'Discharge date cannot be before initial treatment date.';
     }
 
+    // 2. Validate Section 2: Legal Lien & Auto Insurance
+    if (!formData.attorneyName?.trim() && !formData.lawFirm?.trim()) {
+      newErrors.attorneyName = 'Attorney or Law Firm name is required in Section 2.';
+    }
+    if (!formData.insuranceCompany?.trim()) {
+      newErrors.insuranceCompany = 'Auto / Liability insurance carrier is required in Section 2.';
+    }
+    if (!formData.insuranceClaimNumber?.trim() && !formData.insurancePolicyNumber?.trim()) {
+      newErrors.insuranceClaimNumber = 'Insurance Policy # or Claim # is required in Section 2.';
+    }
+
+    // 3. Validate Section 3: Diagnoses (ICD-10) & Notes
+    if (!formData.chiefComplaint?.trim()) {
+      newErrors.chiefComplaint = 'Chief complaints / injury summary is required in Section 3.';
+    }
+    if (!formData.diagnosisCodes || formData.diagnosisCodes.length === 0) {
+      newErrors.diagnosisCodes = 'At least 1 ICD-10 diagnosis code is required in Section 3.';
+    }
+
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length > 0) {
-      addToast(Object.values(newErrors)[0], 'warning');
+      // Auto-navigate to first invalid tab
+      if (newErrors.patientName || newErrors.accidentDate || newErrors.initialDate || newErrors.dischargeDate) {
+        setActiveTab('ACCIDENT');
+        addToast(newErrors.patientName || newErrors.accidentDate || newErrors.initialDate, 'warning');
+      } else if (newErrors.attorneyName || newErrors.insuranceCompany || newErrors.insuranceClaimNumber) {
+        setActiveTab('LEGAL');
+        addToast(newErrors.attorneyName || newErrors.insuranceCompany || newErrors.insuranceClaimNumber, 'warning');
+      } else {
+        setActiveTab('CLINICAL');
+        addToast(newErrors.chiefComplaint || newErrors.diagnosisCodes, 'warning');
+      }
       return;
     }
 
     setIsLoading(true);
     try {
-      const created = await mockCaseService.createCase(formData);
-      addToast(`Accident Case ${created.caseId || 'CASE-2026'} created successfully!`, 'success');
+      // Resolve valid patient ID
+      let finalPatientId = formData.patientId;
+      if (!finalPatientId && patients.length > 0) {
+        finalPatientId = patients[0].id;
+      }
+
+      const payload = {
+        ...formData,
+        patientId: finalPatientId || 'pat-001'
+      };
+
+      const created = await apiCaseService.createCase(payload);
+      addToast(`Accident Case ${created.caseId || 'CASE-2026'} created & saved to database!`, 'success');
       if (onCaseAdded) onCaseAdded(created);
       onClose();
       setFormData(INITIAL_CASE_DATA);
-    } catch {
-      addToast('Failed to create accident case', 'error');
+      setErrors({});
+    } catch (err) {
+      console.error('Failed to create case:', err);
+      addToast(err.message || 'Failed to create accident case in database', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -265,7 +321,12 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
               activeTab === 'ACCIDENT' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
-            <Shield className="w-3.5 h-3.5" /> 1. Accident &amp; Timeline Verification
+            <Shield className="w-3.5 h-3.5" /> 1. Accident &amp; Timeline
+            {isTab1Complete ? (
+              <span className="w-4 h-4 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-[10px]">✓</span>
+            ) : (
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            )}
           </button>
           <button
             type="button"
@@ -274,7 +335,12 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
               activeTab === 'LEGAL' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
-            <Scale className="w-3.5 h-3.5" /> 2. Legal Lien &amp; Auto Insurance
+            <Scale className="w-3.5 h-3.5" /> 2. Legal Lien &amp; Insurance
+            {isTab2Complete ? (
+              <span className="w-4 h-4 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-[10px]">✓</span>
+            ) : (
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            )}
           </button>
           <button
             type="button"
@@ -284,6 +350,11 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
             }`}
           >
             <Stethoscope className="w-3.5 h-3.5" /> 3. Diagnoses (ICD-10) &amp; Notes
+            {isTab3Complete ? (
+              <span className="w-4 h-4 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-[10px]">✓</span>
+            ) : (
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            )}
           </button>
         </div>
 

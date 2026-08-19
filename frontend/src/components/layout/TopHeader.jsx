@@ -1,9 +1,14 @@
-﻿// src/components/layout/TopHeader.jsx
+// src/components/layout/TopHeader.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { mockProviderService } from '../../services/mock/mockProviderService';
-import { Search, Bell, Shield, LogOut, ChevronDown, User, Activity, ChevronLeft, ChevronRight, Menu, Pen, Sparkles } from 'lucide-react';
+import { apiNotificationService } from '../../services/api/apiNotificationService';
+import { 
+  Search, Bell, Shield, LogOut, ChevronDown, User, Activity, 
+  ChevronLeft, ChevronRight, Menu, Pen, Sparkles, CheckCircle2, 
+  Clock, DollarSign, MessageSquare, ExternalLink, X, Check
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FMLogo } from '../common/FMLogo';
 import { EditProfileModal } from '../modals/EditProfileModal';
@@ -12,9 +17,13 @@ export const TopHeader = () => {
   const { currentUser, logout } = useAuthStore();
   const { sidebarCollapsed, toggleSidebar, activeProviderFilter, setProviderFilter } = useUIStore();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notifMenuOpen, setNotifMenuOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [providersList, setProvidersList] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loadingNotifs, setLoadingNotifs] = useState(false);
   const navigate = useNavigate();
 
   const loadProviders = () => {
@@ -23,16 +32,58 @@ export const TopHeader = () => {
     }).catch(() => {});
   };
 
+  const loadNotifications = async () => {
+    try {
+      setLoadingNotifs(true);
+      const data = await apiNotificationService.getLiveNotifications();
+      if (data) {
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error('Failed to load notifications:', err);
+    } finally {
+      setLoadingNotifs(false);
+    }
+  };
+
   useEffect(() => {
     loadProviders();
+    loadNotifications();
+
     window.addEventListener('providers-updated', loadProviders);
-    return () => window.removeEventListener('providers-updated', loadProviders);
+    window.addEventListener('appointment-created', loadNotifications);
+    window.addEventListener('bill-updated', loadNotifications);
+
+    // Periodic poll every 30s
+    const timer = setInterval(loadNotifications, 30000);
+
+    return () => {
+      window.removeEventListener('providers-updated', loadProviders);
+      window.removeEventListener('appointment-created', loadNotifications);
+      window.removeEventListener('bill-updated', loadNotifications);
+      clearInterval(timer);
+    };
   }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/patients?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
+  };
+
+  const handleNotificationClick = (notif) => {
+    setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifMenuOpen(false);
+    if (notif.link) {
+      navigate(notif.link);
     }
   };
 
@@ -127,16 +178,117 @@ export const TopHeader = () => {
           <span>Role: {currentUser?.role || 'Super Admin'}</span>
         </div>
 
-        {/* Notifications Trigger */}
-        <button
-          type="button"
-          onClick={() => navigate('/appointments/calendar')}
-          className="relative p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer shrink-0"
-          title="Notifications"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-        </button>
+        {/* Notifications Trigger & Dropdown */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setNotifMenuOpen(!notifMenuOpen);
+              setUserMenuOpen(false);
+            }}
+            className={`relative p-2 rounded-xl transition cursor-pointer shrink-0 ${
+              notifMenuOpen ? 'bg-slate-800 text-teal-400' : 'hover:bg-slate-800 text-slate-400 hover:text-white'
+            }`}
+            title="Notifications & Alerts"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Notifications Dropdown Panel */}
+          {notifMenuOpen && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 pb-2.5 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-black text-slate-900">Practice Notifications</h3>
+                  {unreadCount > 0 && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold bg-rose-100 text-rose-700 rounded-full">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </div>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllRead}
+                    className="text-[11px] font-bold text-teal-600 hover:text-teal-800 transition cursor-pointer flex items-center gap-1"
+                  >
+                    <Check className="w-3 h-3" /> Mark all read
+                  </button>
+                )}
+              </div>
+
+              {/* Notification Items List */}
+              <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
+                {loadingNotifs ? (
+                  <div className="p-6 text-center text-xs text-slate-400">Loading notifications...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-8 text-center space-y-2">
+                    <Bell className="w-8 h-8 text-slate-300 mx-auto" />
+                    <p className="text-xs font-bold text-slate-600">All caught up!</p>
+                    <p className="text-[11px] text-slate-400">No new alerts or scheduled notifications.</p>
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      onClick={() => handleNotificationClick(notif)}
+                      className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-start gap-3 ${
+                        !notif.read ? 'bg-teal-50/40' : ''
+                      }`}
+                    >
+                      <div className={`p-2 rounded-xl shrink-0 mt-0.5 ${
+                        notif.type === 'CHECK_IN' ? 'bg-teal-100 text-teal-700' :
+                        notif.type === 'BILLING' ? 'bg-amber-100 text-amber-700' :
+                        notif.type === 'REMINDER' ? 'bg-indigo-100 text-indigo-700' :
+                        'bg-cyan-100 text-cyan-700'
+                      }`}>
+                        {notif.type === 'CHECK_IN' ? <CheckCircle2 className="w-4 h-4" /> :
+                         notif.type === 'BILLING' ? <DollarSign className="w-4 h-4" /> :
+                         notif.type === 'REMINDER' ? <MessageSquare className="w-4 h-4" /> :
+                         <Clock className="w-4 h-4" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <p className="text-xs font-extrabold text-slate-900 truncate">{notif.title}</p>
+                          {notif.badge && (
+                            <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-md border shrink-0 ${notif.badgeColor || 'bg-slate-100 text-slate-600'}`}>
+                              {notif.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">{notif.message}</p>
+                        <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400 font-mono">
+                          {notif.time && <span>{notif.time}</span>}
+                          {notif.date && <span>• {notif.date}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Bottom Nav Links */}
+              <div className="pt-2 px-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-center text-xs font-bold">
+                <button
+                  onClick={() => { setNotifMenuOpen(false); navigate('/appointments/calendar'); }}
+                  className="py-1.5 px-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 transition"
+                >
+                  View Calendar
+                </button>
+                <button
+                  onClick={() => { setNotifMenuOpen(false); navigate('/appointments/checkin'); }}
+                  className="py-1.5 px-2 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 transition"
+                >
+                  Lobby Check-in
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* User Profile Dropdown */}
         <div className="relative shrink-0">

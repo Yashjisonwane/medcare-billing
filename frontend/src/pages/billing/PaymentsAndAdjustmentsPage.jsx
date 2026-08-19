@@ -206,7 +206,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
                 >
                   {casesList.map(c => (
                     <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                      {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
+                      {c.caseId || c.id} - {c.patientName || 'Accident Patient'}
                     </option>
                   ))}
                 </select>
@@ -232,8 +232,8 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
                       const isPaid = bal <= 0;
                       return (
                         <option key={b.id} value={b.id}>
-                          {isPaid ? 'âœ… [PAID IN FULL] ' : 'â³ [BALANCE DUE] '}
-                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) â€” {isPaid ? '$0.00 (Settled)' : formatCurrency(bal)}
+                          {isPaid ? '✓ [PAID IN FULL] ' : '⏳ [BALANCE DUE] '}
+                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) - {isPaid ? '$0.00 (Settled)' : formatCurrency(bal)}
                         </option>
                       );
                     })

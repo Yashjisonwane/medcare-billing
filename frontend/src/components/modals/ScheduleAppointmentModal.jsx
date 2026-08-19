@@ -1,9 +1,9 @@
-﻿// src/components/modals/ScheduleAppointmentModal.jsx
+// src/components/modals/ScheduleAppointmentModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiAppointmentService } from '../../services/api/apiAppointmentService';
+import { apiPatientService } from '../../services/api/apiPatientService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { createDefaultServiceLine } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../common/MultiLineCptTable';
@@ -34,7 +34,7 @@ export const ScheduleAppointmentModal = ({
   ]);
 
   const [formData, setFormData] = useState({
-    patientId: prefillPatientId || 'pat-001',
+    patientId: prefillPatientId || '',
     patientName: prefillPatientName || '',
     patientPhone: prefillPhone || '',
     caseId: prefillCaseId || '',
@@ -53,7 +53,7 @@ export const ScheduleAppointmentModal = ({
   // Load patients and cases
   useEffect(() => {
     if (isOpen) {
-      mockPatientService.getPatients().then(res => {
+      apiPatientService.getPatients().then(res => {
         if (res && res.length > 0) {
           setPatients(res);
           if (!prefillPatientName) {
@@ -68,35 +68,37 @@ export const ScheduleAppointmentModal = ({
         }
       }).catch(() => {});
 
-      mockCaseService.getCases().then(res => {
+      apiCaseService.getCases().then(res => {
         if (res && res.length > 0) {
           setCases(res);
           if (!prefillCaseId) {
-            setFormData(prev => ({
-              ...prev,
-              caseId: res[0].caseId || res[0].id
-            }));
+            setFormData(prev => ({ ...prev, caseId: res[0].caseId || res[0].id }));
           }
         }
       }).catch(() => {});
     }
   }, [isOpen, prefillPatientId, prefillPatientName, prefillPhone, prefillCaseId]);
 
-  const set = (field, val) => setFormData(p => ({ ...p, [field]: val }));
+  const set = (f, v) => setFormData(p => ({ ...p, [f]: v }));
 
-  const closedCheck = isClinicClosed(formData.date);
-
-  const handlePatientSelect = (pId) => {
-    const p = patients.find(x => x.id === pId);
-    if (p) {
+  const handlePatientSelect = (patientId) => {
+    const selected = patients.find(p => p.id === patientId);
+    if (selected) {
       setFormData(prev => ({
         ...prev,
-        patientId: p.id,
-        patientName: `${p.firstName} ${p.lastName}`.trim(),
-        patientPhone: p.phone || p.mobilePhone || ''
+        patientId: selected.id,
+        patientName: `${selected.firstName} ${selected.lastName}`.trim(),
+        patientPhone: selected.phone || selected.mobilePhone || ''
       }));
+      // Filter linked cases
+      const patientCases = cases.filter(c => c.patientId === selected.id || c.patientId === selected.patientId);
+      if (patientCases.length > 0) {
+        set('caseId', patientCases[0].caseId || patientCases[0].id);
+      }
     }
   };
+
+  const closedCheck = isClinicClosed(formData.date);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +111,7 @@ export const ScheduleAppointmentModal = ({
     try {
       const selectedProv = Object.values(INITIAL_PROVIDER_CONFIGS).find(p => p.id === formData.providerId);
       const totalEstimatedCharge = serviceLines.reduce((sum, l) => sum + ((parseFloat(l.units) || 1) * (parseFloat(l.charge) || 0)), 0);
-      const created = await mockAppointmentService.createAppointment({
+      const created = await apiAppointmentService.createAppointment({
         ...formData,
         serviceLines,
         totalEstimatedCharge,
@@ -117,11 +119,11 @@ export const ScheduleAppointmentModal = ({
         modifiers: serviceLines.map(l => [l.modifier1, l.modifier2, l.modifier3, l.modifier4].filter(Boolean).join('-')).filter(Boolean).join(', '),
         providerName: selectedProv?.name || 'JOSMIC Wellness Center'
       });
-      addToast(`Appointment scheduled for ${created.patientName}!`, 'success');
+      addToast(`Appointment scheduled for ${created.patientName || formData.patientName}!`, 'success');
       if (onAppointmentBooked) onAppointmentBooked(created);
       onClose();
-    } catch {
-      addToast('Failed to schedule appointment', 'error');
+    } catch (err) {
+      addToast(err?.message || 'Failed to schedule appointment', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +197,7 @@ export const ScheduleAppointmentModal = ({
                 <option value="">-- No Case / General Visit --</option>
                 {cases.map(c => (
                   <option key={c.id} value={c.caseId || c.id}>
-                    {c.caseId || c.id} â€” {c.patientName}
+                    {c.caseId || c.id} - {c.patientName}
                   </option>
                 ))}
               </select>

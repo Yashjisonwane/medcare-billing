@@ -1,8 +1,10 @@
-﻿// src/components/packets/common/PrintableBillingStatement.jsx
+// src/components/packets/common/PrintableBillingStatement.jsx
 import React from 'react';
 import { formatCurrency } from '../../../utils/billingCalculations';
+import { useSettings } from '../../../utils/settingsCache';
 
 export const PrintableBillingStatement = ({ bill, pageIndex = 0 }) => {
+  const settings = useSettings();
   if (!bill) return null;
 
   const lineItems = bill.lineItems || [];

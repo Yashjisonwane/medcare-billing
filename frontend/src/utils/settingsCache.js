@@ -1,30 +1,27 @@
 // src/utils/settingsCache.js
+// A lightweight reactive cache that loads general settings and provides them app-wide.
+// Supports instant reactive updates across all components when settings change.
+
 import { useState, useEffect } from 'react';
 import { getGeneralSettings } from '../services/api/apiSettingsService';
 
-const SETTINGS_STORAGE_KEY = 'medcare_practice_settings';
-const SETTINGS_EVENT = 'medcare_settings_updated';
+const STORAGE_KEY = 'medcare_practice_settings';
 
-const DEFAULT_SETTINGS = {
-  appName: 'F&M Health & Wellness',
-  practiceName: 'F&M Health & Wellness Center LLC',
-  practiceType: 'MULTI_SPECIALTY',
-  timezone: 'America/Chicago',
-  currency: 'USD',
-  dateFormat: 'MM/DD/YYYY',
-  timeFormat: '12H',
-  language: 'en-US'
-};
-
-const getStoredLocalSettings = () => {
+const getDefaultSettings = () => {
   try {
-    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
   } catch (e) {}
-  return DEFAULT_SETTINGS;
+  return {
+    timezone: 'America/Chicago',
+    currency: 'USD',
+    dateFormat: 'MM/DD/YYYY',
+    timeFormat: '12H',
+    language: 'en-US'
+  };
 };
 
-let _cachedSettings = getStoredLocalSettings();
+let _cachedSettings = getDefaultSettings();
 let _loadPromise = null;
 
 export const loadSettings = async () => {
@@ -33,11 +30,11 @@ export const loadSettings = async () => {
   _loadPromise = getGeneralSettings()
     .then(data => {
       if (data && typeof data === 'object') {
-        _cachedSettings = { ...DEFAULT_SETTINGS, ..._cachedSettings, ...data };
+        _cachedSettings = { ..._cachedSettings, ...data };
         try {
-          localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(_cachedSettings));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(_cachedSettings));
         } catch (e) {}
-        window.dispatchEvent(new CustomEvent(SETTINGS_EVENT, { detail: _cachedSettings }));
+        window.dispatchEvent(new CustomEvent('medcare_settings_updated', { detail: _cachedSettings }));
       }
       _loadPromise = null;
       return _cachedSettings;
@@ -52,44 +49,42 @@ export const loadSettings = async () => {
 
 export const getCachedSettings = () => {
   if (!_cachedSettings) {
-    _cachedSettings = getStoredLocalSettings();
+    _cachedSettings = getDefaultSettings();
   }
   return _cachedSettings;
 };
 
-export const updateCachedSettings = (newSettings) => {
-  _cachedSettings = { ..._cachedSettings, ...newSettings };
-  try {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(_cachedSettings));
-  } catch (e) {}
-  window.dispatchEvent(new CustomEvent(SETTINGS_EVENT, { detail: _cachedSettings }));
-  return _cachedSettings;
-};
-
-export const refreshSettingsCache = async () => {
+// Call this after saving settings so the cache is refreshed everywhere immediately
+export const refreshSettingsCache = async (newSettings = null) => {
+  if (newSettings) {
+    _cachedSettings = { ..._cachedSettings, ...newSettings };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(_cachedSettings));
+    } catch (e) {}
+    window.dispatchEvent(new CustomEvent('medcare_settings_updated', { detail: _cachedSettings }));
+  }
   _loadPromise = null;
   return loadSettings();
 };
 
 /**
- * Custom React Hook to subscribe to real-time currency, timezone & localization changes app-wide
+ * Custom React hook to subscribe to settings changes reactively
  */
 export const useSettings = () => {
   const [settings, setSettings] = useState(getCachedSettings);
 
   useEffect(() => {
     const handler = (e) => {
-      setSettings(e.detail || getCachedSettings());
+      if (e?.detail) {
+        setSettings(e.detail);
+      } else {
+        setSettings(getCachedSettings());
+      }
     };
-    window.addEventListener(SETTINGS_EVENT, handler);
-    return () => window.removeEventListener(SETTINGS_EVENT, handler);
+    window.addEventListener('medcare_settings_updated', handler);
+    return () => window.removeEventListener('medcare_settings_updated', handler);
   }, []);
 
-  return {
-    settings,
-    currency: settings.currency || 'USD',
-    timezone: settings.timezone || 'America/Chicago',
-    dateFormat: settings.dateFormat || 'MM/DD/YYYY',
-    timeFormat: settings.timeFormat || '12H'
-  };
+  return settings;
 };
+
