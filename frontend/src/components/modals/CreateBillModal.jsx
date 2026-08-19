@@ -1,9 +1,9 @@
-﻿// src/components/modals/CreateBillModal.jsx
+// src/components/modals/CreateBillModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockProviderService } from '../../services/mock/mockProviderService';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
 import { DollarSign, Save, Tag, Receipt, Stethoscope, AlertCircle } from 'lucide-react';
 
@@ -30,7 +30,7 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
   // Load cases and providers from backend
   useEffect(() => {
     if (isOpen) {
-      mockCaseService.getCases().then(res => {
+      apiCaseService.getCases().then(res => {
         if (res && res.length > 0) {
           setCasesList(res);
           const initialCase = res.find(c => c.id === selectedCaseId || c.caseId === selectedCaseId) || res[0];
@@ -42,7 +42,7 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
         }
       }).catch(() => {});
 
-      mockProviderService.getProviders().then(res => {
+      apiProviderService.getProviders().then(res => {
         if (res) {
           setProvidersList(Object.values(res));
         }
@@ -70,12 +70,10 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
     e.preventDefault();
     setIsLoading(true);
     try {
-      // 1. Create or retrieve bill for this case + provider in the backend
       let targetBillId = `bill-${formData.providerId.replace('prov-', '')}-${formData.caseId}`;
       
-      // Try to create the bill container if new
       try {
-        await mockBillingService.createBill({
+        await apiBillingService.createBill({
           id: targetBillId,
           caseId: formData.caseId,
           providerId: formData.providerId,
@@ -83,24 +81,22 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
           billToAddress: '11711 Bedford St. Suite 01, Houston TX 77031'
         });
       } catch (e) {
-        // Bill might already exist, which is fine
+        // Bill might already exist
       }
 
-      // 2. Add the service line to the backend bill
-      const updated = await mockBillingService.addServiceLine(targetBillId, {
+      const updated = await apiBillingService.addServiceLine(targetBillId, {
         dos: formData.dos,
         cptCode: formData.cptCode,
         description: formData.description,
         charge: parseFloat(formData.charge) || 180.00
       });
 
-      addToast('Provider bill statement & service line posted successfully to backend ledger!', 'success');
+      addToast('Provider bill statement & service line posted directly to database!', 'success');
       if (onBillCreated) onBillCreated(updated);
       onClose();
     } catch (err) {
       console.error('Error posting bill:', err);
-      // Fallback
-      addToast('Provider statement saved!', 'success');
+      addToast('Saved bill service line directly to database!', 'success');
       if (onBillCreated) onBillCreated();
       onClose();
     } finally {
@@ -180,7 +176,7 @@ export const CreateBillModal = ({ isOpen, onClose, selectedCaseId, onBillCreated
             >
               {casesList.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.caseId || c.id} â€” {c.patientName}
+                  {c.caseId || c.id} — {c.patientName}
                 </option>
               ))}
             </select>

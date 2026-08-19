@@ -1,4 +1,4 @@
-﻿// src/utils/billingCalculations.js
+// src/utils/billingCalculations.js
 import { getCachedSettings } from './settingsCache';
 
 export const calculateLineItemBalance = (item) => {
@@ -43,16 +43,18 @@ export const calculateBillLedgerTotals = (serviceLines = []) => {
   };
 };
 
-export const formatCurrency = (amount) => {
+export const formatCurrency = (amount, customCurrency = null) => {
   // Read the user's currency preference from the settings cache
-  let currencyCode = 'USD';
-  try {
-    const settings = getCachedSettings();
-    if (settings && settings.currency) {
-      currencyCode = settings.currency;
+  let currencyCode = customCurrency || 'USD';
+  if (!customCurrency) {
+    try {
+      const settings = getCachedSettings();
+      if (settings && settings.currency) {
+        currencyCode = settings.currency;
+      }
+    } catch (e) {
+      // fallback to USD if cache not loaded yet
     }
-  } catch (e) {
-    // fallback to USD if cache not loaded yet
   }
 
   // Map currency codes to matching locales for proper symbol rendering
@@ -63,6 +65,13 @@ export const formatCurrency = (amount) => {
     GBP: 'en-GB',
     INR: 'en-IN',
     MXN: 'es-MX',
+    AUD: 'en-AU',
+    JPY: 'ja-JP',
+    CHF: 'de-CH',
+    AED: 'ar-AE',
+    NZD: 'en-NZ',
+    SGD: 'en-SG',
+    BRL: 'pt-BR'
   };
   const locale = localeMap[currencyCode] || 'en-US';
 
@@ -73,4 +82,51 @@ export const formatCurrency = (amount) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(num);
+};
+
+export const formatDate = (dateInput, customOptions = {}) => {
+  if (!dateInput) return '';
+  const date = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput) : dateInput;
+  if (isNaN(date?.getTime())) return String(dateInput);
+
+  let timezone = 'America/Chicago';
+  try {
+    const settings = getCachedSettings();
+    if (settings && settings.timezone) {
+      timezone = settings.timezone;
+    }
+  } catch (e) {}
+
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    ...customOptions
+  }).format(date);
+};
+
+export const formatDateTime = (dateInput, customOptions = {}) => {
+  if (!dateInput) return '';
+  const date = typeof dateInput === 'string' || typeof dateInput === 'number' ? new Date(dateInput) : dateInput;
+  if (isNaN(date?.getTime())) return String(dateInput);
+
+  let timezone = 'America/Chicago';
+  let timeFormat = '12H';
+  try {
+    const settings = getCachedSettings();
+    if (settings && settings.timezone) timezone = settings.timezone;
+    if (settings && settings.timeFormat) timeFormat = settings.timeFormat;
+  } catch (e) {}
+
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: timeFormat === '12H',
+    ...customOptions
+  }).format(date);
 };

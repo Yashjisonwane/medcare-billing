@@ -1,7 +1,6 @@
-﻿// src/components/modals/CounselorSessionModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
@@ -79,14 +78,14 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
 
     setIsLoading(true);
     try {
-      const created = await mockClinicalNoteService.createNote({
+      const created = await apiClinicalNoteService.createNote({
         patientId: selectedCase.patientId || selectedCase.patient?.id || 'pat-001',
         patientName: selectedCase.patientName || 'Demo Patient 001',
         caseId: selectedCase.id,
         providerId: 'prov-counselor',
         providerName: 'Counselor Practice (Hope Behavioral Health)',
         type: 'COUNSELOR_GENERIC',
-        title: `Counseling Progress Note (${formData.cptCode || '90834'}) â€” ${formData.sessionDate}`,
+        title: `Counseling Progress Note (${formData.cptCode || '90834'}) — ${formData.sessionDate}`,
         author: formData.counselorName,
         content: { ...formData, patientName: selectedCase.patientName, isSigned: true }
       });

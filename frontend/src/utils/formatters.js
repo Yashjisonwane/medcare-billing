@@ -1,4 +1,4 @@
-﻿// src/utils/formatters.js
+// src/utils/formatters.js
 
 /**
  * Human-readable status mapping for UI display
@@ -31,23 +31,23 @@ export const formatStatus = (rawStatus) => {
 };
 
 /**
- * Mask Tax ID / EIN (e.g. 993723387 -> â€¢â€¢â€¢â€¢â€¢3387)
+ * Mask Tax ID / EIN (e.g. 993723387 -> •••••3387)
  */
 export const maskTaxId = (taxId, visible = false) => {
   if (!taxId || taxId === 'TBD') return 'Pending Configuration';
   if (visible) return taxId;
   const clean = String(taxId).replace(/\D/g, '');
-  if (clean.length < 4) return 'â€¢â€¢â€¢â€¢';
-  return `â€¢â€¢â€¢â€¢â€¢${clean.slice(-4)}`;
+  if (clean.length < 4) return '••••';
+  return `•••••${clean.slice(-4)}`;
 };
 
 /**
- * Mask NPI (e.g. R7637 -> â€¢â€¢â€¢â€¢7637)
+ * Mask NPI (e.g. R7637 -> ••••7637)
  */
 export const maskNpi = (npi, visible = false) => {
   if (!npi || npi === 'TBD') return 'Pending Configuration';
   if (visible) return npi;
   const clean = String(npi);
-  if (clean.length < 4) return 'â€¢â€¢â€¢â€¢';
-  return `â€¢â€¢â€¢â€¢${clean.slice(-4)}`;
+  if (clean.length < 4) return '••••';
+  return `••••${clean.slice(-4)}`;
 };

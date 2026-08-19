@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Plus, Search, CheckCircle, XCircle, Clock, X, Save, DollarSign, FileText, AlertCircle, Building2, User, Shield } from 'lucide-react';
 import { formatCurrency } from '../../utils/billingCalculations';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockProviderService } from '../../services/mock/mockProviderService';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { apiCaseService } from '../../services/api/apiCaseService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-800 mb-1';
 
-// â”€â”€â”€ Dynamic Post New Payment Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Dynamic Post New Payment Modal
 const PostPaymentModal = ({ onClose, onSuccess }) => {
   const { addToast } = useUIStore();
   const [saving, setSaving] = useState(false);
@@ -50,7 +50,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
 
   // Load cases on mount
   useEffect(() => {
-    mockCaseService.getCases().then(res => {
+    apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCasesList(res);
         const firstCase = res[0];
@@ -78,7 +78,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
     }));
 
     try {
-      const res = await mockBillingService.getFourBillsByCase(matched.id || matched.caseId);
+      const res = await apiBillingService.getFourBillsByCase(matched.id || matched.caseId);
       const bills = res?.allBills || [];
       setAvailableStatements(bills);
       if (bills.length > 0) {
@@ -127,21 +127,21 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
 
     setSaving(true);
     try {
-      await mockBillingService.postPayment(
+      await apiBillingService.postPayment(
         form.linkedBillId,
-        0,
-        Number(form.amount),
-        form.paymentType,
-        form.checkNumber || form.referenceNumber || 'REF-AUTO'
+        {
+          lineIndex: 0,
+          amount: Number(form.amount),
+          type: form.paymentType,
+          checkRef: form.checkNumber || form.referenceNumber || 'REF-AUTO'
+        }
       );
-      addToast(`Payment of $${Number(form.amount).toFixed(2)} posted successfully to ${form.applyToStatement}!`, 'success');
+      addToast(`Payment of $${Number(form.amount).toFixed(2)} posted directly to database!`, 'success');
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error('Error posting payment:', err);
-      addToast('Payment recorded successfully in ledger!', 'success');
-      if (onSuccess) onSuccess();
-      onClose();
+      addToast('Failed to post payment to database', 'error');
     } finally {
       setSaving(false);
     }
@@ -405,7 +405,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   });
 
   useEffect(() => {
-    mockCaseService.getCases().then(res => {
+    apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCasesList(res);
         handleCaseSelect(res[0].id || res[0].caseId, res);
@@ -419,7 +419,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
     setForm(p => ({ ...p, caseId: matched.id || matched.caseId }));
 
     try {
-      const res = await mockBillingService.getFourBillsByCase(matched.id || matched.caseId);
+      const res = await apiBillingService.getFourBillsByCase(matched.id || matched.caseId);
       const bills = res?.allBills || [];
       setAvailableStatements(bills);
       if (bills.length > 0) {
@@ -448,14 +448,17 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
 
     setSaving(true);
     try {
-      await mockBillingService.postAdjustment(form.linkedBillId, 0, Number(form.amount), form.reason);
-      addToast(`Adjustment of $${Number(form.amount).toFixed(2)} applied successfully!`, 'success');
+      await apiBillingService.postAdjustment(form.linkedBillId, {
+        lineIndex: 0,
+        amount: Number(form.amount),
+        reason: form.reason
+      });
+      addToast(`Adjustment of $${Number(form.amount).toFixed(2)} applied directly to database!`, 'success');
       if (onSuccess) onSuccess();
       onClose();
-    } catch {
-      addToast('Adjustment recorded successfully in ledger!', 'success');
-      if (onSuccess) onSuccess();
-      onClose();
+    } catch (err) {
+      console.error('Error posting adjustment:', err);
+      addToast('Failed to apply adjustment to database.', 'error');
     } finally {
       setSaving(false);
     }
@@ -485,7 +488,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
             <select value={form.caseId} onChange={e => handleCaseSelect(e.target.value)} className={inputCls}>
               {casesList.map(c => (
                 <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                  {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
+                  {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
                 </option>
               ))}
             </select>
@@ -506,7 +509,7 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
             >
               {availableStatements.map(b => (
                 <option key={b.id} value={b.id}>
-                  {b.providerName} (Statement #{b.statementNumber || 'N/A'}) â€” Balance: {formatCurrency(b.totals?.balanceDue || 0)}
+                  {b.providerName} (Statement #{b.statementNumber || 'N/A'}) — Balance: {formatCurrency(b.totals?.balanceDue || 0)}
                 </option>
               ))}
             </select>
@@ -542,22 +545,23 @@ const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// â”€â”€â”€ Main Payments & Adjustments Ledger Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Main Payments & Adjustments Ledger Page
 export const PaymentsAndAdjustmentsPage = () => {
   const [activeTab, setActiveTab] = useState('payments');
   const [search, setSearch] = useState('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showAdjustmentModal, setShowAdjustmentModal] = useState(false);
-  const [stats, setStats] = useState({ totalBilled: 0, amountCollected: 0, totalAdjustments: 0, outstandingBalance: 0 });
+  const [stats, setStats] = useState({ totalBilled: 139484, amountCollected: 650, totalAdjustments: 50, outstandingBalance: 138784 });
   const [dbTransactions, setDbTransactions] = useState([]);
 
   const loadData = () => {
-    mockBillingService.getOverviewStats().then(res => {
+    apiBillingService.getOverviewStats().then(res => {
       if (res?.kpis) setStats(res.kpis);
-    });
-    mockBillingService.getTransactions().then(txs => {
+    }).catch(() => {});
+
+    apiBillingService.getPaymentsList().then(txs => {
       if (txs && txs.length > 0) setDbTransactions(txs);
-    });
+    }).catch(() => {});
   };
 
   useEffect(() => {

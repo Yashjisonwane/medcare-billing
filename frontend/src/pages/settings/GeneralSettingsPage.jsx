@@ -1,10 +1,10 @@
-﻿// src/pages/settings/GeneralSettingsPage.jsx
+// src/pages/settings/GeneralSettingsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../../store/uiStore';
 import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 'lucide-react';
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
-import { refreshSettingsCache } from '../../utils/settingsCache';
+import { refreshSettingsCache, updateCachedSettings } from '../../utils/settingsCache';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-on-surface mb-1';
@@ -112,6 +112,7 @@ export const GeneralSettingsPage = () => {
         const data = await getGeneralSettings();
         if (data) {
           setSettings(prev => ({ ...prev, ...data }));
+          updateCachedSettings(data);
         }
       } catch (error) {
         // Fallback to local settings
@@ -125,9 +126,6 @@ export const GeneralSettingsPage = () => {
   const set = (field, val) => {
     setSettings(p => {
       const next = { ...p, [field]: val };
-      try {
-        localStorage.setItem('medcare_practice_settings', JSON.stringify(next));
-      } catch (e) {}
       return next;
     });
   };
@@ -136,7 +134,7 @@ export const GeneralSettingsPage = () => {
     e?.preventDefault();
     setIsSaving(true);
     try {
-      localStorage.setItem('medcare_practice_settings', JSON.stringify(settings));
+      updateCachedSettings(settings);
       await updateGeneralSettings(settings).catch(() => {});
       await refreshSettingsCache().catch(() => {});
       addToast('General practice settings updated successfully!', 'success');
@@ -154,7 +152,8 @@ export const GeneralSettingsPage = () => {
     }
     setIsSendingTestEmail(true);
     try {
-      const res = await fetch('http://localhost:5001/v1/notifications/test-email', {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+      const res = await fetch(`${apiBase}/notifications/test-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientEmail: testEmailRecipient })
@@ -180,6 +179,28 @@ export const GeneralSettingsPage = () => {
     );
   }
 
+  const DEFAULT_MODALITIES = [
+    { id: 'pain-mgmt', name: 'Pain Management', providerId: 'prov-josmic', providerName: 'JOSMIC Wellness Center', enabled: true, cpt: '99204 (Confirmed)', fee: '$1,214.00', duration: '60 min', template: 'JOSMIC Pain Evaluation', status: 'COMPLETE' },
+    { id: 'laser-therapy', name: 'Laser Therapy', providerId: 'prov-anik', providerName: 'ANIK Laser Therapy', enabled: true, cpt: '97039 (Confirmed)', fee: '$2,000.00', duration: '45 min', template: 'ANIK Laser Procedure Form', status: 'COMPLETE' },
+    { id: 'shockwave-therapy', name: 'Shockwave Therapy', providerId: 'prov-davs', providerName: "DAV'S Anatomy", enabled: true, cpt: '0101T (Confirmed)', fee: '$1,000.00', duration: '30 min', template: "DAV'S ESWT Therapy Record", status: 'COMPLETE' },
+    { id: 'trigger-point', name: 'Trigger Point Injection', providerId: '', providerName: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '20552 (Pending)', fee: 'Pricing Pending', duration: '30 min', template: 'Trigger Point Form (Pending)', status: 'CONFIGURATION_PENDING' },
+    { id: 'tecar-therapy', name: 'TECAR Therapy', providerId: '', providerName: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '97039-RF (Pending)', fee: 'Pricing Pending', duration: '45 min', template: 'TECAR Procedure Form (Pending)', status: 'CONFIGURATION_PENDING' },
+    { id: 'counseling', name: 'Counseling & Mental Health', providerId: 'prov-counselor', providerName: 'Counselor Practice (Hope Behavioral Health)', enabled: true, cpt: '90834 / 90791', fee: '$180.00 - $350.00', duration: '45 min', template: 'Behavioral Health Progress Note', status: 'COMPLETE' }
+  ];
+
+  const modalitiesList = Array.isArray(settings.modalities) && settings.modalities.length > 0
+    ? settings.modalities
+    : DEFAULT_MODALITIES;
+
+  const handleToggleModality = (idx) => {
+    const updated = [...modalitiesList];
+    updated[idx] = {
+      ...updated[idx],
+      enabled: !updated[idx].enabled
+    };
+    set('modalities', updated);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -201,7 +222,20 @@ export const GeneralSettingsPage = () => {
 
         {/* Practice & Service Management (6 Core Modalities) */}
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5 space-y-4">
-          <SectionHead Icon={Activity} title="Practice & Service Management (Core Modalities)" subtitle="Configure CPT codes, provider assignments, pricing and clinical form templates" />
+          <div className="flex items-center justify-between border-b border-outline-variant pb-3 flex-wrap gap-2">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Activity className="w-4 h-4 text-teal-600" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-on-surface">Practice &amp; Service Management (Core Modalities)</h2>
+                <p className="text-[10px] text-on-surface-variant mt-0.5">Configure CPT codes, provider assignments, pricing and clinical form templates</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-full">
+              6 Practice Modalities Connected
+            </span>
+          </div>
           
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -209,28 +243,23 @@ export const GeneralSettingsPage = () => {
                 <tr>
                   <th className="p-2.5 text-left">Service Modality</th>
                   <th className="p-2.5 text-left">Assigned Provider</th>
-                  <th className="p-2.5 text-center">Enabled</th>
+                  <th className="p-2.5 text-center">Status</th>
                   <th className="p-2.5 text-center">CPT Code</th>
                   <th className="p-2.5 text-right">Configured Fee</th>
                   <th className="p-2.5 text-center">Duration</th>
                   <th className="p-2.5 text-left">Clinical Template</th>
-                  <th className="p-2.5 text-center">Configuration Status</th>
+                  <th className="p-2.5 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {[
-                  { name: 'Pain Management', provider: 'JOSMIC Wellness Center', enabled: true, cpt: '99204 (Confirmed)', fee: '$1,214.00', duration: '60 min', template: 'JOSMIC Pain Evaluation', status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-                  { name: 'Laser Therapy', provider: 'ANIK Laser Therapy', enabled: true, cpt: '97039 (Confirmed)', fee: '$2,000.00', duration: '45 min', template: 'ANIK Laser Procedure Form', status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-                  { name: 'Shockwave Therapy', provider: "DAV'S Anatomy", enabled: true, cpt: '0101T (Confirmed)', fee: '$1,000.00', duration: '30 min', template: "DAV'S ESWT Therapy Record", status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-                  { name: 'Trigger Point Injection', provider: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '20552 (Pending)', fee: 'Pricing Pending', duration: '30 min', template: 'Trigger Point Form (Pending)', status: 'CONFIGURATION_PENDING', statusBadge: 'bg-amber-100 text-amber-800 border-amber-200' },
-                  { name: 'TECAR Therapy', provider: 'Unassigned (Provider Assignment Required)', enabled: false, cpt: '97039-RF (Pending)', fee: 'Pricing Pending', duration: '45 min', template: 'TECAR Procedure Form (Pending)', status: 'CONFIGURATION_PENDING', statusBadge: 'bg-rose-100 text-rose-800 border-rose-200' },
-                  { name: 'Counseling', provider: 'Counselor Practice (Hope Behavioral Health)', enabled: true, cpt: '90834 / 90791', fee: '$180.00 â€“ $350.00', duration: '45 min', template: 'Behavioral Health Progress Note', status: 'COMPLETE', statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-                ].map(srv => (
-                  <tr key={srv.name} className="hover:bg-slate-50">
+                {modalitiesList.map((srv, idx) => (
+                  <tr key={srv.id || srv.name} className="hover:bg-slate-50 transition">
                     <td className="p-2.5 font-bold text-slate-900">{srv.name}</td>
-                    <td className="p-2.5 text-slate-700">{srv.provider}</td>
+                    <td className="p-2.5 text-slate-700 font-medium">{srv.providerName || srv.provider}</td>
                     <td className="p-2.5 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${srv.enabled ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-500'}`}>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        srv.enabled ? 'bg-teal-100 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                      }`}>
                         {srv.enabled ? 'Active' : 'Disabled'}
                       </span>
                     </td>
@@ -239,9 +268,15 @@ export const GeneralSettingsPage = () => {
                     <td className="p-2.5 text-center text-slate-600">{srv.duration}</td>
                     <td className="p-2.5 text-slate-700 font-medium">{srv.template}</td>
                     <td className="p-2.5 text-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${srv.statusBadge}`}>
-                        {srv.status === 'COMPLETE' ? 'Complete' : 'Configuration Pending'}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleModality(idx)}
+                        className={`px-2 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer ${
+                          srv.enabled ? 'bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200' : 'bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200'
+                        }`}
+                      >
+                        {srv.enabled ? 'Disable' : 'Enable'}
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -300,8 +335,8 @@ export const GeneralSettingsPage = () => {
             </div>
             <div><label className={labelCls}>Default Currency</label>
               <select className={inputCls} value={settings.currency} onChange={e => set('currency', e.target.value)}>
-                <option value="USD">USD ($) â€” US Dollar</option>
-                <option value="CAD">CAD (C$) â€” Canadian Dollar</option>
+                <option value="USD">USD ($) — US Dollar</option>
+                <option value="CAD">CAD (C$) — Canadian Dollar</option>
               </select>
             </div>
             <div><label className={labelCls}>Date Format</label>
@@ -365,7 +400,7 @@ export const GeneralSettingsPage = () => {
 
           <div className="pt-3 border-t border-outline-variant/50 space-y-2">
             <h4 className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-              <span>ðŸ‡ºðŸ‡¸</span> Official US Federal Holidays (Auto Holiday Off Calendar)
+              <span>🇺🇸</span> Official US Federal Holidays (Auto Holiday Off Calendar)
             </h4>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -438,7 +473,7 @@ export const GeneralSettingsPage = () => {
           <div className="mt-4 p-4 rounded-xl border border-teal-200 bg-teal-50/40 space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="text-xs font-extrabold text-teal-900 flex items-center gap-1.5">
-                <span>ðŸ“§</span> Live Email Dispatcher &amp; Connection Tester
+                <span>📧</span> Live Email Dispatcher &amp; Connection Tester
               </h4>
               <span className="text-[10px] text-teal-700 font-medium">Plug &amp; Play Backend Ready</span>
             </div>
@@ -459,7 +494,7 @@ export const GeneralSettingsPage = () => {
                 disabled={isSendingTestEmail}
                 className="w-full sm:w-auto px-4 py-2 bg-teal-700 hover:bg-teal-800 active:scale-95 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
               >
-                {isSendingTestEmail ? 'Sending Test...' : 'âš¡ Send Test Email'}
+                {isSendingTestEmail ? 'Sending Test...' : '⚡ Send Test Email'}
               </button>
             </div>
           </div>

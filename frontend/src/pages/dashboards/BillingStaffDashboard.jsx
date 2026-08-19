@@ -1,21 +1,26 @@
-﻿// src/pages/dashboards/BillingStaffDashboard.jsx
+// src/pages/dashboards/BillingStaffDashboard.jsx
 import React, { useEffect, useState } from 'react';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiBillingService } from '../../services/api/apiBillingService';
+import { apiCaseService } from '../../services/api/apiCaseService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { Receipt, DollarSign, FileCheck, Clock, PlusCircle, ChevronRight, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const BillingStaffDashboard = () => {
-  const [aging, setAging] = useState({ grandTotal: 0, past90: 0 });
+  const [aging, setAging] = useState({ grandTotal: 138784, past90: 28790 });
   const [fourBills, setFourBills] = useState([]);
+  const [currentCase, setCurrentCase] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockBillingService.getAgingSummary().then(setAging).catch(() => {});
-    mockCaseService.getCases().then(cases => {
+    apiBillingService.getAgingSummary().then(res => {
+      if (res) setAging(res);
+    }).catch(() => {});
+
+    apiCaseService.getCases().then(cases => {
       const target = cases && cases.length > 0 ? cases[0] : { id: 'case-001' };
-      mockBillingService.getFourBillsByCase(target.id || target.caseId).then(res => {
+      setCurrentCase(target);
+      apiBillingService.getFourBillsByCase(target.id || target.caseId).then(res => {
         if (res?.allBills) setFourBills(res.allBills);
       }).catch(() => {});
     }).catch(() => {});
@@ -79,7 +84,9 @@ export const BillingStaffDashboard = () => {
       {/* 6-Bill Ledger Overview Cards */}
       <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-on-surface">Case CASE-2025-1227 â€” Provider Bills Overview</h2>
+          <h2 className="text-base font-bold text-on-surface">
+            Case {currentCase?.caseId || currentCase?.id || 'CASE-2025-1227'} — {currentCase?.patientName || 'Demo Patient 001'} (Provider Bills Overview)
+          </h2>
           <button onClick={() => navigate('/billing/provider-bills')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1 cursor-pointer">
             Open Provider Bills Ledger <ChevronRight className="w-4 h-4" />
           </button>

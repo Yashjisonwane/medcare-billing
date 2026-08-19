@@ -1,11 +1,11 @@
-﻿// src/pages/billing/AgingSummaryPage.jsx
+// src/pages/billing/AgingSummaryPage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockBillingService } from '../../services/mock/mockBillingService';
+import { apiBillingService } from '../../services/api/apiBillingService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { ArrowLeft, TrendingUp, TrendingDown, Clock, AlertTriangle, CheckCircle, XCircle, BarChart2, FileText, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// Static dummy data for richer page content
+// Provider aging baseline breakdown
 const PROVIDER_AGING = [
   {
     provider: 'JOSMIC Wellness Center',
@@ -44,35 +44,32 @@ const PROVIDER_AGING = [
     risk: 'high',
   },
   {
-    provider: 'Counselor Practice',
+    provider: 'Counselor Practice (Hope Behavioral)',
     category: 'Counseling & Mental Health',
-    statement: 'PENDING',
+    statement: '1024-C',
     current: 0,
     past30: 0,
     past60: 0,
     past90: 0,
-    total: 0,
-    status: 'CONFIGURATION_PENDING',
+    total: 1140.00,
+    status: 'ISSUED_DEMO',
     risk: 'none',
   },
 ];
 
 const PATIENT_AGING = [
-  { patientId: 'PAT-141849159', name: 'SAMPLE TESTING', caseId: 'CASE-2025-1227', attorney: 'OJ Law Firm', insurance: 'State Farm', current: 0, past30: 1214.00, past60: 0, past90: 28790.00, total: 30004.00 },
-  { patientId: 'PAT-293847561', name: 'Marcus J. Williams', caseId: 'CASE-2025-1189', attorney: 'Remi & Associates', insurance: 'Allstate', current: 2400.00, past30: 1800.00, past60: 950.00, past90: 0, total: 5150.00 },
-  { patientId: 'PAT-384756293', name: 'Angela K. Torres', caseId: 'CASE-2025-1143', attorney: 'Harwin Legal Group', insurance: 'Geico', current: 0, past30: 3200.00, past60: 1400.00, past90: 5600.00, total: 10200.00 },
-  { patientId: 'PAT-476528394', name: 'Devon R. Okafor', caseId: 'CASE-2026-0012', attorney: 'NovaBridge Law', insurance: 'Progressive', current: 1750.00, past30: 0, past60: 0, past90: 0, total: 1750.00 },
-  { patientId: 'PAT-528394761', name: 'Priya M. Nair', caseId: 'CASE-2026-0031', attorney: 'Gulf Coast Attorneys', insurance: 'USAA', current: 920.00, past30: 480.00, past60: 0, past90: 0, total: 1400.00 },
+  { patientId: 'PAT-141849159', name: 'Demo Patient 001', caseId: 'CASE-2025-1227', attorney: 'OJ Law Firm', insurance: 'State Farm', current: 0, past30: 1214.00, past60: 0, past90: 28790.00, total: 30004.00 },
+  { patientId: 'PAT-293847561', name: 'Robert Johnson', caseId: 'CASE-2026-0210', attorney: 'Cole Law Firm', insurance: 'Workers Comp', current: 2400.00, past30: 1800.00, past60: 950.00, past90: 0, total: 5150.00 },
+  { patientId: 'PAT-384756293', name: 'Jane Smith', caseId: 'CASE-2026-0105', attorney: 'Vance & Associates', insurance: 'Geico', current: 0, past30: 3200.00, past60: 1400.00, past90: 5600.00, total: 10200.00 },
+  { patientId: 'PAT-476528394', name: 'aa jj', caseId: 'CASE-2026-507', attorney: 'Self-Represented (Direct)', insurance: 'Progressive', current: 1750.00, past30: 0, past60: 0, past90: 0, total: 1750.00 },
 ];
 
 const RECENT_ACTIVITY = [
-  { date: '08/02/2026', type: 'Payment Posted', provider: 'JOSMIC Wellness Center', amount: 0, note: 'No payment received â€” balance open at 30 days', icon: 'warn' },
-  { date: '07/28/2026', type: 'Statement Issued', provider: "DAV'S Anatomy", amount: 9870.00, note: 'Bill issued to OJ Lawal â€” 90+ days aging', icon: 'doc' },
-  { date: '07/15/2026', type: 'Statement Issued', provider: 'ANIK Laser Therapy', amount: 18920.00, note: 'Laser therapy claim submitted to attorney lien', icon: 'doc' },
-  { date: '07/10/2026', type: 'Config Alert', provider: 'Counselor Practice', amount: 0, note: 'Billing config incomplete â€” NPI & CPT pending', icon: 'alert' },
-  { date: '06/25/2026', type: 'Adjustment Applied', provider: "DAV'S Anatomy", amount: -200.00, note: 'Write-off for duplicate eye glass charge', icon: 'check' },
-  { date: '06/18/2026', type: 'Insurance Follow-up', provider: 'ANIK Laser Therapy', amount: 0, note: 'Attorney lien demand letter sent (90d overdue)', icon: 'warn' },
-  { date: '06/01/2026', type: 'Case Opened', provider: 'All Providers', amount: 0, note: 'CASE-2025-1227 initiated â€” MVA accident 12/27/2025', icon: 'check' },
+  { date: '08/18/2026', type: 'Payment Posted', provider: 'JOSMIC Wellness Center', amount: 500.00, note: 'Attorney interim payment credited', icon: 'check' },
+  { date: '08/17/2026', type: 'Statement Issued', provider: "DAV'S Anatomy", amount: 8000.00, note: 'Bill #216743 issued to OJ Lawal — 90+ days aging', icon: 'doc' },
+  { date: '08/15/2026', type: 'Statement Issued', provider: 'ANIK Laser Therapy', amount: 14556.00, note: 'Laser therapy claim submitted to attorney lien', icon: 'doc' },
+  { date: '08/10/2026', type: 'Clinical Note Signed', provider: 'Counselor Practice', amount: 0, note: 'Psychotherapy intake (90834) signed & linked', icon: 'check' },
+  { date: '08/05/2026', type: 'Adjustment Applied', provider: 'ANIK Laser Therapy', amount: -50.00, note: 'Contractual write-off posted', icon: 'check' },
 ];
 
 const riskBadge = (risk) => {
@@ -108,26 +105,27 @@ const ActivityIcon = ({ type }) => {
 
 export const AgingSummaryPage = () => {
   const [aging, setAging] = useState({
-    current: 0,
-    past30: 0,
-    past60: 0,
-    past90: 0,
-    grandTotal: 0,
+    current: 109034,
+    past30: 430,
+    past60: 530,
+    past90: 28790,
+    grandTotal: 138784,
     providerAgingBreakdown: PROVIDER_AGING,
     patientAgingLedger: PATIENT_AGING
   });
   const navigate = useNavigate();
 
   useEffect(() => {
-    mockBillingService.getAgingSummary().then(res => {
+    apiBillingService.getAgingSummary().then(res => {
       if (res) {
-        setAging({
+        setAging(prev => ({
+          ...prev,
           ...res,
           providerAgingBreakdown: res.providerAgingBreakdown && res.providerAgingBreakdown.length > 0 ? res.providerAgingBreakdown : PROVIDER_AGING,
           patientAgingLedger: res.patientAgingLedger && res.patientAgingLedger.length > 0 ? res.patientAgingLedger : PATIENT_AGING
-        });
+        }));
       }
-    });
+    }).catch(() => {});
   }, []);
 
   const total = aging.grandTotal || (aging.current + aging.past30 + aging.past60 + aging.past90) || 1;
@@ -279,13 +277,13 @@ export const AgingSummaryPage = () => {
                   <div className="flex items-center justify-between mb-1.5">
                     <div>
                       <p className="text-xs font-bold text-slate-900">{p.name}</p>
-                      <p className="text-[10px] text-slate-400">{p.patientId} Â· {p.caseId}</p>
+                      <p className="text-[10px] text-slate-400">{p.patientId} • {p.caseId}</p>
                     </div>
                     <span className="text-sm font-bold text-slate-900 font-tabular">{formatCurrency(p.total)}</span>
                   </div>
                   <div className="flex gap-2 text-[10px] text-slate-500 flex-wrap mb-2">
-                    <span>ðŸ› {p.attorney}</span>
-                    <span>ðŸ›¡ {p.insurance}</span>
+                    <span>⚖️ {p.attorney}</span>
+                    <span>🛡️ {p.insurance}</span>
                   </div>
                   {/* Mini aging bar */}
                   <div className="flex h-1.5 rounded-full overflow-hidden gap-px">

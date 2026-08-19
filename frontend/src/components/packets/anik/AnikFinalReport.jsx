@@ -1,4 +1,4 @@
-﻿// src/components/packets/anik/AnikFinalReport.jsx
+// src/components/packets/anik/AnikFinalReport.jsx
 import React from 'react';
 
 export const AnikFinalReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
@@ -60,7 +60,7 @@ export const AnikFinalReport = ({ reportPage = 1, blankMode = false, packetData 
           <div className="border-t border-slate-300 pt-4 font-mono text-xs">
             <p className="font-bold text-slate-900">DISCHARGING PHYSICIAN:</p>
             <p className="mt-4 font-bold text-slate-900 underline">Adeoye, Segun, DC</p>
-            <p className="text-[10px] text-slate-500">ANIK Laser Therapy Center â€” Date Signed: 04/13/2026</p>
+            <p className="text-[10px] text-slate-500">ANIK Laser Therapy Center — Date Signed: 04/13/2026</p>
           </div>
         </div>
       )}

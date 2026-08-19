@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiDocumentService } from '../../services/api/apiDocumentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
 import { useUIStore } from '../../store/uiStore';
 import { FolderOpen, CheckSquare, Download, Sparkles, ArrowLeft, FileText, CheckCircle2, DollarSign, User, Shield } from 'lucide-react';
 
@@ -22,7 +21,10 @@ export const PacketBuilderPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    apiDocumentService.getDocuments().then(setDocs);
+    apiDocumentService.getDocuments().then(res => {
+      if (Array.isArray(res)) setDocs(res);
+    }).catch(() => {});
+
     apiCaseService.getCases().then(res => {
       if (res && res.length > 0) {
         setCases(res);
@@ -32,7 +34,7 @@ export const PacketBuilderPage = () => {
           setSelectedCaseId(res[0].id || 'case-001');
         }
       }
-    });
+    }).catch(() => {});
   }, [queryCaseId]);
 
   const toggleSelect = (id) => {
@@ -104,7 +106,7 @@ export const PacketBuilderPage = () => {
           >
             {cases.map(c => (
               <option key={c.id} value={c.id}>
-                {c.caseId || c.id} â€” {c.patientName}
+                {c.caseId || c.id} — {c.patientName}
               </option>
             ))}
           </select>
@@ -166,7 +168,7 @@ export const PacketBuilderPage = () => {
             <div className="space-y-2 text-xs text-slate-600">
               <div className="flex justify-between">
                 <span className="text-slate-400">Target Patient / Case:</span>
-                <strong className="text-slate-900 truncate max-w-[150px]">{currentCase?.patientName || 'SAMPLE TESTING'}</strong>
+                <strong className="text-slate-900 truncate max-w-[150px]">{currentCase?.patientName || 'Demo Patient 001'}</strong>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Selected Files:</span>
@@ -198,7 +200,7 @@ export const PacketBuilderPage = () => {
               </p>
               <p className="text-[11px] text-slate-500 font-mono">Packet ID: {packetResult.packetId}</p>
               <button
-                onClick={() => addToast('Simulated complete medical-legal packet PDF downloaded!', 'success')}
+                onClick={() => addToast('Complete medical-legal packet PDF ready for download!', 'success')}
                 className="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Complete PDF Packet

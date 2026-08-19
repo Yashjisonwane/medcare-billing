@@ -4,6 +4,7 @@ import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filt
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
+import { formatCurrency } from '../../utils/billingCalculations';
 
 const STATUS_COLORS = {
   Completed: 'bg-emerald-100 text-emerald-700',
@@ -17,8 +18,6 @@ const PROVIDER_COLORS = {
   DAVS: 'bg-blue-100 text-blue-700',
   JOSMIC: 'bg-teal-100 text-teal-700',
 };
-
-const formatCurrency = (v) => `$${Number(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 text-slate-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';

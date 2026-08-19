@@ -1,4 +1,4 @@
-﻿// src/pages/billing/FourBillsPage.jsx
+// src/pages/billing/FourBillsPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiBillingService } from '../../services/api/apiBillingService';
@@ -134,7 +134,7 @@ export const FourBillsPage = () => {
             {casesList.length > 0 ? (
               casesList.map((c) => (
                 <option key={c.id || c.caseId} value={c.id || c.caseId}>
-                  {c.caseId || c.id} â€” {c.patientName || 'Accident Patient'}
+                  {c.caseId || c.id} — {c.patientName || 'Accident Patient'}
                 </option>
               ))
             ) : (
@@ -151,7 +151,7 @@ export const FourBillsPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Patient & Case Context Banner â”€â”€ */}
+      {/* Patient & Case Context Banner */}
       {caseData && (
         <div className="bg-slate-900 text-white p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-sm space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-800 pb-3">
@@ -167,7 +167,7 @@ export const FourBillsPage = () => {
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 Accident Date: <strong className="text-white font-mono">{caseData.accidentDate || 'N/A'}</strong>
-                {caseData.initialDate && <> â€¢ Admission: <strong className="text-white font-mono">{caseData.initialDate}</strong></>}
+                {caseData.initialDate && <> • Admission: <strong className="text-white font-mono">{caseData.initialDate}</strong></>}
               </p>
             </div>
             <div>
