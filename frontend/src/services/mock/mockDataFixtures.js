@@ -75,56 +75,7 @@ export const INITIAL_CASES = [
   }
 ];
 
-export const INITIAL_APPOINTMENTS = [
-  {
-    id: 'apt-001',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-josmic',
-    providerName: 'JOSMIC Wellness Center',
-    appointmentType: 'Pain Consult',
-    date: '2026-08-04',
-    startTime: '09:00 AM',
-    endTime: '10:00 AM',
-    location: 'Suite 274',
-    status: 'CHECKED_IN',
-    reminderStatus: 'Delivered - Confirmed',
-    reminderPreference: 'SMS'
-  },
-  {
-    id: 'apt-002',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-davs',
-    providerName: "DAV'S Anatomy",
-    appointmentType: 'ESWT Session 1',
-    date: '2026-08-04',
-    startTime: '10:30 AM',
-    endTime: '11:15 AM',
-    location: 'Suite 320',
-    status: 'SCHEDULED',
-    reminderStatus: 'Sent - Demo',
-    reminderPreference: 'SMS'
-  },
-  {
-    id: 'apt-003',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-anik',
-    providerName: 'ANIK Laser Therapy',
-    appointmentType: 'Laser Session 1',
-    date: '2026-08-05',
-    startTime: '02:00 PM',
-    endTime: '02:45 PM',
-    location: 'Suite 274',
-    status: 'SCHEDULED',
-    reminderStatus: 'Queued',
-    reminderPreference: 'EMAIL'
-  }
-];
+export const INITIAL_APPOINTMENTS = [];
 
 export const INITIAL_BILLS = [
   {

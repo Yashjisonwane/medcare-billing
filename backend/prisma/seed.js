@@ -593,54 +593,8 @@ async function main() {
   }
   console.log(`💼 Seeded ${casesData.length} patient accident cases.`);
 
-  // 7. Seed Appointments (3 appointments)
-  const appointmentsData = [
-    {
-      id: 'apt-001',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-josmic',
-      appointmentType: 'Pain Consult',
-      cptCode: '99204',
-      date: '2026-08-17',
-      startTime: '09:00 AM',
-      endTime: '10:00 AM',
-      location: 'Suite 274',
-      status: 'CHECKED_IN',
-      reminderStatus: 'Delivered - Confirmed',
-      reminderPreference: 'SMS'
-    },
-    {
-      id: 'apt-002',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-davs',
-      appointmentType: 'Initial Visit II',
-      cptCode: '99204',
-      date: '2026-08-17',
-      startTime: '10:30 AM',
-      endTime: '11:00 AM',
-      location: 'Suite 320',
-      status: 'SCHEDULED',
-      reminderStatus: 'Sent - SMS Queued',
-      reminderPreference: 'SMS'
-    },
-    {
-      id: 'apt-003',
-      patientId: 'pat-002',
-      caseId: 'case-002',
-      providerId: 'prov-anik',
-      appointmentType: 'Laser Session 1',
-      cptCode: '97039',
-      date: '2026-08-18',
-      startTime: '01:30 PM',
-      endTime: '02:00 PM',
-      location: 'Suite 274',
-      status: 'SCHEDULED',
-      reminderStatus: 'Not Sent - Configured',
-      reminderPreference: 'EMAIL'
-    }
-  ];
+  // 7. Seed Appointments
+  const appointmentsData = [];
 
   for (const apt of appointmentsData) {
     await prisma.appointment.create({ data: apt });
