@@ -1,4 +1,4 @@
-﻿// src/components/layout/RoleGuard.jsx
+// src/components/layout/RoleGuard.jsx
 import React from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { ROLES, ROLE_ROUTE_PERMISSIONS } from '../../constants/rolePermissions';
@@ -45,11 +45,13 @@ export const RoleGuard = ({ children }) => {
   }
 
   const isAllowed = allowedRoutes.some(pattern => {
+    if (pattern === '*') return true;
     if (pattern.endsWith('/*')) {
       const prefix = pattern.slice(0, -2);
-      return location.pathname.startsWith(prefix);
+      return location.pathname === prefix || location.pathname.startsWith(prefix + '/');
     }
-    return location.pathname === pattern;
+    const regexPattern = '^' + pattern.replace(/:\w+/g, '[^/]+').replace(/\*/g, '.*') + '$';
+    return new RegExp(regexPattern).test(location.pathname);
   });
 
   if (!isAllowed) {
