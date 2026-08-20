@@ -370,6 +370,74 @@ async function main() {
           configurationStatus: 'COMPLETE'
         }
       ]
+    },
+    {
+      id: 'srv-trigger-point',
+      name: 'Trigger Point Injection Practice',
+      businessName: 'Trigger Point Injection Practice LLC',
+      serviceCategory: 'Trigger Point Injection (TPI)',
+      status: 'ACTIVE',
+      address: { street: '10101 Harwin Dr.', suite: 'Suite 274', city: 'Houston', state: 'TX', zipCode: '77036' },
+      contact: { phone: '713-485-5712', fax: '832-416-1502', email: 'tpi@example.test' },
+      identifiers: { taxId: '993723389', npi: 'TPI88', ssnOrEin: 'EIN' },
+      renderingProvider: { name: 'Adeoye, Segun', credentials: 'DC / MD', npi: 'TPI88' },
+      serviceFacility: { name: 'Trigger Point Clinic', address: '10101 Harwin Dr, Suite 320, Houston, TX 77036', npi: 'TPI88' },
+      billingProvider: { name: 'Trigger Point Practice', address: '10101 Harwin Dr, Suite 320, Houston, TX 77036', phone: '713-485-5712' },
+      defaultPlaceOfService: '11',
+      availableServices: [
+        { code: '20552', description: 'Trigger Point Injection (1-2 muscles)', defaultCharge: 450.00, category: 'Therapy' }
+      ],
+      availableDiagnoses: [
+        { code: 'M79.1', description: 'Myofascial pain syndrome' }
+      ],
+      providerServices: [
+        {
+          providerId: 'srv-trigger-point',
+          serviceId: 'srv-trigger-point-proc',
+          enabled: true,
+          cptCode: '20552',
+          price: 450.00,
+          duration: '30 min',
+          billingDescription: 'Trigger Point Injection Procedure',
+          placeOfService: '11',
+          clinicalTemplate: 'TPI Procedure Note',
+          configurationStatus: 'COMPLETE'
+        }
+      ]
+    },
+    {
+      id: 'srv-tecar-therapy',
+      name: 'TECAR Radiofrequency Practice',
+      businessName: 'TECAR Radiofrequency LLC',
+      serviceCategory: 'TECAR Radiofrequency Therapy',
+      status: 'ACTIVE',
+      address: { street: '10101 Harwin Dr.', suite: 'Suite 274', city: 'Houston', state: 'TX', zipCode: '77036' },
+      contact: { phone: '713-485-5712', fax: '832-416-1502', email: 'tecar@example.test' },
+      identifiers: { taxId: '993723390', npi: 'TECAR99', ssnOrEin: 'EIN' },
+      renderingProvider: { name: 'Adeoye, Segun', credentials: 'DC', npi: 'TECAR99' },
+      serviceFacility: { name: 'TECAR Clinic', address: '10101 Harwin Dr, Suite 320, Houston, TX 77036', npi: 'TECAR99' },
+      billingProvider: { name: 'TECAR Practice', address: '10101 Harwin Dr, Suite 320, Houston, TX 77036', phone: '713-485-5712' },
+      defaultPlaceOfService: '11',
+      availableServices: [
+        { code: '97014', description: 'TECAR Radiofrequency Therapy Session', defaultCharge: 350.00, category: 'Therapy' }
+      ],
+      availableDiagnoses: [
+        { code: 'M54.50', description: 'Low back pain' }
+      ],
+      providerServices: [
+        {
+          providerId: 'srv-tecar-therapy',
+          serviceId: 'srv-tecar-therapy-proc',
+          enabled: true,
+          cptCode: '97014',
+          price: 350.00,
+          duration: '30 min',
+          billingDescription: 'TECAR Radiofrequency Session',
+          placeOfService: '11',
+          clinicalTemplate: 'TECAR Therapy Note',
+          configurationStatus: 'COMPLETE'
+        }
+      ]
     }
   ];
 

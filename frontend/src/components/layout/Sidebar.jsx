@@ -146,7 +146,7 @@ export const Sidebar = ({ onCloseMobile }) => {
                   <NavLink
                     key={item.label + item.path}
                     to={item.path}
-                    end={item.path === dashboardPath || item.path === '/patients' || item.path === '/cases'}
+                    end={item.path === dashboardPath || item.path === '/patients' || item.path === '/cases' || item.path === '/documents'}
                     onClick={handleNavClick}
                     className={({ isActive }) =>
                       `flex items-center justify-between px-3 py-2 rounded-xl text-xs transition cursor-pointer ${isActive
