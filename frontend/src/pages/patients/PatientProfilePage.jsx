@@ -207,7 +207,7 @@ export const PatientProfilePage = () => {
                 <div className="flex justify-between"><span>Emergency Contact Name:</span><strong className="text-slate-900 font-bold">{patient.emergencyContactName || 'Jane Doe'}</strong></div>
                 <div className="flex justify-between"><span>Relationship to Patient:</span><strong className="text-slate-900">{patient.emergencyContactRelation || 'Spouse'}</strong></div>
                 <div className="flex justify-between"><span>Emergency Contact Phone:</span><strong className="text-teal-700 font-mono font-bold">{patient.emergencyContactPhone || '713-555-0102'}</strong></div>
-                <div className="flex justify-between"><span>Alternate Contact:</span><strong className="text-slate-700">{patient.alternatePhone || '713-555-0199'}</strong></div>
+                <div className="flex justify-between"><span>Alternate Contact:</span><strong className="text-slate-700">{patient.alternatePhone || 'N/A'}</strong></div>
                 <div className="flex justify-between"><span>Notification Preference:</span><strong className="text-slate-900">{patient.communicationPref || 'SMS (Automated Text)'}</strong></div>
               </div>
             </div>

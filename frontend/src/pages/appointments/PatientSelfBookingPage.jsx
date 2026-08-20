@@ -207,7 +207,7 @@ export const PatientSelfBookingPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-4 space-y-6">
-      
+
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl"></div>
@@ -230,21 +230,19 @@ export const PatientSelfBookingPage = () => {
             <div className="flex items-center gap-1.5 bg-slate-800/80 p-1 rounded-2xl border border-slate-700">
               <button
                 onClick={() => setMode('book')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${
-                  mode === 'book'
+                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer ${mode === 'book'
                     ? 'bg-teal-500 text-white shadow-md'
                     : 'text-slate-300 hover:text-white'
-                }`}
+                  }`}
               >
                 Book New Visit
               </button>
               <button
                 onClick={() => setMode('lookup')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer ${
-                  mode === 'lookup'
+                className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 cursor-pointer ${mode === 'lookup'
                     ? 'bg-teal-500 text-white shadow-md'
                     : 'text-slate-300 hover:text-white'
-                }`}
+                  }`}
               >
                 <Search className="w-3.5 h-3.5" /> Find My Bookings
               </button>
@@ -335,11 +333,10 @@ export const PatientSelfBookingPage = () => {
                             {apt.providerName || 'JOSMIC Wellness Center'} | Phone: {apt.patientPhone || 'N/A'}
                           </p>
                         </div>
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-extrabold ${
-                          apt.status === 'SCHEDULED' ? 'bg-emerald-100 text-emerald-800' :
-                          apt.status === 'COMPLETED' ? 'bg-blue-100 text-blue-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-extrabold ${apt.status === 'SCHEDULED' ? 'bg-emerald-100 text-emerald-800' :
+                            apt.status === 'COMPLETED' ? 'bg-blue-100 text-blue-800' :
+                              'bg-red-100 text-red-800'
+                          }`}>
                           {apt.status}
                         </span>
                       </div>
@@ -429,7 +426,7 @@ export const PatientSelfBookingPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-900 mb-1">Mobile Phone (For SMS Reminders) *</label>
+                  <label className="block text-xs font-bold text-slate-900 mb-1">Mobile Phone  *</label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
@@ -577,11 +574,10 @@ export const PatientSelfBookingPage = () => {
                       <div
                         key={p.id}
                         onClick={() => setFormData({ ...formData, providerId: p.id })}
-                        className={`p-4 rounded-2xl border cursor-pointer transition flex items-start gap-3 ${
-                          formData.providerId === p.id
+                        className={`p-4 rounded-2xl border cursor-pointer transition flex items-start gap-3 ${formData.providerId === p.id
                             ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
+                          }`}
                       >
                         <Building2 className={`w-5 h-5 mt-0.5 ${formData.providerId === p.id ? 'text-teal-600' : 'text-slate-400'}`} />
                         <div>
@@ -618,18 +614,16 @@ export const PatientSelfBookingPage = () => {
                       <div
                         key={s.id}
                         onClick={() => handleToggleService(s.id)}
-                        className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between relative ${
-                          isSelected
+                        className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between relative ${isSelected
                             ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20 shadow-xs'
                             : 'border-slate-200 hover:border-slate-300 bg-white opacity-80 hover:opacity-100'
-                        }`}
+                          }`}
                       >
                         <div>
                           <div className="flex items-center justify-between gap-1">
                             <div className="text-xs font-bold text-slate-900">{s.name}</div>
-                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                              isSelected ? 'bg-teal-600 text-white' : 'border border-slate-300 bg-white'
-                            }`}>
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${isSelected ? 'bg-teal-600 text-white' : 'border border-slate-300 bg-white'
+                              }`}>
                               {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                             </div>
                           </div>
@@ -712,9 +706,9 @@ export const PatientSelfBookingPage = () => {
                     <p className="text-amber-700 mt-0.5">
                       {slotsState.allSlotsPassed
                         ? `All appointment slots for today (${formData.date}) have already passed. Please pick tomorrow or an upcoming date from the calendar above.`
-                        : slotsState.isWeekend 
-                        ? 'Our clinic is closed on Saturdays and Sundays. Please select a Monday through Friday date for your visit.'
-                        : 'Routine patient visits are not scheduled on US Federal Holidays. Please select another business day.'}
+                        : slotsState.isWeekend
+                          ? 'Our clinic is closed on Saturdays and Sundays. Please select a Monday through Friday date for your visit.'
+                          : 'Routine patient visits are not scheduled on US Federal Holidays. Please select another business day.'}
                     </p>
                   </div>
                 </div>
@@ -771,11 +765,10 @@ export const PatientSelfBookingPage = () => {
                           type="button"
                           disabled={!s.available}
                           onClick={() => setFormData({ ...formData, time: s.time })}
-                          className={`p-3 rounded-xl text-xs font-bold border transition flex items-center justify-between cursor-pointer ${
-                            formData.time === s.time
+                          className={`p-3 rounded-xl text-xs font-bold border transition flex items-center justify-between cursor-pointer ${formData.time === s.time
                               ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-600/30'
                               : 'bg-white text-slate-800 border-slate-200 hover:border-teal-600 hover:bg-teal-50/30 active:scale-98'
-                          }`}
+                            }`}
                         >
                           <span>{s.time}</span>
                           {formData.time === s.time && <Check className="w-4 h-4 text-white" />}
@@ -796,11 +789,10 @@ export const PatientSelfBookingPage = () => {
                 <button
                   disabled={isSubmitting || !formData.time || slotsState.isClosed}
                   onClick={handleAutoBookSubmit}
-                  className={`inline-flex items-center gap-2 px-8 py-3.5 text-white font-extrabold text-xs rounded-xl shadow-lg transition cursor-pointer ${
-                    isSubmitting || !formData.time || slotsState.isClosed
+                  className={`inline-flex items-center gap-2 px-8 py-3.5 text-white font-extrabold text-xs rounded-xl shadow-lg transition cursor-pointer ${isSubmitting || !formData.time || slotsState.isClosed
                       ? 'bg-slate-300 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 active:scale-95'
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <span>Auto-Booking Appointment...</span>

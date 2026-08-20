@@ -9,10 +9,13 @@ import { AddAttorneyModal } from './AddAttorneyModal';
 import { useUIStore } from '../../store/uiStore';
 import { 
   FileSpreadsheet, Save, Shield, User, Stethoscope, Scale, 
-  PlusCircle, Calendar, AlertCircle, CheckCircle2, AlertTriangle, Clock
+  PlusCircle, Calendar, AlertCircle, CheckCircle2, AlertTriangle, Clock, Lock, ChevronRight, ArrowLeft
 } from 'lucide-react';
 
 const todayStr = new Date().toISOString().split('T')[0];
+
+const sanitizePhone = (val) => (val || '').replace(/[^0-9\-()+ \textEXText.]/gi, '');
+const sanitizeClaimPolicy = (val) => (val || '').toUpperCase().replace(/[^A-Z0-9\-]/g, '');
 
 const inputCls = (hasError) =>
   `w-full px-3 py-2 text-xs rounded-xl border ${
@@ -195,39 +198,75 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
   const isTab2Complete = !!((formData.attorneyName?.trim() || formData.lawFirm?.trim()) && formData.insuranceCompany?.trim() && (formData.insuranceClaimNumber?.trim() || formData.insurancePolicyNumber?.trim()));
   const isTab3Complete = !!(formData.chiefComplaint?.trim() && (formData.injuryBodyParts?.trim() || formData.diagnosisCodes?.length > 0) && (formData.diagnosisCodes && formData.diagnosisCodes.length > 0));
 
+  const validateStep1 = () => {
+    const errs = {};
+    if (!formData.patientName?.trim()) {
+      errs.patientName = 'Please select or enter a registered patient in Step 1.';
+    }
+    if (!formData.accidentDate) {
+      errs.accidentDate = 'Date of accident is required in Step 1.';
+    } else if (formData.accidentDate > todayStr) {
+      errs.accidentDate = 'Date of accident cannot be in the future in Step 1.';
+    } else if (formData.initialDate && formData.accidentDate > formData.initialDate) {
+      errs.accidentDate = `Date of accident (${formData.accidentDate}) cannot be after initial treatment date (${formData.initialDate}).`;
+    }
+    if (!formData.initialDate) {
+      errs.initialDate = 'Initial treatment date is required in Step 1.';
+    }
+    if (formData.initialDate && formData.dischargeDate && formData.dischargeDate < formData.initialDate) {
+      errs.dischargeDate = 'Discharge date cannot be before initial treatment date.';
+    }
+    return errs;
+  };
+
+  const validateStep2 = () => {
+    const errs = {};
+    if (!formData.attorneyName?.trim() && !formData.lawFirm?.trim()) {
+      errs.attorneyName = 'Attorney or Law Firm name is required in Step 2.';
+    }
+    if (!formData.insuranceCompany?.trim()) {
+      errs.insuranceCompany = 'Auto / Liability insurance carrier is required in Step 2.';
+    }
+    if (!formData.insuranceClaimNumber?.trim() && !formData.insurancePolicyNumber?.trim()) {
+      errs.insuranceClaimNumber = 'Insurance Policy # or Claim # is required in Step 2.';
+    }
+    if (formData.attorneyEmail?.trim() && !/\S+@\S+\.\S+/.test(formData.attorneyEmail.trim())) {
+      errs.attorneyEmail = 'Please enter a valid email format (e.g. attorney@lawoffice.com).';
+    }
+    return errs;
+  };
+
+  const handleTabClick = (targetTab) => {
+    if (targetTab === 'LEGAL') {
+      const s1Errs = validateStep1();
+      if (Object.keys(s1Errs).length > 0) {
+        setErrors(s1Errs);
+        addToast(Object.values(s1Errs)[0], 'warning');
+        return;
+      }
+    } else if (targetTab === 'CLINICAL') {
+      const s1Errs = validateStep1();
+      if (Object.keys(s1Errs).length > 0) {
+        setActiveTab('ACCIDENT');
+        setErrors(s1Errs);
+        addToast('Please complete Step 1 (Accident & Timeline) before moving to Step 3.', 'warning');
+        return;
+      }
+      const s2Errs = validateStep2();
+      if (Object.keys(s2Errs).length > 0) {
+        setActiveTab('LEGAL');
+        setErrors(s2Errs);
+        addToast(Object.values(s2Errs)[0], 'warning');
+        return;
+      }
+    }
+    setActiveTab(targetTab);
+  };
+
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
-    const newErrors = {};
-
-    // 1. Validate Section 1: Accident & Timeline Verification
-    if (!formData.patientName.trim()) {
-      newErrors.patientName = 'Patient selection is required in Section 1.';
-    }
-    if (!formData.accidentDate) {
-      newErrors.accidentDate = 'Date of accident is required in Section 1.';
-    } else if (formData.accidentDate > todayStr) {
-      newErrors.accidentDate = 'Date of accident cannot be in the future in Section 1.';
-    } else if (formData.initialDate && formData.accidentDate > formData.initialDate) {
-      newErrors.accidentDate = `Date of accident (${formData.accidentDate}) cannot be after initial treatment date (${formData.initialDate}).`;
-    }
-    if (!formData.initialDate) {
-      newErrors.initialDate = 'Initial treatment date is required in Section 1.';
-    }
-    if (formData.initialDate && formData.dischargeDate && formData.dischargeDate < formData.initialDate) {
-      newErrors.dischargeDate = 'Discharge date cannot be before initial treatment date.';
-    }
-
-    // 2. Validate Section 2: Legal Lien & Auto Insurance
-    if (!formData.attorneyName?.trim() && !formData.lawFirm?.trim()) {
-      newErrors.attorneyName = 'Attorney or Law Firm name is required in Section 2.';
-    }
-    if (!formData.insuranceCompany?.trim()) {
-      newErrors.insuranceCompany = 'Auto / Liability insurance carrier is required in Section 2.';
-    }
-    if (!formData.insuranceClaimNumber?.trim() && !formData.insurancePolicyNumber?.trim()) {
-      newErrors.insuranceClaimNumber = 'Insurance Policy # or Claim # is required in Section 2.';
-    }
+    const newErrors = { ...validateStep1(), ...validateStep2() };
 
     // 3. Validate Section 3: Diagnoses (ICD-10) & Notes
     if (!formData.chiefComplaint?.trim()) {
@@ -240,7 +279,6 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      // Auto-navigate to first invalid tab
       if (newErrors.patientName || newErrors.accidentDate || newErrors.initialDate || newErrors.dischargeDate) {
         setActiveTab('ACCIDENT');
         addToast(newErrors.patientName || newErrors.accidentDate || newErrors.initialDate, 'warning');
@@ -256,7 +294,6 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
 
     setIsLoading(true);
     try {
-      // Resolve valid patient ID
       let finalPatientId = formData.patientId;
       if (!finalPatientId && patients.length > 0) {
         finalPatientId = patients[0].id;
@@ -281,6 +318,33 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
     }
   };
 
+  const handleNextFromStep1 = () => {
+    const s1Errs = validateStep1();
+    if (Object.keys(s1Errs).length > 0) {
+      setErrors(s1Errs);
+      addToast(Object.values(s1Errs)[0], 'warning');
+      return;
+    }
+    setActiveTab('LEGAL');
+  };
+
+  const handleNextFromStep2 = () => {
+    const s1Errs = validateStep1();
+    if (Object.keys(s1Errs).length > 0) {
+      setActiveTab('ACCIDENT');
+      setErrors(s1Errs);
+      addToast('Please complete Step 1 first.', 'warning');
+      return;
+    }
+    const s2Errs = validateStep2();
+    if (Object.keys(s2Errs).length > 0) {
+      setErrors(s2Errs);
+      addToast(Object.values(s2Errs)[0], 'warning');
+      return;
+    }
+    setActiveTab('CLINICAL');
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -293,21 +357,63 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
       iconBg="bg-teal-50"
       footer={
         <div className="flex items-center justify-between w-full">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isLoading || (timelineCheck && timelineCheck.isInvalid)}
-            className="px-5 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
-          >
-            <Save className="w-4 h-4" /> {isLoading ? 'Creating Case...' : 'Create Accident Case'}
-          </button>
+          {activeTab === 'ACCIDENT' && (
+            <>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleNextFromStep1}
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              >
+                Continue to Step 2: Legal Lien &amp; Insurance <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {activeTab === 'LEGAL' && (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveTab('ACCIDENT')}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Step 1
+              </button>
+              <button
+                type="button"
+                onClick={handleNextFromStep2}
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              >
+                Continue to Step 3: Diagnoses &amp; Notes <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {activeTab === 'CLINICAL' && (
+            <>
+              <button
+                type="button"
+                onClick={() => setActiveTab('LEGAL')}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Step 2
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isLoading || (timelineCheck && timelineCheck.isInvalid)}
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Save className="w-4 h-4" /> {isLoading ? 'Creating Case...' : 'Create Accident Case'}
+              </button>
+            </>
+          )}
         </div>
       }
     >
@@ -316,7 +422,7 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
         <div className="flex border-b border-slate-200 gap-2 overflow-x-auto pb-0.5">
           <button
             type="button"
-            onClick={() => setActiveTab('ACCIDENT')}
+            onClick={() => handleTabClick('ACCIDENT')}
             className={`pb-2 px-3 text-xs font-bold transition border-b-2 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
               activeTab === 'ACCIDENT' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
@@ -330,12 +436,21 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('LEGAL')}
-            className={`pb-2 px-3 text-xs font-bold transition border-b-2 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-              activeTab === 'LEGAL' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+            onClick={() => handleTabClick('LEGAL')}
+            className={`pb-2 px-3 text-xs font-bold transition border-b-2 flex items-center gap-1.5 whitespace-nowrap ${
+              !isTab1Complete
+                ? 'border-transparent text-slate-400 cursor-not-allowed'
+                : activeTab === 'LEGAL'
+                ? 'border-teal-600 text-teal-600 cursor-pointer'
+                : 'border-transparent text-slate-500 hover:text-slate-700 cursor-pointer'
             }`}
           >
-            <Scale className="w-3.5 h-3.5" /> 2. Legal Lien &amp; Insurance
+            {!isTab1Complete ? (
+              <Lock className="w-3 h-3 text-slate-400" />
+            ) : (
+              <Scale className="w-3.5 h-3.5" />
+            )}
+            2. Legal Lien &amp; Insurance
             {isTab2Complete ? (
               <span className="w-4 h-4 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-[10px]">✓</span>
             ) : (
@@ -344,12 +459,21 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('CLINICAL')}
-            className={`pb-2 px-3 text-xs font-bold transition border-b-2 flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-              activeTab === 'CLINICAL' ? 'border-teal-600 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+            onClick={() => handleTabClick('CLINICAL')}
+            className={`pb-2 px-3 text-xs font-bold transition border-b-2 flex items-center gap-1.5 whitespace-nowrap ${
+              !isTab1Complete || !isTab2Complete
+                ? 'border-transparent text-slate-400 cursor-not-allowed'
+                : activeTab === 'CLINICAL'
+                ? 'border-teal-600 text-teal-600 cursor-pointer'
+                : 'border-transparent text-slate-500 hover:text-slate-700 cursor-pointer'
             }`}
           >
-            <Stethoscope className="w-3.5 h-3.5" /> 3. Diagnoses (ICD-10) &amp; Notes
+            {!isTab1Complete || !isTab2Complete ? (
+              <Lock className="w-3 h-3 text-slate-400" />
+            ) : (
+              <Stethoscope className="w-3.5 h-3.5" />
+            )}
+            3. Diagnoses (ICD-10) &amp; Notes
             {isTab3Complete ? (
               <span className="w-4 h-4 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-[10px]">✓</span>
             ) : (
@@ -604,21 +728,23 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
                   <label className={labelCls}>Attorney Phone</label>
                   <input
                     type="tel"
-                    className={inputCls()}
+                    className={inputCls(errors.attorneyPhone)}
                     value={formData.attorneyPhone}
-                    onChange={e => set('attorneyPhone', e.target.value)}
-                    placeholder="713-555-0188"
+                    onChange={e => set('attorneyPhone', sanitizePhone(e.target.value))}
+                    placeholder="e.g. 713-555-0188"
                   />
+                  {errors.attorneyPhone && <p className="text-[10px] text-rose-500 mt-0.5">{errors.attorneyPhone}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Attorney Email</label>
                   <input
                     type="email"
-                    className={inputCls()}
+                    className={inputCls(errors.attorneyEmail)}
                     value={formData.attorneyEmail}
-                    onChange={e => set('attorneyEmail', e.target.value)}
+                    onChange={e => set('attorneyEmail', e.target.value.trim())}
                     placeholder="attorney@lawoffice.com"
                   />
+                  {errors.attorneyEmail && <p className="text-[10px] text-rose-500 mt-0.5">{errors.attorneyEmail}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Litigation / Lien Status</label>
@@ -638,29 +764,31 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className={labelCls}>Auto Insurance Carrier</label>
+                  <label className={labelCls}>Auto Insurance Carrier *</label>
                   <input
-                    className={inputCls()}
+                    className={inputCls(errors.insuranceCompany)}
                     value={formData.insuranceCompany}
                     onChange={e => set('insuranceCompany', e.target.value)}
                     placeholder="e.g. Geico, Progressive, State Farm"
                   />
+                  {errors.insuranceCompany && <p className="text-[10px] text-rose-500 mt-0.5">{errors.insuranceCompany}</p>}
                 </div>
                 <div>
-                  <label className={labelCls}>Claim Number</label>
+                  <label className={labelCls}>Claim Number *</label>
                   <input
-                    className={inputCls()}
+                    className={inputCls(errors.insuranceClaimNumber)}
                     value={formData.insuranceClaimNumber}
-                    onChange={e => set('insuranceClaimNumber', e.target.value)}
+                    onChange={e => set('insuranceClaimNumber', sanitizeClaimPolicy(e.target.value))}
                     placeholder="e.g. CLM-2026-88192"
                   />
+                  {errors.insuranceClaimNumber && <p className="text-[10px] text-rose-500 mt-0.5">{errors.insuranceClaimNumber}</p>}
                 </div>
                 <div>
                   <label className={labelCls}>Policy Number</label>
                   <input
                     className={inputCls()}
                     value={formData.insurancePolicyNumber}
-                    onChange={e => set('insurancePolicyNumber', e.target.value)}
+                    onChange={e => set('insurancePolicyNumber', sanitizeClaimPolicy(e.target.value))}
                     placeholder="e.g. POL-TX-9921"
                   />
                 </div>
@@ -679,9 +807,10 @@ export const AddCaseModal = ({ isOpen, onClose, onCaseAdded, initialPatient = nu
                 <div>
                   <label className={labelCls}>Adjuster Direct Phone / Contact</label>
                   <input
+                    type="tel"
                     className={inputCls()}
                     value={formData.insuranceAdjusterPhone}
-                    onChange={e => set('insuranceAdjusterPhone', e.target.value)}
+                    onChange={e => set('insuranceAdjusterPhone', sanitizePhone(e.target.value))}
                     placeholder="e.g. 800-555-0199 ext 402"
                   />
                 </div>

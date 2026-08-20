@@ -62,7 +62,7 @@ export const ScheduleAppointmentModal = ({
               ...prev,
               patientId: found.id,
               patientName: `${found.firstName} ${found.lastName}`.trim(),
-              patientPhone: found.phone || found.mobilePhone || prev.patientPhone
+              patientPhone: prefillPhone || ''
             }));
           }
         }
@@ -71,9 +71,6 @@ export const ScheduleAppointmentModal = ({
       apiCaseService.getCases().then(res => {
         if (res && res.length > 0) {
           setCases(res);
-          if (!prefillCaseId) {
-            setFormData(prev => ({ ...prev, caseId: res[0].caseId || res[0].id }));
-          }
         }
       }).catch(() => {});
     }
@@ -84,17 +81,14 @@ export const ScheduleAppointmentModal = ({
   const handlePatientSelect = (patientId) => {
     const selected = patients.find(p => p.id === patientId);
     if (selected) {
+      const patientCases = cases.filter(c => c.patientId === selected.id || c.patientId === selected.patientId);
       setFormData(prev => ({
         ...prev,
         patientId: selected.id,
         patientName: `${selected.firstName} ${selected.lastName}`.trim(),
-        patientPhone: selected.phone || selected.mobilePhone || ''
+        patientPhone: selected.phone || selected.mobilePhone || '',
+        caseId: patientCases.length > 0 ? (patientCases[0].caseId || patientCases[0].id) : ''
       }));
-      // Filter linked cases
-      const patientCases = cases.filter(c => c.patientId === selected.id || c.patientId === selected.patientId);
-      if (patientCases.length > 0) {
-        set('caseId', patientCases[0].caseId || patientCases[0].id);
-      }
     }
   };
 
@@ -128,6 +122,18 @@ export const ScheduleAppointmentModal = ({
       setIsLoading(false);
     }
   };
+
+  // Filter cases to ONLY show cases belonging to the currently selected patient
+  const selectedPatientObj = patients.find(p => p.id === formData.patientId);
+  const availableCases = cases.filter(c => {
+    if (!formData.patientId) return false;
+    const pSysId = selectedPatientObj?.patientId;
+    const pName = selectedPatientObj ? `${selectedPatientObj.firstName} ${selectedPatientObj.lastName}`.trim().toLowerCase() : '';
+    const cPatId = c.patientId;
+    const cPatName = (c.patientName || '').trim().toLowerCase();
+
+    return (cPatId && (cPatId === formData.patientId || cPatId === pSysId)) || (pName && cPatName && cPatName === pName);
+  });
 
   return (
     <Modal
@@ -163,8 +169,25 @@ export const ScheduleAppointmentModal = ({
         {/* Dynamic Patient & Linked Case Selection */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className={labelCls}>Select Patient *</label>
-            {patients.length > 0 ? (
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-bold text-slate-800">Select Patient *</label>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    patientId: prev.patientId ? '' : (patients[0]?.id || ''),
+                    patientName: prev.patientId ? '' : `${patients[0]?.firstName || ''} ${patients[0]?.lastName || ''}`,
+                    patientPhone: prev.patientId ? '' : (patients[0]?.phone || ''),
+                    caseId: ''
+                  }));
+                }}
+                className="text-[10px] font-bold text-teal-700 hover:underline cursor-pointer"
+              >
+                {formData.patientId ? '+ New Walk-In Patient' : 'Select Existing'}
+              </button>
+            </div>
+            {formData.patientId && patients.length > 0 ? (
               <select
                 value={formData.patientId}
                 onChange={e => handlePatientSelect(e.target.value)}
@@ -177,33 +200,35 @@ export const ScheduleAppointmentModal = ({
                 ))}
               </select>
             ) : (
-              <input required className={inputCls} value={formData.patientName} onChange={e => set('patientName', e.target.value)} placeholder="Patient Name" />
+              <input
+                required
+                className={inputCls}
+                value={formData.patientName}
+                onChange={e => set('patientName', e.target.value)}
+                placeholder="Enter Full Name (e.g. John Doe)"
+              />
             )}
           </div>
 
           <div>
-            <label className={labelCls}>Patient Mobile (for SMS Reminders)</label>
+            <label className={labelCls}>Patient Mobile</label>
             <input type="tel" className={inputCls} value={formData.patientPhone} onChange={e => set('patientPhone', e.target.value)} placeholder="713-555-0100" />
           </div>
 
           <div>
             <label className={labelCls}>Linked Accident Case</label>
-            {cases.length > 0 ? (
-              <select
-                value={formData.caseId}
-                onChange={e => set('caseId', e.target.value)}
-                className={inputCls}
-              >
-                <option value="">-- No Case / General Visit --</option>
-                {cases.map(c => (
-                  <option key={c.id} value={c.caseId || c.id}>
-                    {c.caseId || c.id} - {c.patientName}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input className={inputCls} value={formData.caseId} onChange={e => set('caseId', e.target.value)} placeholder="CASE-2025-1227" />
-            )}
+            <select
+              value={formData.caseId}
+              onChange={e => set('caseId', e.target.value)}
+              className={inputCls}
+            >
+              <option value="">-- No Case / General Visit --</option>
+              {availableCases.map(c => (
+                <option key={c.id} value={c.caseId || c.id}>
+                  {c.caseId || c.id} - {c.patientName}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
