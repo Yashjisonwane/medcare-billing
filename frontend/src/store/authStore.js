@@ -108,7 +108,7 @@ export const useAuthStore = create((set, get) => ({
   },
 
   /**
-   * Logout â€” clears session and token
+   * Logout - clears session and token
    */
   logout: async () => {
     set({ isLoading: true });

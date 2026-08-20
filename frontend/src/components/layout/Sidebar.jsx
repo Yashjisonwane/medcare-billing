@@ -118,7 +118,7 @@ export const Sidebar = ({ onCloseMobile }) => {
   return (
     <aside className="w-64 h-full bg-slate-900 border-r border-slate-800 flex flex-col justify-between text-slate-300 font-sans text-xs select-none">
       
-      {/* â”€â”€ MOBILE ONLY HEADER (Close button) â”€â”€ */}
+      {/* -- MOBILE ONLY HEADER (Close button) -- */}
       <div className="lg:hidden p-3 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/40">
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Navigation Menu</span>
         <button
@@ -130,7 +130,7 @@ export const Sidebar = ({ onCloseMobile }) => {
         </button>
       </div>
 
-      {/* â”€â”€ SCROLLABLE NAVIGATION ITEMS (Starts directly from top on desktop) â”€â”€ */}
+      {/* -- SCROLLABLE NAVIGATION ITEMS (Starts directly from top on desktop) -- */}
       <div className="flex-1 overflow-y-auto overscroll-contain py-4 px-3 space-y-5">
         {navSections.map((section, idx) => (
           <div key={idx} className="space-y-1">

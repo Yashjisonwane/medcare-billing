@@ -81,7 +81,7 @@ export const TherapistDashboard = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-on-surface flex items-center gap-2">
               <Activity className="w-5 h-5 text-secondary-container" />
-              DAV'S Anatomy â€” ESWT Radial Device Form
+              DAV'S Anatomy - ESWT Radial Device Form
             </h2>
             <button onClick={() => navigate('/clinical-notes/davs-eswt')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1">
               Open Form <ChevronRight className="w-4 h-4" />
@@ -96,7 +96,7 @@ export const TherapistDashboard = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-on-surface flex items-center gap-2">
               <Award className="w-5 h-5 text-purple-600" />
-              ANIK Laser Therapy â€” Procedure Form
+              ANIK Laser Therapy - Procedure Form
             </h2>
             <button onClick={() => navigate('/clinical-notes/anik-laser')} className="text-xs font-bold text-secondary-container hover:underline flex items-center gap-1">
               Open Form <ChevronRight className="w-4 h-4" />

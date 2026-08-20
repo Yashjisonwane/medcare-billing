@@ -80,7 +80,7 @@ export const JosmicPainFormPage = () => {
       </button>
 
       <div>
-        <h1 className="text-2xl font-bold text-on-surface">JOSMIC Wellness Center â€” Pain Management Consultation Form</h1>
+        <h1 className="text-2xl font-bold text-on-surface">JOSMIC Wellness Center - Pain Management Consultation Form</h1>
         <p className="text-xs text-on-surface-variant">Structured consultation, 24 anatomical pain location grid, HPI pain scale & diagnostic plan</p>
       </div>
 
@@ -88,7 +88,7 @@ export const JosmicPainFormPage = () => {
         {/* Section 1: Patient Header */}
         <div className="space-y-4">
           <h2 className="text-sm font-bold text-on-surface border-b border-outline-variant pb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-secondary-container" /> Section 1 â€” Patient & Chief Complaint
+            <FileText className="w-4 h-4 text-secondary-container" /> Section 1 - Patient & Chief Complaint
           </h2>
 
           <div>
@@ -140,9 +140,9 @@ export const JosmicPainFormPage = () => {
             className="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary-container"
           />
           <div className="flex justify-between text-[10px] text-on-surface-variant font-bold">
-            <span>0 â€” No Pain</span>
-            <span>5 â€” Moderate</span>
-            <span>10 â€” Unbearable</span>
+            <span>0 - No Pain</span>
+            <span>5 - Moderate</span>
+            <span>10 - Unbearable</span>
           </div>
         </div>
 

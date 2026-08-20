@@ -39,7 +39,7 @@ export const RoleGuard = ({ children }) => {
   // treat as Super Admin so the app doesn't break.
   const allowedRoutes = ROLE_ROUTE_PERMISSIONS[role] || ['*'];
 
-  // Super admin (or unrecognized â†’ fallback) has full access
+  // Super admin (or unrecognized -> fallback) has full access
   if (allowedRoutes.includes('*')) {
     return children;
   }

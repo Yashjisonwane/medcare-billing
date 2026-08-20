@@ -24,7 +24,7 @@ const PROVIDER_COLORS = {
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 text-slate-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';
 
-// â”€â”€â”€ Schedule Session Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Schedule Session Modal ---------------------------------------------------
 const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   const [form, setForm] = useState({
     patientName: '',
@@ -265,7 +265,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Main Page ----------------------------------------------------------------
 export const TreatmentSessionsPage = () => {
   const settings = useSettings();
   const [search, setSearch] = useState('');

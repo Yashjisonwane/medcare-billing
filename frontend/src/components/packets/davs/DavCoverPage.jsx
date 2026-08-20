@@ -11,7 +11,7 @@ export const DavCoverPage = ({ packetData, blankMode = false }) => {
       </div>
 
       <div className="bg-slate-100 p-6 rounded-xl border border-slate-300 space-y-4 font-mono text-xs">
-        <h2 className="text-sm font-bold text-slate-900 uppercase border-b border-slate-300 pb-2">DAV'S ANATOMY â€” CLINICAL PACKET COVER SHEET (14 PAGES)</h2>
+        <h2 className="text-sm font-bold text-slate-900 uppercase border-b border-slate-300 pb-2">DAV'S ANATOMY - CLINICAL PACKET COVER SHEET (14 PAGES)</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>PATIENT: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>{packetData.patientName}</strong>}</div>
           <div>SYSTEM ID: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>{packetData.patient?.patientId || packetData.patientId || 'N/A'}</strong>}</div>

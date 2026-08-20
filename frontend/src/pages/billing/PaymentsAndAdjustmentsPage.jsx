@@ -174,10 +174,10 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
             <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Payment Type *</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { val: 'INSURANCE', label: 'ðŸ› Insurance Payment' },
-                { val: 'PATIENT', label: 'ðŸ‘¤ Patient Payment' },
-                { val: 'ATTORNEY', label: 'âš–ï¸ Attorney Settlement' },
-                { val: 'WORKERS_COMP', label: 'ðŸ— Workers\' Comp' },
+                { val: 'INSURANCE', label: '🏛️ Insurance Payment' },
+                { val: 'PATIENT', label: '👤 Patient Payment' },
+                { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
+                { val: 'WORKERS_COMP', label: "🏗️ Workers' Comp" },
               ].map(opt => (
                 <label 
                   key={opt.val} 
@@ -388,7 +388,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// â”€â”€â”€ Dynamic Post Adjustment / Write-Off Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Dynamic Post Adjustment / Write-Off Modal --------------------------------
 const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   const { addToast } = useUIStore();
   const [saving, setSaving] = useState(false);

@@ -53,7 +53,7 @@ export const DavsEswtFormPage = () => {
       </button>
 
       <div>
-        <h1 className="text-2xl font-bold text-on-surface">DAV'S Anatomy â€” Shockwave Therapy (ESWT) Radial Device Form</h1>
+        <h1 className="text-2xl font-bold text-on-surface">DAV'S Anatomy - Shockwave Therapy (ESWT) Radial Device Form</h1>
         <p className="text-xs text-on-surface-variant">Vitals verification, Bar setting (3.0), Hz (10 Hz), Wave Count (3000) & BLT cream application</p>
       </div>
 

@@ -261,7 +261,7 @@ export const AgingSummaryPage = () => {
         </div>
       </div>
 
-      {/* Patient Aging & Recent Activity â€” 2 column layout */}
+      {/* Patient Aging & Recent Activity - 2 column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {/* Patient-Level Aging */}

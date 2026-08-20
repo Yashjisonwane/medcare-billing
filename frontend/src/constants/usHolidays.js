@@ -126,7 +126,7 @@ export const isClinicClosed = (dateStr) => {
       isClosed: true,
       isWeekend: true,
       isHoliday: false,
-      reason: `Weekend (${weekendCheck.dayName}) â€” Clinic is closed`
+      reason: `Weekend (${weekendCheck.dayName}) - Clinic is closed`
     };
   }
 
@@ -136,7 +136,7 @@ export const isClinicClosed = (dateStr) => {
       isClosed: true,
       isWeekend: false,
       isHoliday: true,
-      reason: `US Federal Holiday (${holidayCheck.name}) â€” Clinic is closed`,
+      reason: `US Federal Holiday (${holidayCheck.name}) - Clinic is closed`,
       holidayName: holidayCheck.name
     };
   }

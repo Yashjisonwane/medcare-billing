@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 /**
- * DAV'S ESWT Procedure Form (Radial Device) â€” Sample PDF Pages 7, 8, 9
+ * DAV'S ESWT Procedure Form (Radial Device) - Sample PDF Pages 7, 8, 9
  */
 export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, blankMode = false, packetData = null }) => {
   const [nerveBlock, setNerveBlock] = useState('NO');
@@ -41,7 +41,7 @@ export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, bla
           <div><strong>PT Hx:</strong> <span className="underline ml-1">Motor vehicle collision on {blankMode || !packetData ? '12/27/2025' : (packetData.accidentDate || '12/27/2025')}</span></div>
         </div>
 
-        {/* â”€â”€ 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) â”€â”€ */}
+        {/* -- 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) -- */}
         <div className="border-2 border-slate-800 rounded-lg overflow-hidden grid grid-cols-12 text-xs">
           
           {/* Column 1: Human Body Anatomical Diagram */}
@@ -177,7 +177,7 @@ export const DavEswtProcedureForm = ({ dos = '01/22/2026', readOnly = false, bla
         <div className="border-t border-slate-300 pt-2 space-y-1 text-[10px]">
           <p><strong>Pre-Treatment:</strong> Apply BLT cream to all treatment areas to be treated if needed. Apply liberal amount of ultrasound gel as treating specific areas.</p>
           <p><strong>Treatment:</strong> Place sheath/condom over transmitter tip. Set device to recommended Bar of 2.6 (can go up to 3.6 Bar) or Mj of 90 (Can go up to 150mJ). Set device to recommended Hz of 15. Treat each area with 500 waves.</p>
-          <p><strong>Post procedure Instructions:</strong> â€¢ No down time following treatment â€¢ May expect mild inflammation, redness &amp; swelling for a few days â€¢ No Aspirin or NSAIDS for at least 7 days â€¢ Tylenol or Acetaminophen may be taken for discomfort â€¢ Hydrate very well (at least 64 ounces of water daily).</p>
+          <p><strong>Post procedure Instructions:</strong> • No down time following treatment • May expect mild inflammation, redness &amp; swelling for a few days • No Aspirin or NSAIDS for at least 7 days • Tylenol or Acetaminophen may be taken for discomfort • Hydrate very well (at least 64 ounces of water daily).</p>
         </div>
 
         {/* Signature Box */}

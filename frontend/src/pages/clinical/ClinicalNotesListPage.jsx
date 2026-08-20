@@ -41,7 +41,7 @@ export const ClinicalNotesListPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* â”€â”€ Top Header & Actions â”€â”€ */}
+      {/* -- Top Header & Actions -- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Clinical Documentation Master Registry</h1>
@@ -63,7 +63,7 @@ export const ClinicalNotesListPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Search & Filter Controls â”€â”€ */}
+      {/* -- Search & Filter Controls -- */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -95,7 +95,7 @@ export const ClinicalNotesListPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Notes List (Mobile Cards + Desktop Table) â”€â”€ */}
+      {/* -- Notes List (Mobile Cards + Desktop Table) -- */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {filteredNotes.length === 0 ? (
           <div className="p-8 text-center space-y-3">

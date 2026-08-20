@@ -251,7 +251,7 @@ export const PatientSelfBookingPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ MODE: LOOKUP MY BOOKINGS â”€â”€ */}
+      {/* -- MODE: LOOKUP MY BOOKINGS -- */}
       {mode === 'lookup' && (
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div>
@@ -368,7 +368,7 @@ export const PatientSelfBookingPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ MODE: BOOK NEW VISIT â”€â”€ */}
+      {/* -- MODE: BOOK NEW VISIT -- */}
       {mode === 'book' && (
         <>
           {/* Step Indicator Bar */}

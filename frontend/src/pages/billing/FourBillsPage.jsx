@@ -85,7 +85,7 @@ export const FourBillsPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* â”€â”€ Top Navigation & Breadcrumb â”€â”€ */}
+      {/* -- Top Navigation & Breadcrumb -- */}
       <div className="flex items-center gap-2 flex-wrap">
         <button 
           onClick={() => navigate(-1)} 
@@ -118,7 +118,7 @@ export const FourBillsPage = () => {
         </button>
       </div>
 
-      {/* â”€â”€ Header Title & Dynamic Case Selector â”€â”€ */}
+      {/* -- Header Title & Dynamic Case Selector -- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Provider Bills Ledger</h1>
@@ -203,7 +203,7 @@ export const FourBillsPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ Dynamic Provider Bill Statements â”€â”€ */}
+      {/* -- Dynamic Provider Bill Statements -- */}
       {bills.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
           <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto border border-teal-100">
@@ -280,7 +280,7 @@ export const FourBillsPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ Interactive Create Bill Modal â”€â”€ */}
+      {/* -- Interactive Create Bill Modal -- */}
       <CreateBillModal
         isOpen={showCreateBillModal}
         onClose={() => setShowCreateBillModal(false)}

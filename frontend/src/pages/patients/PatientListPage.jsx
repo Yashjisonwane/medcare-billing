@@ -31,7 +31,7 @@ export const PatientListPage = () => {
 
   return (
     <div className="space-y-5">
-      {/* â”€â”€ Top Header & Register Action â”€â”€ */}
+      {/* -- Top Header & Register Action -- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Patient Registry</h1>
@@ -45,7 +45,7 @@ export const PatientListPage = () => {
         </button>
       </div>
 
-      {/* â”€â”€ Search & Filter Controls â”€â”€ */}
+      {/* -- Search & Filter Controls -- */}
       <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -72,7 +72,7 @@ export const PatientListPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Patient List (Responsive: Desktop Table + Mobile Cards) â”€â”€ */}
+      {/* -- Patient List (Responsive: Desktop Table + Mobile Cards) -- */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-xs text-slate-500">Loading patient registry...</div>
@@ -219,7 +219,7 @@ export const PatientListPage = () => {
         )}
       </div>
 
-      {/* â”€â”€ Modals â”€â”€ */}
+      {/* -- Modals -- */}
       <AddPatientModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}

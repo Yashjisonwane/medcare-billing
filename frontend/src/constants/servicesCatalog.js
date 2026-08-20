@@ -71,7 +71,7 @@ export const CORE_SERVICES = [
   },
   {
     id: 'srv-tecar-therapy',
-    name: 'Radiofrequency Energy Transfer â€” TECAR Therapy',
+    name: 'Radiofrequency Energy Transfer - TECAR Therapy',
     shortCode: 'TECAR',
     category: 'Therapeutic Modality',
     description: 'Radiofrequency energy transfer (Capacitive/Resistive) for soft tissue rehabilitation.',

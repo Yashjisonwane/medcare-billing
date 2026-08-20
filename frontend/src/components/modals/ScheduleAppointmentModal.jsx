@@ -298,12 +298,12 @@ export const ScheduleAppointmentModal = ({
         {closedCheck.isClosed && (
           <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-950 space-y-1.5 text-xs">
             <div className="flex items-center gap-2 font-bold text-amber-900">
-              <span>{closedCheck.isWeekend ? 'ðŸ“…' : 'ðŸ‡ºðŸ‡¸'}</span>
+              <span>{closedCheck.isWeekend ? '📅' : '🇺🇸'}</span>
               <span>Clinic Closed: {closedCheck.reason}</span>
             </div>
             <p className="text-[11px] text-amber-800">
               {closedCheck.isWeekend
-                ? 'Routine clinic visits are not scheduled on Saturdays and Sundays. Please select a Mondayâ€“Friday date or toggle Admin Override.'
+                ? 'Routine clinic visits are not scheduled on Saturdays and Sundays. Please select a Monday-Friday date or toggle Admin Override.'
                 : 'Routine appointments are suspended for this US Federal Holiday.'}
             </p>
             <label className="flex items-center gap-2 cursor-pointer font-bold text-amber-950 pt-1">
