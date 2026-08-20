@@ -1,8 +1,9 @@
-// src/pages/patients/PatientListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { apiPatientService } from '../../services/api/apiPatientService';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
+import { ROLES } from '../../constants/rolePermissions';
 import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin, Trash2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';
@@ -11,7 +12,7 @@ import { PatientDetailsModal } from '../../components/modals/PatientDetailsModal
 export const PatientListPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToast } = useUIStore();
+  const { addToast, activeProviderFilter } = useUIStore();
 
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState(() => {
@@ -39,6 +40,17 @@ export const PatientListPage = () => {
     }).catch(() => {
       setIsLoading(false);
     });
+  };
+
+  const handleTogglePatientStatus = async (pat, newStatus) => {
+    try {
+      await mockPatientService.updatePatient(pat.id, { status: newStatus });
+      addToast(`Patient ${pat.firstName} ${pat.lastName} status updated to ${newStatus}`, 'success');
+      loadPatients();
+    } catch (err) {
+      console.error('Failed to update patient status:', err);
+      addToast('Failed to update patient status', 'error');
+    }
   };
 
   const formatDobDDMMYYYY = (dobStr) => {
@@ -76,6 +88,11 @@ export const PatientListPage = () => {
   useEffect(() => {
     loadPatients();
   }, [search, statusFilter]);
+
+  const filteredPatients = patients.filter(pat => {
+    if (activeProviderFilter === 'ALL') return true;
+    return pat.assignedProviderIds?.includes(activeProviderFilter);
+  });
 
   return (
     <div className="space-y-5">
@@ -124,7 +141,7 @@ export const PatientListPage = () => {
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-xs text-slate-500">Loading patient registry...</div>
-        ) : patients.length === 0 ? (
+        ) : filteredPatients.length === 0 ? (
           <div className="p-8 text-center space-y-3">
             <User className="w-10 h-10 text-slate-300 mx-auto" />
             <p className="text-sm font-bold text-slate-900">No Patients Found</p>
@@ -140,7 +157,7 @@ export const PatientListPage = () => {
           <>
             {/* 1. Mobile Card View (< 768px) */}
             <div className="divide-y divide-slate-100 md:hidden">
-              {patients.map((pat) => (
+              {filteredPatients.map((pat) => (
                 <div key={pat.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -153,10 +170,33 @@ export const PatientListPage = () => {
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">
                         ID: {pat.patientId || pat.id} • DOB: {formatDobDDMMYYYY(pat.dob)} ({pat.sex})
                       </p>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                      {pat.status || 'ACTIVE'}
-                    </span>
+                    </div>                    {canTogglePatientStatus ? (
+                      <select
+                        value={pat.status || 'ACTIVE'}
+                        onChange={(e) => handleTogglePatientStatus(pat, e.target.value)}
+                        className={`px-3 py-1 text-[11px] font-extrabold rounded-full border outline-none cursor-pointer transition shadow-2xs shrink-0 ${
+                          (pat.status || 'ACTIVE') === 'ACTIVE'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 ring-2 ring-emerald-400/20'
+                            : 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100 ring-2 ring-rose-400/20'
+                        }`}
+                      >
+                        <option value="ACTIVE">🟢 ACTIVE</option>
+                        <option value="INACTIVE">🔴 INACTIVE</option>
+                      </select>
+                    ) : (
+                      <span
+                        className={`px-3 py-1 text-[11px] font-extrabold rounded-full border inline-flex items-center gap-1.5 shrink-0 ${
+                          (pat.status || 'ACTIVE') === 'ACTIVE'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}
+                      >
+                        <span className={`w-2 h-2 rounded-full ${
+                          (pat.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'
+                        }`} />
+                        {pat.status || 'ACTIVE'}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-1 text-xs text-slate-600">
@@ -218,7 +258,7 @@ export const PatientListPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {patients.map((pat) => (
+                  {filteredPatients.map((pat) => (
                     <tr key={pat.id} className="hover:bg-slate-50/80 transition">
                       <td className="p-3.5 font-mono text-slate-600 font-bold">{pat.patientId || pat.id}</td>
                       <td className="p-3.5">
@@ -245,9 +285,33 @@ export const PatientListPage = () => {
                         </div>
                       </td>
                       <td className="p-3.5">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {pat.status || 'ACTIVE'}
-                        </span>
+                        {canTogglePatientStatus ? (
+                          <select
+                            value={pat.status || 'ACTIVE'}
+                            onChange={(e) => handleTogglePatientStatus(pat, e.target.value)}
+                            className={`px-3 py-1 text-[11px] font-extrabold rounded-full border outline-none cursor-pointer transition shadow-2xs ${
+                              (pat.status || 'ACTIVE') === 'ACTIVE'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 ring-2 ring-emerald-400/20'
+                                : 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100 ring-2 ring-rose-400/20'
+                            }`}
+                          >
+                            <option value="ACTIVE">🟢 ACTIVE</option>
+                            <option value="INACTIVE">🔴 INACTIVE</option>
+                          </select>
+                        ) : (
+                          <span
+                            className={`px-3 py-1 text-[11px] font-extrabold rounded-full border inline-flex items-center gap-1.5 ${
+                              (pat.status || 'ACTIVE') === 'ACTIVE'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-rose-50 text-rose-700 border-rose-200'
+                            }`}
+                          >
+                            <span className={`w-2 h-2 rounded-full ${
+                              (pat.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'
+                            }`} />
+                            {pat.status || 'ACTIVE'}
+                          </span>
+                        )}
                       </td>
                       <td className="p-3.5 text-right">
                         <div className="flex items-center justify-end gap-1.5">

@@ -62,5 +62,16 @@ export const mockCaseService = {
       throw new Error(err.error || 'Failed to update case providers.');
     }
     return res.json();
+  },
+
+  async deleteCase(id) {
+    const res = await fetch(`${API_BASE}/cases/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to delete accident case.');
+    }
+    return res.json();
   }
 };

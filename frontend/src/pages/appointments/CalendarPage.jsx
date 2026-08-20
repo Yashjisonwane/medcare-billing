@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export const CalendarPage = () => {
-  const { addToast } = useUIStore();
+  const { addToast, activeProviderFilter } = useUIStore();
 
   const [allApts, setAllApts] = useState([]);
   const [apts, setApts] = useState([]);
@@ -34,6 +34,10 @@ export const CalendarPage = () => {
   useEffect(() => {
     fetchProviders();
   }, []);
+
+  useEffect(() => {
+    setSelectedProvider(activeProviderFilter);
+  }, [activeProviderFilter]);
 
   useEffect(() => {
     fetchAppointments();

@@ -135,11 +135,32 @@ export const createAppointment = async (req, res) => {
     }
 
     if (!targetPatientId) {
-      const fallbackPatient = await prisma.patient.findFirst();
-      if (fallbackPatient) {
-        targetPatientId = fallbackPatient.id;
-        patientEmail = fallbackPatient.email || patientEmail;
-        patientName = `${fallbackPatient.firstName} ${fallbackPatient.lastName}`.trim();
+      if (data.patientName) {
+        const nameParts = data.patientName.trim().split(' ');
+        const firstName = nameParts[0] || 'Walk-In';
+        const lastName = nameParts.slice(1).join(' ') || 'Patient';
+        const newPat = await prisma.patient.create({
+          data: {
+            id: `pat-${Date.now()}`,
+            patientId: `${Math.floor(100000000 + Math.random() * 900000000)}`,
+            firstName,
+            lastName,
+            phone: data.patientPhone || '',
+            email: data.patientEmail || `${firstName.toLowerCase()}.${Date.now()}@example.com`,
+            dob: data.patientDob || '1990-01-01',
+            gender: 'Unspecified',
+            status: 'ACTIVE'
+          }
+        });
+        targetPatientId = newPat.id;
+        patientName = `${newPat.firstName} ${newPat.lastName}`;
+      } else {
+        const fallbackPatient = await prisma.patient.findFirst();
+        if (fallbackPatient) {
+          targetPatientId = fallbackPatient.id;
+          patientEmail = fallbackPatient.email || patientEmail;
+          patientName = `${fallbackPatient.firstName} ${fallbackPatient.lastName}`.trim();
+        }
       }
     }
 
