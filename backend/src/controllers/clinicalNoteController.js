@@ -392,3 +392,30 @@ Provide clean, concise medical prose with standard medical terminology and ICD-1
     generatedAt: new Date().toLocaleTimeString()
   });
 };
+
+/**
+ * Delete clinical note by ID
+ */
+export const deleteNote = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const existing = await prisma.clinicalNote.findUnique({
+      where: { id }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Clinical note not found.' });
+    }
+
+    await prisma.clinicalNote.delete({
+      where: { id }
+    });
+
+    return res.status(200).json({ message: 'Clinical note deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting clinical note:', error);
+    return res.status(500).json({ error: 'Failed to delete clinical note.' });
+  }
+};
+
