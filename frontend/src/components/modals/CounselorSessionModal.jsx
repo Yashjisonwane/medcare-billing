@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { apiCaseService } from '../../services/api/apiCaseService';
+import { mockCaseService } from '../../services/mock/mockCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
 import { Brain, Save, CheckCircle2, Stethoscope, Tag, Clock } from 'lucide-react';
@@ -14,6 +15,17 @@ const COMMON_DIAGNOSES = [
   { code: 'F41.1', label: 'Generalized Anxiety Disorder' },
   { code: 'F32.9', label: 'Major Depressive Disorder' },
   { code: 'M54.50', label: 'Low back pain (Somatic coping)' },
+  { code: 'S13.4', label: 'Cervical sprain / Whiplash' },
+  { code: 'S33.5', label: 'Lumbar strain' }
+];
+
+const FULL_COUNSELING_CPT_CATALOG = [
+  { code: '90791', description: 'Psychiatric Diagnostic Evaluation (Intake)', fee: '350.00' },
+  { code: '90834', description: 'Individual Psychotherapy (45 Min)', fee: '180.00' },
+  { code: '90837', description: 'Individual Psychotherapy (60 Min)', fee: '240.00' },
+  { code: '90832', description: 'Individual Psychotherapy (30 Min)', fee: '120.00' },
+  { code: '90847', description: 'Family Psychotherapy w/ Patient (50 Min)', fee: '220.00' },
+  { code: '90853', description: 'Group Psychotherapy', fee: '95.00' }
 ];
 
 export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
@@ -24,9 +36,21 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
 
   useEffect(() => {
     if (isOpen) {
-      apiCaseService.getCases().then(setCases).catch(console.error);
+      // Load live cases from backend DB first
+      apiCaseService.getCases()
+        .then(res => {
+          if (res && res.length > 0) setCases(res);
+          else return mockCaseService.getCases();
+        })
+        .then(res => {
+          if (res) setCases(res);
+        })
+        .catch(() => {
+          mockCaseService.getCases().then(setCases).catch(console.error);
+        });
+
       apiProviderService.getProviders().then(provMap => {
-        const counselor = provMap['prov-counselor'];
+        const counselor = provMap['prov-counselor'] || provMap['counselor'];
         if (counselor && Array.isArray(counselor.availableServices)) {
           setProviderServices(counselor.availableServices);
         }
@@ -38,21 +62,56 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
     caseId: '',
     counselorName: 'Jordan Miller, LCSW, BCD',
     sessionDate: new Date().toISOString().split('T')[0],
-    cptCode: '',
+    cptCode: '90791',
     diagnosisCodes: [],
     summary: ''
   });
 
-  const selectedCaseObj = cases.find(c => c.id === formData.caseId);
-  const caseDiagnoses = selectedCaseObj && Array.isArray(selectedCaseObj.diagnosisCodes) && selectedCaseObj.diagnosisCodes.length > 0
-    ? selectedCaseObj.diagnosisCodes 
+  const selectedCaseObj = cases.find(c => c.id === formData.caseId || c.caseId === formData.caseId);
+
+  // Auto-extract ICD-10 diagnoses from linked case
+  let rawDiagnoses = selectedCaseObj?.diagnoses || selectedCaseObj?.diagnosisCodes || [];
+  if (typeof rawDiagnoses === 'string') {
+    try { rawDiagnoses = JSON.parse(rawDiagnoses); } catch { rawDiagnoses = [rawDiagnoses]; }
+  }
+
+  const caseDiagnoses = Array.isArray(rawDiagnoses) && rawDiagnoses.length > 0
+    ? rawDiagnoses.map(d => {
+        if (typeof d === 'string') {
+          const parts = d.split(' - ');
+          return { code: parts[0]?.trim() || d, label: parts[1]?.trim() || d };
+        }
+        return { code: d.code || d.icdCode || d, label: d.label || d.description || d };
+      })
     : COMMON_DIAGNOSES;
 
-  const activeServices = providerServices.length > 0 ? providerServices : [
-    { code: '90834', description: 'Individual Psychotherapy (45 Min)', fee: '180.00' },
-    { code: '90791', description: 'Psychiatric Diagnostic Evaluation', fee: '350.00' },
-    { code: '90837', description: 'Individual Psychotherapy (60 Min)', fee: '240.00' },
-  ];
+  // When selected case changes, pre-select its diagnosis codes
+  useEffect(() => {
+    if (selectedCaseObj) {
+      const initialCodes = caseDiagnoses.map(d => d.code);
+      setFormData(prev => ({
+        ...prev,
+        diagnosisCodes: initialCodes.length > 0 ? initialCodes : ['F43.10', 'F41.1']
+      }));
+    }
+  }, [formData.caseId]);
+
+  // Combine DB provider services with full catalog so all 6 Counseling CPT codes are available
+  const activeServicesMap = new Map();
+  FULL_COUNSELING_CPT_CATALOG.forEach(s => activeServicesMap.set(s.code, s));
+  if (Array.isArray(providerServices)) {
+    providerServices.forEach(s => {
+      const code = s.code || s.cptCode;
+      if (code) {
+        activeServicesMap.set(code, {
+          code,
+          description: s.description || s.billingDescription || 'Psychotherapy Session',
+          fee: s.fee || s.defaultCharge || s.price || '180.00'
+        });
+      }
+    });
+  }
+  const activeServices = Array.from(activeServicesMap.values());
 
   const handleToggleDiagnosis = (code) => {
     setFormData(prev => {
@@ -73,27 +132,37 @@ export const CounselorSessionModal = ({ isOpen, onClose, onNoteSaved }) => {
       return;
     }
     
-    const selectedCase = cases.find(c => c.id === formData.caseId);
+    const selectedCase = cases.find(c => c.id === formData.caseId || c.caseId === formData.caseId);
     if (!selectedCase) return;
 
     setIsLoading(true);
     try {
       const created = await apiClinicalNoteService.createNote({
         patientId: selectedCase.patientId || selectedCase.patient?.id || 'pat-001',
-        patientName: selectedCase.patientName || 'Demo Patient 001',
-        caseId: selectedCase.id,
+        patientName: selectedCase.patientName || 'Accident Patient',
+        caseId: selectedCase.id || selectedCase.caseId,
         providerId: 'prov-counselor',
         providerName: 'Counselor Practice (Hope Behavioral Health)',
         type: 'COUNSELOR_GENERIC',
-        title: `Counseling Progress Note (${formData.cptCode || '90834'}) — ${formData.sessionDate}`,
+        noteType: 'COUNSELOR_GENERIC',
+        title: `Counseling Progress Note (${formData.cptCode || '90791'}) — ${formData.sessionDate}`,
+        date: formData.sessionDate,
+        status: 'SIGNED_LOCKED',
         author: formData.counselorName,
-        content: { ...formData, patientName: selectedCase.patientName, isSigned: true }
+        content: { 
+          ...formData, 
+          patientName: selectedCase.patientName,
+          cptCode: formData.cptCode,
+          diagnosisCodes: formData.diagnosisCodes,
+          isSigned: true 
+        }
       });
-      addToast('Counselor session note saved directly to backend database!', 'success');
+      addToast('Clinical session note saved to database & linked to Provider Bills Ledger!', 'success');
       if (onNoteSaved) onNoteSaved(created);
       onClose();
-    } catch {
-      addToast('Failed to save session note', 'error');
+    } catch (err) {
+      console.error('Failed to save note:', err);
+      addToast('Failed to save session note to database', 'error');
     } finally {
       setIsLoading(false);
     }
