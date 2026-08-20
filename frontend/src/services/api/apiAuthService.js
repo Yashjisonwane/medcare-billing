@@ -73,7 +73,12 @@ export const apiAuthService = {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
           return user;
         } else if (res.status === 401) {
-          // Stale or expired token
+          console.warn('[Auth] Token verification returned 401. Falling back to cached local session.');
+          if (saved) {
+            try {
+              return JSON.parse(saved);
+            } catch {}
+          }
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(STORAGE_KEY);
           return null;
