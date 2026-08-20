@@ -1,14 +1,17 @@
-﻿// src/pages/admin/AuditLogListPage.jsx
+// src/pages/admin/AuditLogListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { apiAuditService } from '../../services/api/apiAuditService';
 import { Activity, ShieldAlert } from 'lucide-react';
 
+import { useUIStore } from '../../store/uiStore';
+
 export const AuditLogListPage = () => {
   const [logs, setLogs] = useState([]);
+  const { activeProviderFilter } = useUIStore();
 
   useEffect(() => {
-    apiAuditService.getLogs().then(setLogs);
-  }, []);
+    apiAuditService.getLogs(activeProviderFilter).then(setLogs).catch(() => {});
+  }, [activeProviderFilter]);
 
   return (
     <div className="space-y-6">

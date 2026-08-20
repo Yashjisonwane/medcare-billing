@@ -21,11 +21,38 @@ const formatLog = (l) => {
  * Get audit logs list
  */
 export const getLogs = async (req, res) => {
+  const { providerId } = req.query;
   try {
     const logs = await prisma.auditLog.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    return res.status(200).json(logs.map(formatLog));
+
+    let formatted = logs.map(formatLog);
+
+    if (providerId && providerId !== 'ALL') {
+      const filter = providerId.toLowerCase();
+      formatted = formatted.filter(log => {
+        const resText = (log.resource || '').toLowerCase();
+        const userText = (log.user || '').toLowerCase();
+        const roleText = (log.role || '').toLowerCase();
+
+        if (filter.includes('josmic')) {
+          return resText.includes('josmic') || userText.includes('adeoye') || roleText.includes('doctor') || resText.includes('pain');
+        }
+        if (filter.includes('davs') || filter.includes('dav\'s')) {
+          return resText.includes('dav') || resText.includes('eswt') || userText.includes('rivera') || userText.includes('therapy');
+        }
+        if (filter.includes('anik')) {
+          return resText.includes('anik') || resText.includes('laser') || userText.includes('rivera');
+        }
+        if (filter.includes('counselor')) {
+          return resText.includes('counsel') || userText.includes('miller') || roleText.includes('counselor');
+        }
+        return false;
+      });
+    }
+
+    return res.status(200).json(formatted);
   } catch (error) {
     console.error('Error fetching audit logs:', error);
     return res.status(500).json({ error: 'Failed to retrieve compliance audit logs.' });

@@ -965,8 +965,15 @@ export const getPaymentsList = async (req, res) => {
  * Comprehensive reports data including provider billing, monthly trend, sessions, and claims status
  */
 export const getPracticeReports = async (req, res) => {
+  const { providerId } = req.query;
   try {
+    const where = {};
+    if (providerId && providerId !== 'ALL') {
+      where.providerId = providerId;
+    }
+
     const bills = await prisma.bill.findMany({
+      where,
       include: {
         provider: true,
         serviceLines: true,
