@@ -4,8 +4,11 @@ const API_BASE = API_BASE_URL;
 
 
 export const apiAuditService = {
-  async getLogs() {
-    const res = await fetch(`${API_BASE}/audit-logs`);
+  async getLogs(providerId) {
+    const url = providerId && providerId !== 'ALL'
+      ? `${API_BASE}/audit-logs?providerId=${encodeURIComponent(providerId)}`
+      : `${API_BASE}/audit-logs`;
+    const res = await fetch(url);
     if (!res.ok) {
       throw new Error('Failed to retrieve compliance audit logs.');
     }
