@@ -6,7 +6,9 @@ import { apiCaseService } from '../../services/api/apiCaseService';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, PenTool, Lock, CheckCircle2, FileText, AlertTriangle, PlusCircle, Save, Stethoscope, DollarSign, Layers, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, PenTool, Lock, CheckCircle2, FileText, AlertTriangle, PlusCircle, Save, Stethoscope, DollarSign, Layers, ShieldCheck, Trash2 } from 'lucide-react';
+
+import { DeleteConfirmModal } from '../../components/modals/DeleteConfirmModal';
 
 export const ClinicalNoteEditorPage = () => {
   const { id } = useParams();
@@ -16,11 +18,30 @@ export const ClinicalNoteEditorPage = () => {
 
   const [note, setNote] = useState(null);
   const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [addendumText, setAddendumText] = useState('');
   const [isSigning, setIsSigning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [patients, setPatients] = useState([]);
   const [cases, setCases] = useState([]);
+
+  const handleConfirmDelete = async () => {
+    if (!note || !note.id) return;
+    setIsDeleting(true);
+    try {
+      await apiClinicalNoteService.deleteNote(note.id);
+      addToast('Document deleted successfully', 'success');
+      setShowDeleteModal(false);
+      navigate('/clinical-notes');
+    } catch (err) {
+      addToast('Failed to delete document: ' + err.message, 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
 
   // Signature Modal States
   const [signatureType, setSignatureType] = useState('draw'); // 'draw' | 'type'
@@ -443,19 +464,31 @@ export const ClinicalNoteEditorPage = () => {
           </p>
         </div>
 
-        {!isSigned ? (
+        <div className="flex items-center gap-2 shrink-0">
+          {!isSigned ? (
+            <button
+              onClick={() => setSignatureModalOpen(true)}
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <PenTool className="w-4 h-4" /> Sign &amp; Lock Clinical Chart
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200">
+              <Lock className="w-4 h-4" /> Chart Locked &amp; Signed
+            </div>
+          )}
           <button
-            onClick={() => setSignatureModalOpen(true)}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer shrink-0"
+            onClick={() => setShowDeleteModal(true)}
+            title="Delete Document"
+            className="px-3 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl border border-rose-200 transition flex items-center gap-1.5 cursor-pointer"
           >
-            <PenTool className="w-4 h-4" /> Sign &amp; Lock Clinical Chart
+            <Trash2 className="w-4 h-4" /> Delete
           </button>
-        ) : (
-          <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200 shrink-0">
-            <Lock className="w-4 h-4" /> Chart Locked &amp; Signed
-          </div>
-        )}
+        </div>
       </div>
+
+
+
 
       {/* Note Content Display */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
@@ -702,6 +735,17 @@ export const ClinicalNoteEditorPage = () => {
           </div>
         </div>
       )}
+
+      {/* React Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={note?.title}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };
+
+

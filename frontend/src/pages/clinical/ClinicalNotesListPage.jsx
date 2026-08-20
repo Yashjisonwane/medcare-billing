@@ -1,15 +1,18 @@
 // src/pages/clinical/ClinicalNotesListPage.jsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
-import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar, Search, Filter, Stethoscope } from 'lucide-react';
+import { FileText, PlusCircle, Brain, Sparkles, ChevronRight, PenTool, User, Calendar, Search, Filter, Stethoscope, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CounselorSessionModal } from '../../components/modals/CounselorSessionModal';
+import { DeleteConfirmModal } from '../../components/modals/DeleteConfirmModal';
 
 export const ClinicalNotesListPage = () => {
   const [notes, setNotes] = useState([]);
   const [showCounselorModal, setShowCounselorModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const loadNotes = () => {
@@ -22,6 +25,22 @@ export const ClinicalNotesListPage = () => {
   useEffect(() => {
     loadNotes();
   }, []);
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await apiClinicalNoteService.deleteNote(deleteTarget.id);
+      setDeleteTarget(null);
+      loadNotes();
+    } catch (err) {
+      alert('Error deleting note: ' + err.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
 
   const filteredNotes = useMemo(() => {
     return notes.filter(n => {
@@ -147,12 +166,21 @@ export const ClinicalNotesListPage = () => {
                     </p>
                   </div>
 
-                  <button
-                    onClick={() => navigate(`/clinical-notes/${note.id}`)}
-                    className="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
-                  >
-                    Open Clinical Note <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => navigate(`/clinical-notes/${note.id}`)}
+                      className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
+                    >
+                      Open Clinical Note <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget({ id: note.id, title: note.title })}
+                      className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl text-xs flex items-center justify-center gap-1 border border-rose-200 transition cursor-pointer"
+                      title="Delete Document"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -190,12 +218,21 @@ export const ClinicalNotesListPage = () => {
                         </span>
                       </td>
                       <td className="p-3.5 text-right">
-                        <button
-                          onClick={() => navigate(`/clinical-notes/${note.id}`)}
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer"
-                        >
-                          Open Note <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => navigate(`/clinical-notes/${note.id}`)}
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer"
+                          >
+                            Open Note <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget({ id: note.id, title: note.title })}
+                            title="Delete Document"
+                            className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl text-xs inline-flex items-center gap-1 border border-rose-200 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -212,6 +249,16 @@ export const ClinicalNotesListPage = () => {
         onClose={() => setShowCounselorModal(false)}
         onNoteSaved={() => loadNotes()}
       />
+
+      {/* React Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        itemName={deleteTarget?.title}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };
+

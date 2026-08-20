@@ -1,28 +1,32 @@
 // src/pages/treatments/TreatmentSessionsPage.jsx
 import React, { useState, useEffect } from 'react';
-import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filter, X, Save } from 'lucide-react';
+import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filter, X, Save, FileText, ChevronRight, Sparkles } from 'lucide-react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
+import { useNavigate } from 'react-router-dom';
 
 const STATUS_COLORS = {
-  Completed: 'bg-emerald-100 text-emerald-700',
-  Scheduled: 'bg-blue-100 text-blue-700',
-  Cancelled: 'bg-red-100 text-red-700',
-  'No Show': 'bg-amber-100 text-amber-700',
+  Completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  CHECKED_IN: 'bg-sky-50 text-sky-700 border-sky-200',
+  Scheduled: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  SCHEDULED: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  Cancelled: 'bg-rose-50 text-rose-700 border-rose-200',
+  'No Show': 'bg-amber-50 text-amber-700 border-amber-200',
 };
 
 import { formatCurrency } from '../../utils/billingCalculations';
 import { useSettings } from '../../utils/settingsCache';
 
 const PROVIDER_COLORS = {
-  ANIK: 'bg-violet-100 text-violet-700',
-  DAVS: 'bg-blue-100 text-blue-700',
-  JOSMIC: 'bg-teal-100 text-teal-700',
+  ANIK: 'bg-purple-50 text-purple-700 border-purple-200',
+  DAVS: 'bg-sky-50 text-sky-700 border-sky-200',
+  JOSMIC: 'bg-teal-50 text-teal-700 border-teal-200',
+  OTHER: 'bg-slate-100 text-slate-700 border-slate-200',
 };
 
-const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-slate-50 text-slate-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
+const inputCls = 'w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:bg-white focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition font-medium';
 const labelCls = 'block text-xs font-bold text-slate-900 mb-1';
 
 // --- Schedule Session Modal ---------------------------------------------------
@@ -125,28 +129,28 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-6 border border-slate-200">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl my-6 border border-slate-200 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center">
-              <Calendar className="w-4 h-4 text-teal-600" />
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/90">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-teal-50 border border-teal-200 text-teal-600">
+              <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Schedule Treatment Session</h2>
-              <p className="text-[10px] text-slate-400">Book a new therapy session for a patient</p>
+              <h2 className="text-base font-extrabold text-slate-900">Schedule Treatment Session</h2>
+              <p className="text-xs text-slate-500">Book a new therapy session for a patient</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-slate-200 rounded-lg transition">
-            <X className="w-4 h-4 text-slate-500" />
+          <button onClick={onClose} className="p-2 hover:bg-slate-200/60 rounded-xl transition cursor-pointer">
+            <X className="w-5 h-5 text-slate-400" />
           </button>
         </div>
 
         <form onSubmit={handleSave} className="p-6 space-y-5">
           {/* Patient & Case */}
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Patient & Case</p>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Patient &amp; Case</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div><label className={labelCls}>Select Case / Patient *</label>
                 <select required className={inputCls} onChange={handleCaseChange} defaultValue="">
@@ -165,7 +169,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
           {/* Provider & Session */}
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Provider & Session Details</p>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Provider &amp; Session Details</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div><label className={labelCls}>Practice Provider *</label>
                 <select className={inputCls} value={form.provider} onChange={e => set('provider', e.target.value)}>
@@ -185,7 +189,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
           {/* Date & Time */}
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Date, Time & Location</p>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Date, Time &amp; Location</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div><label className={labelCls}>Date of Service *</label><input type="date" required className={inputCls} value={form.dos} onChange={e => set('dos', e.target.value)} /></div>
               <div><label className={labelCls}>Start Time</label><input className={inputCls} value={form.startTime} onChange={e => set('startTime', e.target.value)} /></div>
@@ -204,7 +208,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
           {/* Billing */}
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Billing & Authorization</p>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Billing &amp; Authorization</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div><label className={labelCls}>ICD-10 Codes</label><input className={inputCls} value={form.diagnosisCodes} onChange={e => set('diagnosisCodes', e.target.value)} /></div>
               <div><label className={labelCls}>Units</label><input type="number" min="1" className={inputCls} value={form.units} onChange={e => set('units', e.target.value)} /></div>
@@ -228,7 +232,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
           {/* Reminder */}
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-3">Reminder</p>
+            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Reminder</p>
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
                 <input type="checkbox" checked={form.reminderSent} onChange={e => set('reminderSent', e.target.checked)} className="rounded text-teal-600" />
@@ -254,9 +258,9 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition">Cancel</button>
-            <button type="submit" disabled={saving} className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+            <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">Cancel</button>
+            <button type="submit" disabled={saving} className="px-5 py-2 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer">
               <Save className="w-4 h-4" /> {saving ? 'Scheduling...' : 'Schedule Session'}
             </button>
           </div>
@@ -268,6 +272,7 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
 
 export const TreatmentSessionsPage = () => {
   const settings = useSettings();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filterProvider, setFilterProvider] = useState('ALL');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -351,64 +356,78 @@ export const TreatmentSessionsPage = () => {
   });
 
   const totalCharge = filtered.reduce((a, s) => a + s.charge, 0);
-  const completedSessions = filtered.filter(s => s.status === 'Completed').length;
+  const completedSessions = filtered.filter(s => s.status === 'Completed' || s.status === 'CHECKED_IN').length;
+
+  const formatSessionId = (rawId) => {
+    if (!rawId) return 'APT-000';
+    if (rawId.length > 12) {
+      return `${rawId.slice(0, 4)}-${rawId.slice(-5)}`;
+    }
+    return rawId;
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-5">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Treatment Sessions</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Treatment Sessions</h1>
           <p className="text-xs text-slate-500">All therapy sessions across JOSMIC, DAV'S Anatomy &amp; ANIK Laser Therapy providers</p>
         </div>
         <button
           onClick={() => setShowScheduleModal(true)}
-          className="px-3.5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow hover:bg-teal-700 flex items-center gap-1.5 self-start sm:self-auto"
+          className="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
           <Calendar className="w-4 h-4" /> Schedule Session
         </button>
       </div>
 
-      {/* Summary KPI */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Total Sessions', value: loading ? '...' : filtered.length, icon: Activity, color: 'teal', suffix: 'sessions' },
-          { label: 'Completed', value: completedSessions, icon: CheckCircle, color: 'emerald', suffix: 'done' },
-          { label: 'Total Billed', value: formatCurrency(totalCharge), icon: Clock, color: 'violet', suffix: '' },
-          { label: 'Providers', value: activeProviderFilter === 'ALL' ? 3 : 1, icon: User, color: 'blue', suffix: 'clinics' },
+          { label: 'Total Sessions', value: loading ? '...' : filtered.length, icon: Activity, iconColor: 'text-teal-600', iconBg: 'bg-teal-50 border-teal-100', suffix: 'sessions' },
+          { label: 'Completed / Active', value: completedSessions, icon: CheckCircle, iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50 border-emerald-100', suffix: 'done' },
+          { label: 'Total Billed', value: formatCurrency(totalCharge), icon: Clock, iconColor: 'text-violet-600', iconBg: 'bg-violet-50 border-violet-100', suffix: '' },
+          { label: 'Active Providers', value: activeProviderFilter === 'ALL' ? 3 : 1, icon: User, iconColor: 'text-sky-600', iconBg: 'bg-sky-50 border-sky-100', suffix: 'clinics' },
         ].map(card => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div key={card.label} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">{card.label}</span>
-                <Icon className={`w-4 h-4 text-${card.color}-500`} />
+                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">{card.label}</span>
+                <div className={`p-1.5 rounded-xl border ${card.iconBg}`}>
+                  <Icon className={`w-4 h-4 ${card.iconColor}`} />
+                </div>
               </div>
-              <p className="text-2xl font-black text-slate-900">{card.value} <span className="text-xs font-normal text-slate-400">{card.suffix}</span></p>
+              <p className="text-xl sm:text-2xl font-black text-slate-900 leading-none">
+                {card.value} {card.suffix && <span className="text-xs font-bold text-slate-400">{card.suffix}</span>}
+              </p>
             </div>
           );
         })}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+      {/* Filters Card */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by patient, provider or treatment modality..."
-              className="w-full pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-1 focus:ring-teal-600 outline-none transition font-medium"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs font-bold text-slate-500">Provider:</span>
+          <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+            <span className="text-xs font-bold text-slate-500 flex items-center gap-1 shrink-0">
+              <Filter className="w-3.5 h-3.5 text-slate-400" /> Provider:
+            </span>
             {['ALL', 'JOSMIC', 'DAVS', 'ANIK'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilterProvider(f)}
-                className={`px-3 py-1 text-[11px] font-bold rounded-lg transition ${filterProvider === f ? 'bg-teal-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-xl transition cursor-pointer shrink-0 ${filterProvider === f ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'}`}
               >
                 {f}
               </button>
@@ -417,8 +436,8 @@ export const TreatmentSessionsPage = () => {
         </div>
 
         {/* 6 Modality Filters Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <span className="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs pt-1 border-t border-slate-100">
+          <span className="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1 shrink-0">
             <Activity className="w-3.5 h-3.5 text-teal-600" /> Modality:
           </span>
           {[
@@ -433,10 +452,10 @@ export const TreatmentSessionsPage = () => {
             <button
               key={mod.id}
               onClick={() => setSearch(mod.id === 'ALL' ? '' : mod.label.split(' ')[0])}
-              className={`px-2.5 py-1 rounded-full border text-[11px] font-bold whitespace-nowrap transition ${
+              className={`px-3 py-1 rounded-xl border text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                 search.toLowerCase().includes(mod.label.split(' ')[0].toLowerCase())
-                  ? 'bg-teal-700 text-white border-teal-700'
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
               {mod.label}
@@ -445,70 +464,101 @@ export const TreatmentSessionsPage = () => {
         </div>
       </div>
 
-      {/* Sessions Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-xs">
-          <thead className="bg-slate-100 text-slate-600 uppercase text-[10px] font-bold">
-            <tr>
-              <th className="p-3.5 text-left">Session ID</th>
-              <th className="p-3.5 text-left">Patient</th>
-              <th className="p-3.5 text-left">Provider</th>
-              <th className="p-3.5 text-left">Service Modality</th>
-              <th className="p-3.5 text-left">Date &amp; Time</th>
-              <th className="p-3.5 text-left">Assigned Clinician</th>
-              <th className="p-3.5 text-center">Treatment Status</th>
-              <th className="p-3.5 text-center">Form Status</th>
-              <th className="p-3.5 text-center">Billing Readiness</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filtered.map(s => (
-              <tr key={s.id} className="hover:bg-slate-50 cursor-pointer">
-                <td className="p-3.5 font-mono font-bold text-teal-700">{s.id}</td>
-                <td className="p-3.5 font-semibold text-slate-900">{s.patient}</td>
-                <td className="p-3.5">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${PROVIDER_COLORS[s.providerShort] || 'bg-slate-100 text-slate-700'}`}>{s.provider}</span>
-                </td>
-                <td className="p-3.5 font-medium text-slate-700">{s.type}</td>
-                <td className="p-3.5 font-mono text-slate-600">{s.dos} ({s.duration})</td>
-                <td className="p-3.5 text-slate-700 font-medium">{s.therapist}</td>
-                <td className="p-3.5 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_COLORS[s.status] || 'bg-slate-100 text-slate-700'}`}>{s.status}</span>
-                </td>
-                <td className="p-3.5 text-center">
-                  {s.hasClinicalNote ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Form Complete
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                      Missing Form
-                    </span>
-                  )}
-                </td>
-                <td className="p-3.5 text-center">
-                  {s.hasClinicalNote ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
-                      Ready ({formatCurrency(s.charge)})
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-200">
-                      Pending Form
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-slate-50 border-t border-slate-200">
-            <tr>
-              <td colSpan={7} className="p-3.5 font-bold text-slate-700 text-[11px]">Total ({filtered.length} sessions)</td>
-              <td className="p-3.5 text-right font-mono font-black text-slate-900" colSpan={2}>
-                {formatCurrency(filtered.reduce((a, s) => a + s.charge, 0))}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+      {/* Sessions Table Container */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        {filtered.length === 0 ? (
+          <div className="p-8 text-center space-y-3">
+            <Activity className="w-10 h-10 text-slate-300 mx-auto" />
+            <p className="text-sm font-bold text-slate-900">No Treatment Sessions Found</p>
+            <p className="text-xs text-slate-500">No sessions match your search criteria or active filters.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-extrabold border-b border-slate-200">
+                <tr>
+                  <th className="p-3.5 whitespace-nowrap">Session ID</th>
+                  <th className="p-3.5 whitespace-nowrap">Patient</th>
+                  <th className="p-3.5 whitespace-nowrap">Provider</th>
+                  <th className="p-3.5 whitespace-nowrap">Service Modality</th>
+                  <th className="p-3.5 whitespace-nowrap">Date &amp; Time</th>
+                  <th className="p-3.5 whitespace-nowrap">Assigned Clinician</th>
+                  <th className="p-3.5 text-center whitespace-nowrap">Treatment Status</th>
+                  <th className="p-3.5 text-center whitespace-nowrap">Form Status</th>
+                  <th className="p-3.5 text-center whitespace-nowrap">Billing Readiness</th>
+                  <th className="p-3.5 text-right whitespace-nowrap">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map(s => (
+                  <tr key={s.id} className="hover:bg-slate-50/80 transition">
+                    <td className="p-3.5 font-mono font-bold text-teal-700 whitespace-nowrap" title={s.id}>
+                      {formatSessionId(s.id)}
+                    </td>
+                    <td className="p-3.5 font-bold text-slate-900 whitespace-nowrap">{s.patient}</td>
+                    <td className="p-3.5 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${PROVIDER_COLORS[s.providerShort] || PROVIDER_COLORS.OTHER}`}>
+                        {s.provider}
+                      </span>
+                    </td>
+                    <td className="p-3.5 font-medium text-slate-800 whitespace-nowrap">{s.type}</td>
+                    <td className="p-3.5 whitespace-nowrap font-mono text-slate-700">
+                      <div>{s.dos}</div>
+                      <div className="text-[10px] text-slate-400 font-sans flex items-center gap-1 mt-0.5">
+                        <Clock className="w-3 h-3 text-slate-400 inline shrink-0" /> {s.duration}
+                      </div>
+                    </td>
+                    <td className="p-3.5 text-slate-700 font-medium whitespace-nowrap">{s.therapist}</td>
+                    <td className="p-3.5 text-center whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${STATUS_COLORS[s.status] || 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="p-3.5 text-center whitespace-nowrap">
+                      {s.hasClinicalNote ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <CheckCircle className="w-3 h-3" /> Form Complete
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          <AlertCircle className="w-3 h-3" /> Missing Form
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3.5 text-center whitespace-nowrap">
+                      {s.hasClinicalNote ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                          Ready ({formatCurrency(s.charge)})
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                          Pending Form
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3.5 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => navigate('/clinical-notes')}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-teal-600" />
+                        Form <ChevronRight className="w-3 h-3 text-slate-400" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="bg-slate-50 border-t border-slate-200">
+                <tr>
+                  <td colSpan={8} className="p-3.5 font-bold text-slate-700 text-xs">Total ({filtered.length} sessions)</td>
+                  <td className="p-3.5 text-right font-mono font-black text-slate-900 text-sm" colSpan={2}>
+                    {formatCurrency(totalCharge)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Schedule Session Modal */}
