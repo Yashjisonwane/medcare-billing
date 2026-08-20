@@ -45,12 +45,17 @@ export const getPatients = async (req, res) => {
     }
 
     if (search) {
-      const q = search.toLowerCase();
+      const q = search.trim();
       where.OR = [
+        { patientId: { contains: q } },
+        { id: { contains: q } },
         { firstName: { contains: q } },
         { lastName: { contains: q } },
+        { middleName: { contains: q } },
         { phone: { contains: q } },
-        { email: { contains: q } }
+        { email: { contains: q } },
+        { city: { contains: q } },
+        { ssn: { contains: q } }
       ];
     }
 

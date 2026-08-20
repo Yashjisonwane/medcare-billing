@@ -6,6 +6,7 @@ import { CORE_SERVICES as SERVICES_CATALOG } from '../../constants/servicesCatal
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import { formatFeeString } from '../../utils/billingCalculations';
 import {
   Calendar, Clock, User, Phone, Mail, CheckCircle2,
   Sparkles, ArrowRight, ArrowLeft, ShieldCheck, AlertCircle,
@@ -564,7 +565,7 @@ export const PatientSelfBookingPage = () => {
                         <div className="text-xs font-bold text-slate-900">{p.name}</div>
                         <div className="text-[11px] text-slate-500">{p.serviceCategory || p.subtitle || 'Specialized Clinic Center'}</div>
                         <div className="text-[10px] text-teal-700 font-medium mt-1">
-                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> Â· Fee: <span className="font-bold text-slate-900">{p.fee || '$1,214.00'}</span>
+                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> • Fee: <span className="font-bold text-slate-900">{formatFeeString(p.fee || '$1,214.00')}</span>
                         </div>
                       </div>
                     </div>

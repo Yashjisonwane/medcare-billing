@@ -5,6 +5,7 @@ import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
 import { refreshSettingsCache } from '../../utils/settingsCache';
+import { formatFeeString } from '../../utils/billingCalculations';
 import { API_BASE_URL } from '../../config/api';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
@@ -267,7 +268,7 @@ export const GeneralSettingsPage = () => {
                       </span>
                     </td>
                     <td className="p-2.5 text-center font-mono font-medium text-slate-700">{srv.cpt}</td>
-                    <td className="p-2.5 text-right font-mono font-bold text-slate-900">{srv.fee}</td>
+                    <td className="p-2.5 text-right font-mono font-bold text-slate-900">{formatFeeString(srv.fee)}</td>
                     <td className="p-2.5 text-center text-slate-600">{srv.duration}</td>
                     <td className="p-2.5 text-slate-700 font-medium">{srv.template}</td>
                     <td className="p-2.5 text-center">

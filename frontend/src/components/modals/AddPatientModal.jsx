@@ -351,10 +351,10 @@ export const AddPatientModal = ({ isOpen, onClose, onPatientAdded }) => {
   };
 
   const stepsList = [
-    { id: 1, name: '1. Demographics', short: 'Demographics' },
-    { id: 2, name: '2. Contact & Insurance', short: 'Contact & Ins.' },
-    { id: 3, name: '3. Practice Providers', short: 'Providers & Lien' },
-    { id: 4, name: '4. Medical & Allergies', short: 'Medical & Summary' },
+    { id: 1, name: 'Demographics', short: 'Demographics' },
+    { id: 2, name: 'Contact & Insurance', short: 'Contact & Ins.' },
+    { id: 3, name: 'Practice Providers', short: 'Providers & Lien' },
+    { id: 4, name: 'Medical & Allergies', short: 'Medical & Summary' },
   ];
 
   return (

@@ -1,4 +1,4 @@
-﻿// src/components/modals/PatientDetailsModal.jsx
+// src/components/modals/PatientDetailsModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { 
@@ -35,7 +35,7 @@ export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`${patient.lastName || ''}, ${patient.firstName || ''} ${patient.middleName || ''}`}
+      title={`${patient.firstName || ''} ${patient.middleName ? `${patient.middleName} ` : ''}${patient.lastName || ''}`.trim()}
       subtitle={`Patient ID: ${patient.patientId || patient.id} | DOB: ${patient.dob} (${patient.sex || 'M'})`}
       icon={User}
       size="2xl"
@@ -70,7 +70,7 @@ export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-base sm:text-lg font-bold text-white">
-                  {patient.lastName}, {patient.firstName}
+                  {patient.firstName} {patient.middleName ? `${patient.middleName} ` : ''}{patient.lastName}
                 </h3>
                 <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full font-bold text-[10px]">
                   {patient.status || 'ACTIVE'}

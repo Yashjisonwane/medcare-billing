@@ -22,7 +22,7 @@ export const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedProvider, setSelectedProvider] = useState('ALL');
   const [selectedChannel, setSelectedChannel] = useState('ALL'); // 'ALL' | 'SELF_PORTAL' | 'INTERNAL'
-  const [viewMode, setViewMode] = useState('DAY'); // 'DAY' | 'ALL_VISITS'
+  const [viewMode, setViewMode] = useState('ALL_VISITS'); // 'ALL_VISITS' | 'DAY'
 
   // Modals
   const [showBookModal, setShowBookModal] = useState(false);
