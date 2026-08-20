@@ -85,8 +85,11 @@ export const apiBillingService = {
     return res.json();
   },
 
-  async getPracticeReports() {
-    const res = await fetch(`${API_BASE}/billing/reports`);
+  async getPracticeReports(providerId) {
+    const url = providerId && providerId !== 'ALL'
+      ? `${API_BASE}/billing/reports?providerId=${encodeURIComponent(providerId)}`
+      : `${API_BASE}/billing/reports`;
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to retrieve practice reports.');
     return res.json();
   },

@@ -1,4 +1,4 @@
-﻿// src/pages/admin/ProviderListPage.jsx
+// src/pages/admin/ProviderListPage.jsx
 import React, { useState, useEffect } from 'react';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { maskTaxId, maskNpi } from '../../utils/formatters';
@@ -209,18 +209,7 @@ export const ProviderListPage = () => {
                   </div>
                 </div>
 
-                {isCounselor && (
-                  <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1">
-                    <p className="font-bold text-amber-800 flex items-center gap-1.5">
-                      <AlertTriangle className="w-4 h-4 text-amber-600" /> Pending Client Setup Items:
-                    </p>
-                    <ul className="list-disc list-inside text-[11px] space-y-0.5 text-slate-700">
-                      <li>Awaiting Client Details</li>
-                      <li>Billing Configuration Pending</li>
-                      <li>Services and Prices Pending</li>
-                    </ul>
-                  </div>
-                )}
+
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-200">

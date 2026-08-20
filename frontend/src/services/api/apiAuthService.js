@@ -12,8 +12,9 @@ export const apiAuthService = {
    * Login with email and password against the backend with graceful demo fallback
    */
   async login(email, password) {
+    let res;
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -27,6 +28,11 @@ export const apiAuthService = {
       }
     } catch (err) {
       console.warn('[apiAuthService] Backend API login failed, using local demo fallback:', err.message);
+    }
+
+    if (res && !res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || `Login failed with status ${res.status}`);
     }
 
     // Fallback demo authentication

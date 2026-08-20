@@ -22,6 +22,11 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
+    if (user.status !== 'ACTIVE') {
+      console.log(`[Auth] Blocked login attempt for non-active user: ${email} (Status: ${user.status})`);
+      return res.status(403).json({ error: 'Your account is inactive or suspended.' });
+    }
+
     // Compare bcrypt hashes
     const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
 

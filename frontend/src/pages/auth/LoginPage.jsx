@@ -55,7 +55,7 @@ export const LoginPage = () => {
       navigate(`/dashboard/${(user.role || 'super-admin').toLowerCase().replace(/\s+/g, '-')}`);
     } catch (err) {
       console.error('Login error:', err);
-      setError('Invalid login credentials for staff account.');
+      setError(err.message || 'Invalid login credentials for staff account.');
     } finally {
       setIsSubmitting(false);
     }

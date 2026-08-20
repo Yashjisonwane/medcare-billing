@@ -36,7 +36,7 @@ const CurrencyTooltip = ({ active, payload, label }) => {
 // -- Page ----------------------------------------------------------------------
 export const ReportsPage = () => {
   const settings = useSettings();
-  const { addToast } = useUIStore();
+  const { addToast, activeProviderFilter } = useUIStore();
   const [activeTab, setActiveTab] = useState('billing');
   const [providerBilling, setProviderBilling] = useState([]);
   const [monthlyBilling, setMonthlyBilling] = useState([]);
@@ -48,7 +48,7 @@ export const ReportsPage = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const data = await apiBillingService.getPracticeReports();
+        const data = await apiBillingService.getPracticeReports(activeProviderFilter);
         setProviderBilling(data.providerBilling || []);
         setMonthlyBilling(data.monthlyBilling || []);
         setSessionBreakdown(data.sessionBreakdown || []);
@@ -60,7 +60,7 @@ export const ReportsPage = () => {
       }
     };
     fetchReports();
-  }, [addToast]);
+  }, [addToast, activeProviderFilter]);
 
   const totalBilled = providerBilling.reduce((a, p) => a + p.charges, 0);
   const totalCollected = providerBilling.reduce((a, p) => a + p.payments, 0);
