@@ -27,7 +27,7 @@ export const CheckInPage = () => {
   const [editingApt, setEditingApt] = useState(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
-  const { addToast } = useUIStore();
+  const { addToast, activeProviderFilter } = useUIStore();
   const navigate = useNavigate();
 
   const [providersList, setProvidersList] = useState([]);
@@ -65,6 +65,10 @@ export const CheckInPage = () => {
   useEffect(() => {
     loadProviders();
   }, []);
+
+  useEffect(() => {
+    setSelectedProvider(activeProviderFilter);
+  }, [activeProviderFilter]);
 
   useEffect(() => {
     loadAppointments();

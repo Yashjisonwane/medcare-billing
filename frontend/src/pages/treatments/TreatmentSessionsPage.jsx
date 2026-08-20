@@ -4,6 +4,7 @@ import { Activity, Calendar, Clock, User, CheckCircle, AlertCircle, Search, Filt
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
+import { useUIStore } from '../../store/uiStore';
 
 const STATUS_COLORS = {
   Completed: 'bg-emerald-100 text-emerald-700',
@@ -265,7 +266,6 @@ const ScheduleSessionModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// --- Main Page ----------------------------------------------------------------
 export const TreatmentSessionsPage = () => {
   const settings = useSettings();
   const [search, setSearch] = useState('');
@@ -273,6 +273,7 @@ export const TreatmentSessionsPage = () => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { activeProviderFilter } = useUIStore();
 
   const fetchSessions = async () => {
     try {
@@ -326,12 +327,31 @@ export const TreatmentSessionsPage = () => {
 
   const filtered = sessions.filter(s => {
     const matchSearch = !search || s.patient.toLowerCase().includes(search.toLowerCase()) || s.provider.toLowerCase().includes(search.toLowerCase()) || s.type.toLowerCase().includes(search.toLowerCase());
-    const matchProvider = filterProvider === 'ALL' || s.providerShort === filterProvider;
+    
+    let matchProvider = true;
+    if (activeProviderFilter !== 'ALL') {
+      const filterLower = activeProviderFilter.toLowerCase();
+      if (filterLower.includes('josmic')) {
+        matchProvider = s.providerShort === 'JOSMIC';
+      } else if (filterLower.includes('davs')) {
+        matchProvider = s.providerShort === 'DAVS';
+      } else if (filterLower.includes('anik')) {
+        matchProvider = s.providerShort === 'ANIK';
+      } else {
+        const provSlug = filterLower.replace('prov-', '').replace('srv-', '').split('-')[0];
+        matchProvider = s.provider.toLowerCase().includes(provSlug);
+      }
+    }
+
+    if (filterProvider !== 'ALL') {
+      matchProvider = matchProvider && (s.providerShort === filterProvider);
+    }
+
     return matchSearch && matchProvider;
   });
 
-  const totalCharge = sessions.reduce((a, s) => a + s.charge, 0);
-  const completedSessions = sessions.filter(s => s.status === 'Completed').length;
+  const totalCharge = filtered.reduce((a, s) => a + s.charge, 0);
+  const completedSessions = filtered.filter(s => s.status === 'Completed').length;
 
   return (
     <div className="space-y-6">
@@ -351,10 +371,10 @@ export const TreatmentSessionsPage = () => {
       {/* Summary KPI */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Sessions', value: loading ? '...' : sessions.length, icon: Activity, color: 'teal', suffix: 'sessions' },
+          { label: 'Total Sessions', value: loading ? '...' : filtered.length, icon: Activity, color: 'teal', suffix: 'sessions' },
           { label: 'Completed', value: completedSessions, icon: CheckCircle, color: 'emerald', suffix: 'done' },
           { label: 'Total Billed', value: formatCurrency(totalCharge), icon: Clock, color: 'violet', suffix: '' },
-          { label: 'Providers', value: 3, icon: User, color: 'blue', suffix: 'clinics' },
+          { label: 'Providers', value: activeProviderFilter === 'ALL' ? 3 : 1, icon: User, color: 'blue', suffix: 'clinics' },
         ].map(card => {
           const Icon = card.icon;
           return (

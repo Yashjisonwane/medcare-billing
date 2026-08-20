@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { AddCaseModal } from '../../components/modals/AddCaseModal';
 import { CaseDetailsModal } from '../../components/modals/CaseDetailsModal';
 import { AddAttorneyModal } from '../../components/modals/AddAttorneyModal';
+import { useUIStore } from '../../store/uiStore';
 
 export const CaseListPage = () => {
   const [cases, setCases] = useState([]);
@@ -15,6 +16,8 @@ export const CaseListPage = () => {
   const [selectedCase, setSelectedCase] = useState(null);
   const navigate = useNavigate();
 
+  const { activeProviderFilter } = useUIStore();
+
   const loadCases = () => {
     mockCaseService.getCases({ search }).then(res => setCases(res || [])).catch(() => {});
   };
@@ -22,6 +25,11 @@ export const CaseListPage = () => {
   useEffect(() => {
     loadCases();
   }, [search]);
+
+  const filteredCases = cases.filter(c => {
+    if (activeProviderFilter === 'ALL') return true;
+    return c.assignedProviderIds?.includes(activeProviderFilter);
+  });
 
   return (
     <div className="space-y-5">
@@ -61,7 +69,7 @@ export const CaseListPage = () => {
 
       {/* -- Cases List (Mobile Cards + Desktop Table) -- */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        {cases.length === 0 ? (
+        {filteredCases.length === 0 ? (
           <div className="p-8 text-center space-y-3">
             <FileSpreadsheet className="w-10 h-10 text-slate-300 mx-auto" />
             <p className="text-sm font-bold text-slate-900">No Accident Cases Found</p>
@@ -71,7 +79,7 @@ export const CaseListPage = () => {
           <>
             {/* 1. Mobile Cards View (< 768px) */}
             <div className="divide-y divide-slate-100 md:hidden">
-              {cases.map((c) => (
+              {filteredCases.map((c) => (
                 <div key={c.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -140,7 +148,7 @@ export const CaseListPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {cases.map((c) => (
+                  {filteredCases.map((c) => (
                     <tr key={c.id} className="hover:bg-slate-50/80 transition">
                       <td 
                         className="p-3.5 font-bold font-mono text-teal-700 hover:underline cursor-pointer"

@@ -11,7 +11,7 @@ import { PatientDetailsModal } from '../../components/modals/PatientDetailsModal
 export const PatientListPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToast } = useUIStore();
+  const { addToast, activeProviderFilter } = useUIStore();
 
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState(() => {
@@ -77,6 +77,11 @@ export const PatientListPage = () => {
     loadPatients();
   }, [search, statusFilter]);
 
+  const filteredPatients = patients.filter(pat => {
+    if (activeProviderFilter === 'ALL') return true;
+    return pat.assignedProviderIds?.includes(activeProviderFilter);
+  });
+
   return (
     <div className="space-y-5">
       {/* -- Top Header & Register Action -- */}
@@ -124,7 +129,7 @@ export const PatientListPage = () => {
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-xs text-slate-500">Loading patient registry...</div>
-        ) : patients.length === 0 ? (
+        ) : filteredPatients.length === 0 ? (
           <div className="p-8 text-center space-y-3">
             <User className="w-10 h-10 text-slate-300 mx-auto" />
             <p className="text-sm font-bold text-slate-900">No Patients Found</p>
@@ -140,7 +145,7 @@ export const PatientListPage = () => {
           <>
             {/* 1. Mobile Card View (< 768px) */}
             <div className="divide-y divide-slate-100 md:hidden">
-              {patients.map((pat) => (
+              {filteredPatients.map((pat) => (
                 <div key={pat.id} className="p-4 space-y-3 hover:bg-slate-50/70 transition">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -218,7 +223,7 @@ export const PatientListPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {patients.map((pat) => (
+                  {filteredPatients.map((pat) => (
                     <tr key={pat.id} className="hover:bg-slate-50/80 transition">
                       <td className="p-3.5 font-mono text-slate-600 font-bold">{pat.patientId || pat.id}</td>
                       <td className="p-3.5">
