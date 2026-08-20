@@ -174,17 +174,10 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
             <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Payment Type *</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-<<<<<<< HEAD
-                { val: 'INSURANCE', label: '🏛️ Insurance Payment' },
-                { val: 'PATIENT', label: '👤 Patient Payment' },
-                { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
-                { val: 'WORKERS_COMP', label: "🏗️ Workers' Comp" },
-=======
                 { val: 'INSURANCE', label: '🏢 Insurance Payment' },
                 { val: 'PATIENT', label: '👤 Patient Payment' },
                 { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
                 { val: 'WORKERS_COMP', label: '👷 Workers\' Comp' },
->>>>>>> a2f3eaba2e99b9a9754dd86d018729e9346e420d
               ].map(opt => (
                 <label 
                   key={opt.val} 
