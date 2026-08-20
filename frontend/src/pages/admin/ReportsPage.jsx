@@ -16,7 +16,7 @@ import { useSettings } from '../../utils/settingsCache';
 
 const COLORS = ['#0d9488', '#3b82f6', '#7c3aed', '#f59e0b'];
 
-// â”€â”€ Custom Tooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Custom Tooltip ----------------------------------------------------------
 const CurrencyTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
     return (
@@ -33,7 +33,7 @@ const CurrencyTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-// â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Page ----------------------------------------------------------------------
 export const ReportsPage = () => {
   const settings = useSettings();
   const { addToast } = useUIStore();
@@ -117,7 +117,7 @@ export const ReportsPage = () => {
   return (
     <div className="space-y-6">
 
-      {/* â”€â”€ Header â”€â”€ */}
+      {/* -- Header -- */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -144,7 +144,7 @@ export const ReportsPage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ KPI Summary Cards â”€â”€ */}
+      {/* -- KPI Summary Cards -- */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total Amount Billed', value: formatCurrency(totalBilled), sub: 'Across all 4 providers', icon: DollarSign, color: 'teal' },
@@ -168,7 +168,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* â”€â”€ Secondary KPIs â”€â”€ */}
+      {/* -- Secondary KPIs -- */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total CMS-1500 Claims', value: totalClaims, icon: FileText, color: 'blue' },
@@ -191,7 +191,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* â”€â”€ Tabs â”€â”€ */}
+      {/* -- Tabs -- */}
       <div className="flex border-b border-slate-200 gap-1">
         {TABS.map(tab => {
           const Icon = tab.icon;
@@ -209,7 +209,7 @@ export const ReportsPage = () => {
         })}
       </div>
 
-      {/* â”€â”€ BILLING SUMMARY TAB â”€â”€ */}
+      {/* -- BILLING SUMMARY TAB -- */}
       {activeTab === 'billing' && (
         <div className="space-y-5">
           {/* Provider Charges Bar Chart */}
@@ -346,7 +346,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ TREATMENT SESSIONS TAB â”€â”€ */}
+      {/* -- TREATMENT SESSIONS TAB -- */}
       {activeTab === 'sessions' && (
         <div className="space-y-5">
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
@@ -407,7 +407,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ CMS CLAIMS TAB â”€â”€ */}
+      {/* -- CMS CLAIMS TAB -- */}
       {activeTab === 'claims' && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -465,7 +465,7 @@ export const ReportsPage = () => {
         </div>
       )}
 
-      {/* â”€â”€ AR AGING TAB â”€â”€ */}
+      {/* -- AR AGING TAB -- */}
       {activeTab === 'aging' && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

@@ -57,7 +57,7 @@ const PatientInfoBar = ({ blankMode, packetData }) => (
   </div>
 );
 
-// â”€â”€â”€ PAGE 1 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- PAGE 1 ------------------------------------------------------------------
 const Page1 = ({ blankMode, packetData }) => (
   <div>
     <div className="flex items-center gap-4 mb-4">
@@ -149,7 +149,7 @@ const Page1 = ({ blankMode, packetData }) => (
   </div>
 );
 
-// â”€â”€â”€ PAGE 2 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- PAGE 2 ------------------------------------------------------------------
 const Page2 = ({ blankMode, packetData }) => (
   <div>
     <div className="mb-4 text-[11px]">
@@ -157,7 +157,7 @@ const Page2 = ({ blankMode, packetData }) => (
         <span className="font-bold">2.1 Date of Injury:</span>
         <div className="border-b border-slate-400 w-24 font-mono">{blankMode || !packetData ? '' : (packetData.accidentDate || '12 / 27 / 2025')}&nbsp;</div>
       </div>
-      <p className="font-bold mb-2">2.2 Pain Severity (0â€“10): rate in scale of severity</p>
+      <p className="font-bold mb-2">2.2 Pain Severity (0-10): rate in scale of severity</p>
       <div className="grid grid-cols-3 gap-4 mb-3 pl-2">
         <div>
           <span className="font-semibold">Current: </span>
@@ -267,7 +267,7 @@ const Page2 = ({ blankMode, packetData }) => (
   </div>
 );
 
-// â”€â”€â”€ PAGE 3 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- PAGE 3 ------------------------------------------------------------------
 const Page3 = ({ blankMode }) => (
   <div>
     <div className="mb-3">
@@ -323,7 +323,7 @@ const Page3 = ({ blankMode }) => (
     </div>
 
     <div className="mb-3 text-[11px]">
-      <p className="font-bold mb-1">ROM (Range of Motion) â€” Check what is applicable:</p>
+      <p className="font-bold mb-1">ROM (Range of Motion) - Check what is applicable:</p>
       <div className="flex flex-wrap gap-y-1.5 pl-2">
         <CB checked={true} label="Full" blankMode={blankMode} />
         <CB checked={false} label="Limited - Painful" blankMode={blankMode} />
@@ -332,7 +332,7 @@ const Page3 = ({ blankMode }) => (
     </div>
 
     <div className="mb-4 text-[11px]">
-      <p className="font-bold mb-1">Neurological Exam â€” Check what is applicable:</p>
+      <p className="font-bold mb-1">Neurological Exam - Check what is applicable:</p>
       <div className="pl-2 space-y-2">
         <div className="flex items-center gap-3">
           <span className="font-semibold w-16">Motor:</span>
@@ -386,7 +386,7 @@ const Page3 = ({ blankMode }) => (
   </div>
 );
 
-// â”€â”€â”€ PAGE 4 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- PAGE 4 ------------------------------------------------------------------
 const Page4 = ({ blankMode, packetData }) => (
   <div>
     <div className="pl-2 space-y-1.5 text-[11px] mb-4">
@@ -405,7 +405,7 @@ const Page4 = ({ blankMode, packetData }) => (
     <SectionHeader>7. Plan &amp; Recommendations</SectionHeader>
 
     <div className="mb-3">
-      <p className="font-bold text-[11px] mb-1.5">Diagnostics Ordered â€” check what is applicable:</p>
+      <p className="font-bold text-[11px] mb-1.5">Diagnostics Ordered - check what is applicable:</p>
       <div className="flex flex-wrap gap-y-1.5 pl-2">
         <CB checked={false} label="X-ray" blankMode={blankMode} />
         <CB checked={false} label="MRI" blankMode={blankMode} />
@@ -416,7 +416,7 @@ const Page4 = ({ blankMode, packetData }) => (
     </div>
 
     <div className="mb-3">
-      <p className="font-bold text-[11px] mb-1.5">Medications â€” check what is applicable:</p>
+      <p className="font-bold text-[11px] mb-1.5">Medications - check what is applicable:</p>
       <div className="flex flex-wrap gap-y-1.5 pl-2">
         <CB checked={false} label="NSAIDs" blankMode={blankMode} />
         <CB checked={false} label="Muscle relaxants" blankMode={blankMode} />
@@ -430,7 +430,7 @@ const Page4 = ({ blankMode, packetData }) => (
     </div>
 
     <div className="mb-3">
-      <p className="font-bold text-[11px] mb-1.5">Interventions â€” check all that is applicable:</p>
+      <p className="font-bold text-[11px] mb-1.5">Interventions - check all that is applicable:</p>
       <div className="flex flex-wrap gap-y-1.5 pl-2">
         <CB checked={false} label="Physical therapy" blankMode={blankMode} />
         <CB checked={false} label="Chiropractic care" blankMode={blankMode} />
@@ -485,13 +485,13 @@ const Page4 = ({ blankMode, packetData }) => (
         </div>
       </div>
       <div className="mt-4">
-        <p className="text-[10px] text-slate-500">JOSMIC Wellness Center â€” 10101 Harwin Dr, Ste 774, Houston TX 77036 | Office: 713-485-5712 | Fax: 713-485-0208</p>
+        <p className="text-[10px] text-slate-500">JOSMIC Wellness Center - 10101 Harwin Dr, Ste 774, Houston TX 77036 | Office: 713-485-5712 | Fax: 713-485-0208</p>
       </div>
     </div>
   </div>
 );
 
-// â”€â”€â”€ MAIN COMPONENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- MAIN COMPONENT -----------------------------------------------------------
 export const JosmicPainManagementReport = ({ reportPage = 1, blankMode = false, packetData = null }) => {
   const pageComponents = { 1: Page1, 2: Page2, 3: Page3, 4: Page4 };
   const PageContent = pageComponents[reportPage] || Page1;
@@ -504,7 +504,7 @@ export const JosmicPainManagementReport = ({ reportPage = 1, blankMode = false, 
 
       {/* Footer */}
       <div className="absolute bottom-4 left-0 right-0 px-14 flex justify-between text-[9px] text-slate-400 font-mono border-t border-slate-100 pt-2">
-        <span>JOSMIC Wellness Center â€” Pain Management Consultation &amp; Evaluation Report â€” Confidential</span>
+        <span>JOSMIC Wellness Center - Pain Management Consultation &amp; Evaluation Report - Confidential</span>
         <span>Page {reportPage + 3} of 7</span>
       </div>
     </div>

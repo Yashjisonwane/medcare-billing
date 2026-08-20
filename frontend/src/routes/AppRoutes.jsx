@@ -1,8 +1,9 @@
-﻿// src/routes/AppRoutes.jsx
+// src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { RoleGuard } from '../components/layout/RoleGuard';
+import { useAuthStore } from '../store/authStore';
 
 // Auth Pages
 import { LoginPage } from '../pages/auth/LoginPage';
@@ -69,6 +70,12 @@ import { ReportsPage } from '../pages/admin/ReportsPage';
 import { GeneralSettingsPage } from '../pages/settings/GeneralSettingsPage';
 import { SecuritySettingsPage } from '../pages/settings/SecuritySettingsPage';
 
+const IndexRedirect = () => {
+  const { currentUser } = useAuthStore();
+  const roleSlug = currentUser?.role?.toLowerCase()?.replace(/\s+/g, '-') || 'super-admin';
+  return <Navigate to={`/dashboard/${roleSlug}`} replace />;
+};
+
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -88,7 +95,7 @@ export const AppRoutes = () => {
           </RoleGuard>
         }
       >
-        <Route index element={<Navigate to="/dashboard/super-admin" replace />} />
+        <Route index element={<IndexRedirect />} />
         <Route path="403" element={<PermissionDeniedPage />} />
 
         {/* Dashboards */}

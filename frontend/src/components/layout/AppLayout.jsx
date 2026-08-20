@@ -20,14 +20,14 @@ export const AppLayout = () => {
 
   return (
     <div className="app-shell flex flex-col bg-slate-900 font-sans antialiased text-slate-900 print:h-auto print:overflow-visible">
-      {/* Top Header â€” 64px on mobile, 72px-80px on desktop */}
+      {/* Top Header - 64px on mobile, 72px-80px on desktop */}
       <header className="h-16 sm:h-20 shrink-0 border-b border-slate-800 bg-slate-900 z-30 print:hidden">
         <TopHeader />
       </header>
 
       {/* Body Row: sidebar + main */}
       <div className="flex flex-1 min-h-0 relative print:block">
-        {/* â”€â”€ Mobile Overlay Backdrop â”€â”€ */}
+        {/* -- Mobile Overlay Backdrop -- */}
         {!sidebarCollapsed && (
           <div
             className="fixed inset-0 top-16 sm:top-20 bg-black/60 z-40 lg:hidden"
@@ -36,7 +36,7 @@ export const AppLayout = () => {
           />
         )}
 
-        {/* â”€â”€ Sidebar â”€â”€ */}
+        {/* -- Sidebar -- */}
         <div
           className={`
             shrink-0 overflow-y-auto overscroll-contain bg-slate-900 border-r border-slate-800 print:hidden
@@ -49,7 +49,7 @@ export const AppLayout = () => {
           <Sidebar />
         </div>
 
-        {/* â”€â”€ Main Content â”€â”€ */}
+        {/* -- Main Content -- */}
         <main
           className="
             flex-1 min-w-0 min-h-0

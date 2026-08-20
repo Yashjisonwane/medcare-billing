@@ -356,7 +356,7 @@ export const CheckInPage = () => {
                         <span className="font-bold text-teal-800 flex items-center gap-1">
                           <Building2 className="w-3.5 h-3.5 text-teal-600" /> {apt.providerName}
                         </span>
-                        <span>â€¢</span>
+                        <span>•</span>
                         <span className="font-medium text-slate-700">{apt.appointmentType}</span>
                         {apt.cptCode && (
                           <span className="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] font-mono font-bold">
@@ -367,9 +367,9 @@ export const CheckInPage = () => {
 
                       <div className="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap pt-0.5">
                         <span className="flex items-center gap-1 font-bold text-slate-800">
-                          <Clock className="w-3 h-3 text-slate-400" /> Scheduled Time: {apt.startTime} â€“ {apt.endTime}
+                          <Clock className="w-3 h-3 text-slate-400" /> Scheduled Time: {apt.startTime} - {apt.endTime}
                         </span>
-                        <span>â€¢</span>
+                        <span>•</span>
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-slate-400" /> Location: <strong className="text-slate-800">{apt.location || 'Main Clinic'}</strong>
                         </span>

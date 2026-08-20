@@ -255,7 +255,7 @@ export const ProviderListPage = () => {
         })}
       </div>
 
-      {/* ðŸ”´ ADD NEW PROVIDER DIALOG MODAL */}
+      {/* 🔴 ADD NEW PROVIDER DIALOG MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden">

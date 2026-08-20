@@ -1,4 +1,4 @@
-﻿// src/pages/auth/LoginPage.jsx
+// src/pages/auth/LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
@@ -93,9 +93,9 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen lg:h-screen w-full flex flex-col lg:flex-row bg-slate-950 text-slate-900 overflow-y-auto lg:overflow-hidden touch-scroll select-none">
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           LEFT SIDE: Medical Clinic Hero Panel (42% - 45%) - Fixed Zero Scroll
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       <div className="hidden lg:flex relative w-full lg:w-[44%] xl:w-[42%] lg:h-full lg:min-h-0 flex-col lg:justify-between p-5 sm:p-6 lg:p-7 xl:p-8 text-white shrink-0 overflow-hidden">
         {/* Background Medical Clinic Photo */}
         <img
@@ -115,7 +115,7 @@ export const LoginPage = () => {
                 F&amp;M HEALTH &amp; WELLNESS
               </h2>
               <p className="text-[9px] text-amber-300 font-bold tracking-wider uppercase">
-                Relieve Pain â€¢ Heal Mind â€¢ Restore Life
+                Relieve Pain • Heal Mind • Restore Life
               </p>
             </div>
           </div>
@@ -168,15 +168,15 @@ export const LoginPage = () => {
         </div>
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           RIGHT SIDE: In-Place Switchable Panel (Login View <-> Forgot Password)
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       <div className="flex-1 lg:h-full bg-white flex flex-col justify-between p-5 sm:p-6 lg:p-7 xl:p-8 lg:overflow-y-auto">
         <div className="max-w-xl w-full mx-auto flex flex-col justify-center min-h-full lg:h-full py-4 lg:py-0 space-y-3.5 sm:space-y-4">
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          {/* ==================================================================
               VIEW 1: DIRECT LOGIN VIEW
-             â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+             ================================================================== */}
           {viewMode === 'login' && (
             <>
               {/* Header Banner */}
@@ -201,7 +201,7 @@ export const LoginPage = () => {
                 </div>
               )}
 
-              {/* â”€â”€ Direct Email & Password Form â”€â”€ */}
+              {/* -- Direct Email & Password Form -- */}
               <form onSubmit={handleLoginSubmit} className="bg-slate-50/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-2xs space-y-2.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
@@ -240,7 +240,7 @@ export const LoginPage = () => {
                         required 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                        placeholder="••••••••"
                         className="w-full pl-8 pr-8 py-1.5 sm:py-2 text-xs rounded-xl border border-slate-200 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 bg-white text-slate-900 outline-none transition"
                       />
                       <button
@@ -264,16 +264,16 @@ export const LoginPage = () => {
                 </button>
               </form>
 
-              {/* â”€â”€ Divider â”€â”€ */}
+              {/* Divider */}
               <div className="relative flex items-center justify-center">
                 <div className="border-t border-slate-200 w-full" />
                 <span className="bg-white px-2.5 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                  âš¡ Or One-Click Quick Role Access
+                  ⚡ Or One-Click Quick Role Access
                 </span>
                 <div className="border-t border-slate-200 w-full" />
               </div>
 
-              {/* â”€â”€ 6 Quick Role Access Cards â”€â”€ */}
+              {/* 6 Quick Role Access Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {DEMO_ACCOUNTS.map((acc) => (
                   <button
@@ -301,9 +301,9 @@ export const LoginPage = () => {
             </>
           )}
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          {/* ==================================================================
               VIEW 2: IN-PLACE FORGOT PASSWORD VIEW (RIGHT SIDE)
-             â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+             ================================================================== */}
           {viewMode === 'forgot' && (
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* Back to Login Button */}
@@ -404,7 +404,7 @@ export const LoginPage = () => {
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-3 h-3 text-teal-600 shrink-0" />
-              <span>HIPAA 256-bit Encryption â€¢ Demo: demo123</span>
+              <span>HIPAA 256-bit Encryption • Demo: demo123</span>
             </div>
             <span>Â© 2026 F&amp;M Health</span>
           </div>

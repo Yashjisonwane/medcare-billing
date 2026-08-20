@@ -357,7 +357,7 @@ export const AiAssistantPage = () => {
         </button>
       </div>
 
-      {/* â”€â”€ GENERATE TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* -- GENERATE TAB ------------------------------- */}
       {activeTab === 'generate' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Input */}

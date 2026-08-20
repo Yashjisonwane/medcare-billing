@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * ANIK Therapy Assessment Form â€” ANIK Reference PDF Page 7
+ * ANIK Therapy Assessment Form - ANIK Reference PDF Page 7
  * Now connected dynamically to serviceLines
  */
 export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false, packetData = null, serviceLines = [] }) => {

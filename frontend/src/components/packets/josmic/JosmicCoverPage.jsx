@@ -90,7 +90,7 @@ export const JosmicCoverPage = ({ blankMode = false, packetData = null }) => {
 
       {/* Footer */}
       <div className="absolute bottom-6 left-0 right-0 px-12 flex justify-between text-[9px] text-slate-400 font-mono border-t border-slate-200 pt-2 mt-6">
-        <span>JOSMIC Wellness Center â€” Confidential Clinical Document</span>
+        <span>JOSMIC Wellness Center - Confidential Clinical Document</span>
         <span>Page 1 of 7</span>
       </div>
     </div>

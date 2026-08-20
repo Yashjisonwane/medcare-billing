@@ -236,7 +236,7 @@ export const ClinicalNoteEditorPage = () => {
     }
   };
 
-  // â”€â”€ Render New Note Form â”€â”€
+  // -- Render New Note Form --
   if (isNew && !note) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">

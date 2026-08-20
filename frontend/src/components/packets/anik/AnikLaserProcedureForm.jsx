@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 /**
- * ANIK Laser Therapy Procedure Form (Radial Device) â€” Sample PDF Pages 8, 9, 10
+ * ANIK Laser Therapy Procedure Form (Radial Device) - Sample PDF Pages 8, 9, 10
  */
 export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, blankMode = false, packetData = null }) => {
   const [nerveBlock, setNerveBlock] = useState('NO');
@@ -42,7 +42,7 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
           <div><strong>SESSIONS:</strong> <span className="border border-slate-800 px-2 py-0.5 ml-1 font-bold">3</span></div>
         </div>
 
-        {/* â”€â”€ 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) â”€â”€ */}
+        {/* -- 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) -- */}
         <div className="border-2 border-slate-800 rounded-lg overflow-hidden grid grid-cols-12 text-xs">
           
           {/* Column 1: Human Body Anatomical Diagram */}

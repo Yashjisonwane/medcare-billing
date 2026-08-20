@@ -119,7 +119,7 @@ export const AssessmentsAndFormsPage = () => {
       {activeTab === 'TPI' && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-8 text-center space-y-3">
           <Clock className="w-10 h-10 text-amber-600 mx-auto" />
-          <h3 className="text-base font-bold text-amber-900">Trigger Point Injection â€” Configuration Pending</h3>
+          <h3 className="text-base font-bold text-amber-900">Trigger Point Injection - Configuration Pending</h3>
           <p className="text-xs text-amber-800 max-w-lg mx-auto leading-relaxed">
             Clinical Form Pending. Trigger Point Injection form templates and clinical session workflows will be available once provider-service configuration is completed.
           </p>
@@ -129,7 +129,7 @@ export const AssessmentsAndFormsPage = () => {
       {activeTab === 'TECAR' && (
         <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center space-y-3">
           <Clock className="w-10 h-10 text-rose-600 mx-auto" />
-          <h3 className="text-base font-bold text-rose-900">TECAR Therapy â€” Configuration Pending</h3>
+          <h3 className="text-base font-bold text-rose-900">TECAR Therapy - Configuration Pending</h3>
           <p className="text-xs text-rose-800 max-w-lg mx-auto leading-relaxed">
             Clinical Form Pending. Radiofrequency Energy Transfer (TECAR Therapy) procedure forms will be enabled upon provider assignment.
           </p>

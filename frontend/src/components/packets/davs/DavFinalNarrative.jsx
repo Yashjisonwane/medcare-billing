@@ -31,7 +31,7 @@ export const DavFinalNarrative = ({ reportPage = 1, blankMode = false, packetDat
         <div className="border-t border-slate-300 pt-4 font-mono text-xs">
           <p className="font-bold text-slate-900">DISCHARGING PHYSICIAN SIGNATURE:</p>
           <p className="mt-4 font-bold text-slate-900 underline">Adeoye, Segun, DC</p>
-          <p className="text-[10px] text-slate-500">DAV'S Anatomy Center â€” Date Signed: 04/13/2026</p>
+          <p className="text-[10px] text-slate-500">DAV'S Anatomy Center - Date Signed: 04/13/2026</p>
         </div>
       </div>
     </div>

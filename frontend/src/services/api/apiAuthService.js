@@ -99,7 +99,7 @@ export const apiAuthService = {
   },
 
   /**
-   * Logout â€” clear all stored session data
+   * Logout - clear all stored session data
    */
   async logout() {
     localStorage.removeItem(STORAGE_KEY);

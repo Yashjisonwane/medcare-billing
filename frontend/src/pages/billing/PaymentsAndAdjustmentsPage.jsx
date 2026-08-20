@@ -174,10 +174,17 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
             <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Payment Type *</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { val: 'INSURANCE', label: 'ðŸ› Insurance Payment' },
-                { val: 'PATIENT', label: 'ðŸ‘¤ Patient Payment' },
-                { val: 'ATTORNEY', label: 'âš–ï¸ Attorney Settlement' },
-                { val: 'WORKERS_COMP', label: 'ðŸ— Workers\' Comp' },
+<<<<<<< HEAD
+                { val: 'INSURANCE', label: '🏛️ Insurance Payment' },
+                { val: 'PATIENT', label: '👤 Patient Payment' },
+                { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
+                { val: 'WORKERS_COMP', label: "🏗️ Workers' Comp" },
+=======
+                { val: 'INSURANCE', label: '🏢 Insurance Payment' },
+                { val: 'PATIENT', label: '👤 Patient Payment' },
+                { val: 'ATTORNEY', label: '⚖️ Attorney Settlement' },
+                { val: 'WORKERS_COMP', label: '👷 Workers\' Comp' },
+>>>>>>> a2f3eaba2e99b9a9754dd86d018729e9346e420d
               ].map(opt => (
                 <label 
                   key={opt.val} 
@@ -267,7 +274,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
               <div className="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-xl text-[11px] text-emerald-800 flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
-                  à¤¯à¤¹ à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤®à¥‡à¤‚à¤Ÿ à¤ªà¥‚à¤°à¥€ à¤¤à¤°à¤¹ à¤šà¥à¤•à¤¤à¤¾ (<strong>Paid in Full / $0.00</strong>) à¤¹à¥ˆà¥¤ à¤¯à¤¦à¤¿ à¤…à¤¨à¥à¤¯ à¤•à¤¿à¤¸à¥€ à¤ªà¥à¤°à¥‹à¤µà¤¾à¤‡à¤¡à¤° à¤ªà¤° à¤¬à¤•à¤¾à¤¯à¤¾ à¤¹à¥ˆ, à¤¤à¥‹ à¤¡à¥à¤°à¥‰à¤ªà¤¡à¤¾à¤‰à¤¨ à¤¸à¥‡ à¤ªà¥‡à¤‚à¤¡à¤¿à¤‚à¤— à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤®à¥‡à¤‚à¤Ÿ à¤šà¥à¤¨à¥‡à¤‚à¥¤
+                  This statement is fully settled (<strong>Paid in Full / $0.00</strong>). If there is an outstanding balance on any other provider, select the pending statement from the dropdown.
                 </span>
               </div>
             )}
@@ -388,7 +395,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
   );
 };
 
-// â”€â”€â”€ Dynamic Post Adjustment / Write-Off Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Dynamic Post Adjustment / Write-Off Modal --------------------------------
 const PostAdjustmentModal = ({ onClose, onSuccess }) => {
   const { addToast } = useUIStore();
   const [saving, setSaving] = useState(false);

@@ -391,11 +391,31 @@ export const createBill = async (req, res) => {
     return res.status(400).json({ error: 'caseId and providerId are required.' });
   }
 
-  const generatedId = `bill-${Date.now()}`;
+  const providerKey = data.providerId.replace('prov-', '');
+  const generatedId = data.id || `bill-${providerKey}-${data.caseId}`;
+  
   const statementNum = `${Math.floor(100000 + Math.random() * 900000)}`;
   const statementDate = new Date().toLocaleDateString('en-US');
 
   try {
+    // Check if the bill already exists to prevent duplicate insertion error
+    const existing = await prisma.bill.findUnique({
+      where: { id: generatedId },
+      include: {
+        serviceLines: true,
+        provider: true,
+        case: {
+          include: {
+            patient: true
+          }
+        }
+      }
+    });
+
+    if (existing) {
+      return res.status(200).json(formatBill(existing));
+    }
+
     const newBill = await prisma.bill.create({
       data: {
         id: generatedId,
@@ -406,7 +426,7 @@ export const createBill = async (req, res) => {
         statementDate,
         billToName: data.billToName || 'OJ LAW FIRM & ASSOCIATES',
         billToAddress: data.billToAddress || '11711 Bedford St. Suite 01, Houston TX 77031',
-        status: 'ISSUED_DEMO',
+        status: 'ISSUED',
         totals: { totalCharges: 0, totalPayments: 0, totalAdjustments: 0, balanceDue: 0 },
         aging: { current: 0, past30: 0, past60: 0, past90: 0 }
       },

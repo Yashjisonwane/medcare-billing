@@ -1,4 +1,4 @@
-﻿// src/components/common/FMLogo.jsx
+// src/components/common/FMLogo.jsx
 import React, { useState } from 'react';
 import fmLogoImg from '../../assets/fm-logo.jpeg';
 import { Maximize2, X } from 'lucide-react';
@@ -42,7 +42,7 @@ export const FMLogo = ({
               F&amp;M HEALTH &amp; WELLNESS
             </span>
             <span className="text-[10px] tracking-widest uppercase font-sans font-bold text-amber-400 mt-1">
-              RELIEVE PAIN â€¢ HEAL MIND â€¢ RESTORE LIFE
+              RELIEVE PAIN • HEAL MIND • RESTORE LIFE
             </span>
           </div>
         )}
@@ -80,7 +80,7 @@ export const FMLogo = ({
             </div>
 
             <p className="text-center text-xs text-slate-500 font-medium mt-4">
-              Click anywhere outside or hit âœ• to close preview
+              Click anywhere outside or hit ✕ to close preview
             </p>
           </div>
         </div>

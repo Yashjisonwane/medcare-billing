@@ -65,7 +65,7 @@ export const PatientProfilePage = () => {
 
   return (
     <div className="space-y-5">
-      {/* â”€â”€ Top Back Navigation & Breadcrumb â”€â”€ */}
+      {/* -- Top Back Navigation & Breadcrumb -- */}
       <div className="flex items-center justify-between gap-3">
         <button
           onClick={() => navigate('/patients')}
@@ -80,7 +80,7 @@ export const PatientProfilePage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Patient Header Banner â”€â”€ */}
+      {/* -- Patient Header Banner -- */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center font-extrabold text-xl border border-teal-200 shadow-xs">
@@ -129,7 +129,7 @@ export const PatientProfilePage = () => {
         </div>
       </div>
 
-      {/* â”€â”€ Tabs Navigation â”€â”€ */}
+      {/* -- Tabs Navigation -- */}
       <div className="flex border-b border-slate-200 gap-4 sm:gap-6 text-xs font-bold text-slate-500 overflow-x-auto pb-0.5">
         <button
           onClick={() => setActiveTab('OVERVIEW')}
@@ -163,9 +163,9 @@ export const PatientProfilePage = () => {
         </button>
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           TAB 1: OVERVIEW & DEMOGRAPHICS + EMERGENCY CONTACT
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       {activeTab === 'OVERVIEW' && (
         <div className="space-y-5 animate-in fade-in-50 duration-150">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -258,9 +258,9 @@ export const PatientProfilePage = () => {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           TAB 2: ACCIDENT CASES
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       {activeTab === 'CASES' && (
         <div className="space-y-4 animate-in fade-in-50 duration-150">
           <div className="flex items-center justify-between">
@@ -346,9 +346,9 @@ export const PatientProfilePage = () => {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           TAB 3: CLINICAL NOTES & SOAP DOCUMENTATION
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       {activeTab === 'NOTES' && (
         <div className="space-y-4 animate-in fade-in-50 duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -416,9 +416,9 @@ export const PatientProfilePage = () => {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           TAB 4: FOUR PROVIDER BILLS LEDGER
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       {activeTab === 'BILLS' && (
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 animate-in fade-in-50 duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -454,9 +454,9 @@ export const PatientProfilePage = () => {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      {/* ======================================================================
           TAB 5: DOCUMENTS & ATTACHMENTS
-         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+         ====================================================================== */}
       {activeTab === 'DOCUMENTS' && (
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 animate-in fade-in-50 duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
@@ -495,7 +495,7 @@ export const PatientProfilePage = () => {
         </div>
       )}
 
-      {/* â”€â”€ Add Accident Case Modal â”€â”€ */}
+      {/* -- Add Accident Case Modal -- */}
       <AddCaseModal
         isOpen={showAddCaseModal}
         onClose={() => setShowAddCaseModal(false)}
@@ -506,14 +506,14 @@ export const PatientProfilePage = () => {
         }}
       />
 
-      {/* â”€â”€ Document Upload Modal â”€â”€ */}
+      {/* -- Document Upload Modal -- */}
       <UploadDocumentModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onDocumentUploaded={() => loadData()}
       />
 
-      {/* â”€â”€ Full Document Attachment Viewer Modal â”€â”€ */}
+      {/* -- Full Document Attachment Viewer Modal -- */}
       {previewDoc && (
         <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
