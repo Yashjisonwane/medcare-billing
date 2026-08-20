@@ -1,4 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/v1';
+import { API_BASE_URL } from '../../config/api';
+
+const API_BASE = API_BASE_URL;
+
 
 export const mockBillingService = {
   async getFourBillsByCase(caseId = 'CASE-2025-1227') {

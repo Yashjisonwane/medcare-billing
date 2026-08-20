@@ -1,5 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+import { API_BASE_URL } from '../../config/api';
+
+const API_BASE = API_BASE_URL;
 const API_URL = `${API_BASE}/settings`;
+
 
 export const getGeneralSettings = async () => {
   try {

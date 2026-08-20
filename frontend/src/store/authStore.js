@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { apiAuthService } from '../services/api/apiAuthService';
 import { DEMO_ACCOUNTS } from '../constants/rolePermissions';
+import { API_BASE_URL } from '../config/api';
 
 const STORAGE_KEY = 'medpractice_auth_session';
 const TOKEN_KEY = 'medpractice_auth_token';
@@ -76,7 +77,7 @@ export const useAuthStore = create((set, get) => ({
 
     try {
       const token = localStorage.getItem(TOKEN_KEY);
-      const res = await fetch('http://localhost:5000/v1/auth/profile', {
+      const res = await fetch(`${API_BASE_URL}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

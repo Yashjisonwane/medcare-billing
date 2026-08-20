@@ -5,6 +5,7 @@ import { Settings, Save, Globe, Bell, Building, Clock, Activity, Loader2 } from 
 import { getUSHolidaysForYear } from '../../constants/usHolidays';
 import { getGeneralSettings, updateGeneralSettings } from '../../services/api/apiSettingsService';
 import { refreshSettingsCache } from '../../utils/settingsCache';
+import { API_BASE_URL } from '../../config/api';
 
 const inputCls = 'w-full px-3 py-2 text-xs rounded-lg border border-outline-variant bg-surface focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition';
 const labelCls = 'block text-xs font-bold text-on-surface mb-1';
@@ -155,8 +156,7 @@ export const GeneralSettingsPage = () => {
     }
     setIsSendingTestEmail(true);
     try {
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
-      const res = await fetch(`${apiBase}/notifications/test-email`, {
+      const res = await fetch(`${API_BASE_URL}/notifications/test-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientEmail: testEmailRecipient })
