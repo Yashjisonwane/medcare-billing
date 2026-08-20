@@ -143,14 +143,12 @@ export const TopHeader = () => {
                 onChange={(e) => setProviderFilter(e.target.value)}
                 className="w-full bg-slate-800 text-white text-xs font-semibold rounded-xl px-3.5 py-2 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 appearance-none pr-8 cursor-pointer outline-none"
               >
-                <option value="ALL">All Practice Providers ({providersList.length + 2} Modalities)</option>
+                <option value="ALL">All Practice Providers ({providersList.length} Modalities)</option>
                 {providersList.map((prov) => (
                   <option key={prov.id} value={prov.id}>
                     {prov.name} {prov.isPlaceholder ? '(Pending Docs)' : ''}
                   </option>
                 ))}
-                <option value="srv-trigger-point">Trigger Point Injection (Pending Config)</option>
-                <option value="srv-tecar-therapy">TECAR Therapy (Pending Config)</option>
               </select>
               <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
