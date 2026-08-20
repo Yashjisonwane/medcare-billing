@@ -1,11 +1,13 @@
 // src/pages/appointments/ScheduleAppointmentPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+import { mockPatientService } from '../../services/mock/mockPatientService';
+import { mockCaseService } from '../../services/mock/mockCaseService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
-import { createDefaultServiceLine } from '../../constants/servicesCatalog';
+import { createDefaultServiceLine, COMMON_CPT_CODES } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../../components/common/MultiLineCptTable';
 import { useUIStore } from '../../store/uiStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, Save, Bell, User, MapPin, FileText, Tag } from 'lucide-react';
 
 import { isClinicClosed } from '../../constants/usHolidays';
@@ -20,31 +22,79 @@ const SectionHead = ({ Icon, title }) => (
 );
 
 export const ScheduleAppointmentPage = () => {
-  const [serviceLines, setServiceLines] = useState([
-    createDefaultServiceLine(1, '99204', 'Initial Comprehensive Pain Management Consultation', 450.00),
-    createDefaultServiceLine(2, '97039', 'High Intensity Laser Therapy (HILT)', 250.00)
-  ]);
+  const [searchParams] = useSearchParams();
+  const patientIdFromUrl = searchParams.get('patientId');
+
+  const getTodayDateString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const getInitialServiceLinesForProvider = (providerKey, visitType = 'INITIAL') => {
+    const config = INITIAL_PROVIDER_CONFIGS[providerKey];
+    if (!config) return [];
+    
+    let codes = [];
+    if (providerKey === 'josmic') {
+      codes = visitType === 'INITIAL' 
+        ? [{ code: '99204', desc: 'Initial Comprehensive Pain Management Consultation' }, { code: '97039', desc: 'High Intensity Laser Therapy (HILT)' }]
+        : [{ code: '99214', desc: 'Office/Outpatient Visit Established Moderate (30-39 min)' }, { code: '97110', desc: 'Therapeutic Exercise (15 min)' }];
+    } else if (providerKey === 'davs') {
+      codes = visitType === 'INITIAL'
+        ? [{ code: '99204', desc: 'Initial Visit II' }, { code: '0101T', desc: 'Shockwave / ESWT' }]
+        : [{ code: '99214', desc: 'Final Visit II' }, { code: '0101T', desc: 'Shockwave / ESWT' }];
+    } else if (providerKey === 'anik') {
+      codes = [{ code: '97039', desc: 'High Intensity Laser Therapy' }];
+    } else if (providerKey === 'counselor') {
+      codes = [{ code: '90834', desc: 'Psychotherapy (45 min)' }];
+    }
+
+    return codes.map((c, idx) => {
+      let realPrice = 0;
+      const matchingProvSrv = config.providerServices?.find(ps => ps.cptCode === c.code);
+      if (matchingProvSrv) {
+        realPrice = matchingProvSrv.price;
+      } else {
+        const matchingAvailSrv = config.availableServices?.find(as => as.code === c.code);
+        if (matchingAvailSrv) {
+          realPrice = matchingAvailSrv.defaultCharge;
+        } else {
+          const catalogFee = COMMON_CPT_CODES.find(cc => cc.code === c.code)?.defaultFee || 0;
+          realPrice = catalogFee;
+        }
+      }
+      return createDefaultServiceLine(idx + 1, c.code, c.desc, realPrice);
+    });
+  };
+
+  const [serviceLines, setServiceLines] = useState(getInitialServiceLinesForProvider('josmic', 'INITIAL'));
+
+  const initialProvConfig = INITIAL_PROVIDER_CONFIGS.josmic;
+  const initialAddress = initialProvConfig ? `${initialProvConfig.address.street}, ${initialProvConfig.address.suite}, ${initialProvConfig.address.city} ${initialProvConfig.address.state} ${initialProvConfig.address.zipCode}` : '';
 
   const [formData, setFormData] = useState({
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    patientPhone: '713-555-0100',
-    patientDob: '1985-05-15',
-    caseId: 'case-001',
-    caseRef: 'CASE-2025-1227',
+    patientId: '',
+    patientName: '',
+    patientPhone: '',
+    patientDob: '',
+    caseId: '',
+    caseRef: '',
     providerId: 'prov-josmic',
     visitType: 'INITIAL', // 'INITIAL' | 'SUBSEQUENT'
-    appointmentType: 'Pain Consult',
+    appointmentType: 'Pain Consult & Evaluation',
     cptCode: '99204, 97039',
-    reasonForVisit: 'Post-MVA initial pain management consultation & laser therapy',
-    date: '2026-08-04',
+    reasonForVisit: '',
+    date: getTodayDateString(),
     startTime: '09:00 AM',
     endTime: '10:00 AM',
     duration: '60',
     visitStatus: 'SCHEDULED',
-    location: 'Suite 774',
-    locationAddress: '10101 Harwin Dr. Suite 774, Houston TX 77036',
-    room: 'Exam Room 3',
+    location: initialProvConfig?.address?.suite || '',
+    locationAddress: initialAddress,
+    room: '',
     telehealth: false,
     telehealthLink: '',
     reminderPreference: 'SMS',
@@ -53,17 +103,54 @@ export const ScheduleAppointmentPage = () => {
     interpreterNeeded: false,
     interpreterLanguage: '',
     transportNeeded: false,
-    attendingProvider: 'Dr. Mohamed Siddiqui',
-    attendingProviderNpi: '1234567890',
+    attendingProvider: initialProvConfig?.renderingProvider ? `${initialProvConfig.renderingProvider.name} ${initialProvConfig.renderingProvider.credentials || ''}`.trim() : '',
+    attendingProviderNpi: initialProvConfig?.renderingProvider?.npi || '',
     authorizationNumber: '',
     copayAmount: '0.00',
     billToCase: true,
-    visitNotes: 'Patient to bring photo ID, insurance card, and any prior imaging reports.',
+    visitNotes: '',
     holidayOverride: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useUIStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (patientIdFromUrl) {
+      mockPatientService.getPatientById(patientIdFromUrl)
+        .then(patient => {
+          if (patient) {
+            setFormData(prev => ({
+              ...prev,
+              patientId: patient.id,
+              patientName: `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
+              patientPhone: patient.phone || '',
+              patientDob: patient.dob || '',
+              reminderPreference: patient.communicationPref || 'SMS'
+            }));
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load patient: ", err);
+          addToast("Failed to load patient details", "error");
+        });
+
+      mockCaseService.getCases({ patientId: patientIdFromUrl })
+        .then(cases => {
+          if (cases && cases.length > 0) {
+            const activeCase = cases.find(c => c.status === 'ACTIVE') || cases[0];
+            setFormData(prev => ({
+              ...prev,
+              caseId: activeCase.id,
+              caseRef: activeCase.caseId || activeCase.id
+            }));
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load patient cases: ", err);
+        });
+    }
+  }, [patientIdFromUrl]);
 
   const set = (field, val) => setFormData(p => ({ ...p, [field]: val }));
 
@@ -136,13 +223,20 @@ export const ScheduleAppointmentPage = () => {
                   const provKey = pid.replace('prov-', '');
                   const provConfig = INITIAL_PROVIDER_CONFIGS[provKey];
                   const firstService = provConfig?.providerServices?.find(s => s.enabled && s.configurationStatus === 'COMPLETE') || provConfig?.providerServices?.[0];
+                  const provAddress = provConfig ? `${provConfig.address.street}, ${provConfig.address.suite}, ${provConfig.address.city} ${provConfig.address.state} ${provConfig.address.zipCode}` : '';
                   
                   setFormData(p => ({
                     ...p,
                     providerId: pid,
                     appointmentType: firstService ? firstService.billingDescription : (provConfig?.serviceCategory || 'Consultation'),
-                    duration: firstService?.duration ? parseInt(firstService.duration) : 60
+                    duration: firstService?.duration ? parseInt(firstService.duration) : 60,
+                    attendingProvider: provConfig?.renderingProvider ? `${provConfig.renderingProvider.name} ${provConfig.renderingProvider.credentials || ''}`.trim() : '',
+                    attendingProviderNpi: provConfig?.renderingProvider?.npi || '',
+                    location: provConfig?.address?.suite || '',
+                    locationAddress: provAddress
                   }));
+
+                  setServiceLines(getInitialServiceLinesForProvider(provKey, formData.visitType));
                 }}
               >
                 <option value="prov-josmic">JOSMIC Wellness Center (Pain Management)</option>
@@ -160,18 +254,8 @@ export const ScheduleAppointmentPage = () => {
                 onChange={e => {
                   const val = e.target.value;
                   set('visitType', val);
-                  // Update default CPT code if initial vs subsequent changed
-                  if (val === 'SUBSEQUENT') {
-                    setServiceLines([
-                      createDefaultServiceLine(1, '99214', 'Office/Outpatient Visit Established Moderate (30-39 min)', 275.00),
-                      createDefaultServiceLine(2, '97110', 'Therapeutic Exercise (15 min)', 110.00)
-                    ]);
-                  } else {
-                    setServiceLines([
-                      createDefaultServiceLine(1, '99204', 'Initial Comprehensive Pain Management Consultation', 450.00),
-                      createDefaultServiceLine(2, '97039', 'High Intensity Laser Therapy (HILT)', 250.00)
-                    ]);
-                  }
+                  const provKey = formData.providerId.replace('prov-', '');
+                  setServiceLines(getInitialServiceLinesForProvider(provKey, val));
                 }}
               >
                 <option value="INITIAL">Initial Visit (New Patient E&amp;M - e.g. 99204)</option>

@@ -7,10 +7,12 @@ import { API_BASE_URL } from '../config/api';
 const STORAGE_KEY = 'medpractice_auth_session';
 const TOKEN_KEY = 'medpractice_auth_token';
 
+const hasSession = typeof window !== 'undefined' && !!(localStorage.getItem(TOKEN_KEY) || localStorage.getItem(STORAGE_KEY));
+
 export const useAuthStore = create((set, get) => ({
   currentUser: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: hasSession,
 
   /**
    * Called on app load or route guard
