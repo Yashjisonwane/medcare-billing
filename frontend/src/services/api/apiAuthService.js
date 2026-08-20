@@ -1,7 +1,9 @@
 // src/services/api/apiAuthService.js
 import { DEMO_ACCOUNTS } from '../../constants/rolePermissions';
+import { API_BASE_URL } from '../../config/api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/v1';
+const API_BASE = API_BASE_URL;
+
 const STORAGE_KEY = 'medpractice_auth_session';
 const TOKEN_KEY = 'medpractice_auth_token';
 
