@@ -885,44 +885,7 @@ async function main() {
   console.log(`📂 Seeded ${documentsData.length} document assets.`);
 
   // 11. Seed Compliance Logs (3 logs)
-  const auditLogsData = [
-    {
-      id: 'audit-001',
-      userId: 'usr- bil',
-      userName: 'Rachel Green',
-      user: 'Rachel Green',
-      role: 'Billing Staff',
-      action: 'VIEW_PHI',
-      resource: 'Patient Profile: Demo Patient 001',
-      patientId: 'pat-001',
-      ipAddress: '192.168.1.104',
-      timestamp: '2026-08-15 10:14 AM'
-    },
-    {
-      id: 'audit-002',
-      userId: 'usr-doc',
-      userName: 'Dr. Segun Adeoye',
-      user: 'Dr. Segun Adeoye',
-      role: 'Doctor',
-      action: 'SIGN_DOCUMENT',
-      resource: 'Clinical Note: Pain Management Report',
-      patientId: 'pat-001',
-      ipAddress: '192.168.1.102',
-      timestamp: '2026-08-15 10:30 AM'
-    },
-    {
-      id: 'audit-003',
-      userId: 'usr-sa',
-      userName: 'Sarah Connor',
-      user: 'Sarah Connor',
-      role: 'Super Admin',
-      action: 'EXPORT_PACKET',
-      resource: 'Unified Packet Bundle: CASE-2025-1227',
-      patientId: 'pat-001',
-      ipAddress: '192.168.1.100',
-      timestamp: '2026-08-15 11:00 AM'
-    }
-  ];
+  const auditLogsData = [];
 
   for (const log of auditLogsData) {
     await prisma.auditLog.create({ data: log });

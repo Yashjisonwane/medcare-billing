@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
-import { mockProviderService } from '../../services/mock/mockProviderService';
-import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
+import { apiAppointmentService } from '../../services/api/apiAppointmentService';
+import { apiProviderService } from '../../services/api/apiProviderService';
 import { CORE_SERVICES as SERVICES_CATALOG } from '../../constants/servicesCatalog';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
@@ -48,27 +47,29 @@ export const PatientSelfBookingPage = () => {
     attorneyPhone: '',
   });
 
-  // Providers state (loaded from backend)
-  const [providers, setProviders] = useState(Object.values(INITIAL_PROVIDER_CONFIGS));
+  // Providers state (loaded 100% from backend)
+  const [providers, setProviders] = useState([]);
+  const [loadingProviders, setLoadingProviders] = useState(true);
 
   useEffect(() => {
     const fetchProviders = async () => {
+      setLoadingProviders(true);
       try {
-        const backendProviders = await mockProviderService.getProviders();
-        if (backendProviders && backendProviders.length > 0) {
-          const merged = backendProviders.map(bp => {
-            const staticMatch = Object.values(INITIAL_PROVIDER_CONFIGS).find(ip => ip.id === bp.id || ip.name === bp.name);
-            return {
-              ...staticMatch,
-              ...bp,
-              cptCode: bp.cptCode || staticMatch?.cptCode || '99204 (Confirmed)',
-              fee: bp.fee || staticMatch?.fee || '$1,214.00'
-            };
-          });
-          setProviders(merged);
+        const backendRes = await apiProviderService.getProviders();
+        const list = backendRes && typeof backendRes === 'object' ? Object.values(backendRes) : [];
+        if (list && list.length > 0) {
+          setProviders(list);
+          if (!formData.providerId || !list.some(p => p.id === formData.providerId)) {
+            setFormData(prev => ({ ...prev, providerId: list[0].id }));
+          }
+        } else {
+          setProviders([]);
         }
       } catch (err) {
-        console.warn('Using default provider configurations', err);
+        console.warn('Failed to fetch backend providers list:', err);
+        setProviders([]);
+      } finally {
+        setLoadingProviders(false);
       }
     };
     fetchProviders();
@@ -88,7 +89,7 @@ export const PatientSelfBookingPage = () => {
   const loadSlots = async (providerId, dateStr) => {
     setSlotsState(prev => ({ ...prev, loading: true }));
     try {
-      const res = await mockAppointmentService.getAvailableSlots(providerId, dateStr);
+      const res = await apiAppointmentService.getAvailableSlots(providerId, dateStr);
       setSlotsState({
         loading: false,
         isClosed: res.isClosed,
@@ -111,7 +112,7 @@ export const PatientSelfBookingPage = () => {
     }
     setIsSearching(true);
     try {
-      const results = await mockAppointmentService.searchPatientBookings(searchQuery);
+      const results = await apiAppointmentService.searchPatientBookings(searchQuery);
       setSearchResults(results);
       if (results.length === 0) {
         addToast('No bookings found matching your search query.', 'info');
@@ -188,11 +189,11 @@ export const PatientSelfBookingPage = () => {
         charge: s.suggestedCptCode === '99204' ? 450.00 : s.suggestedCptCode === '97039' ? 250.00 : (s.standardRate || 350.00)
       }));
 
-      const created = await mockAppointmentService.autoBookAppointment({
+      const created = await apiAppointmentService.autoBookAppointment({
         ...formData,
         serviceLines,
         cptCode: serviceLines.map(l => l.cptCode).join(', '),
-        providerName: selectedProvider.name
+        providerName: selectedProvider?.name || 'JOSMIC Wellness Center'
       });
       setConfirmedBooking(created);
       setStep(4);
@@ -212,8 +213,17 @@ export const PatientSelfBookingPage = () => {
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl"></div>
         <div className="relative z-10 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-200 text-xs font-bold border border-teal-400/30 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-teal-300" /> Patient Public Self-Booking Portal
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md transition cursor-pointer"
+                title="Go back to previous page"
+              >
+                <ArrowLeft className="w-4 h-4 text-teal-300" /> Back
+              </button>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-200 text-xs font-bold border border-teal-400/30 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-teal-300" /> Patient Public Self-Booking Portal
+              </div>
             </div>
 
             {/* Mode Switcher Buttons */}
@@ -525,7 +535,14 @@ export const PatientSelfBookingPage = () => {
                 )}
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
@@ -548,29 +565,40 @@ export const PatientSelfBookingPage = () => {
 
               {/* Provider Cards */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-900">Select Clinic Provider</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {providers.map(p => (
-                    <div
-                      key={p.id}
-                      onClick={() => setFormData({ ...formData, providerId: p.id })}
-                      className={`p-4 rounded-2xl border cursor-pointer transition flex items-start gap-3 ${
-                        formData.providerId === p.id
-                          ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <Building2 className={`w-5 h-5 mt-0.5 ${formData.providerId === p.id ? 'text-teal-600' : 'text-slate-400'}`} />
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">{p.name}</div>
-                        <div className="text-[11px] text-slate-500">{p.serviceCategory || p.subtitle || 'Specialized Clinic Center'}</div>
-                        <div className="text-[10px] text-teal-700 font-medium mt-1">
-                          Default CPT Code: <span className="font-bold font-mono text-slate-800">{p.cptCode || '99204'}</span> • Fee: <span className="font-bold text-slate-900">{formatFeeString(p.fee || '$1,214.00')}</span>
+                <label className="block text-xs font-bold text-slate-900">Select Clinic Provider / Doctor</label>
+                {loadingProviders ? (
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center text-xs text-slate-500 flex items-center justify-center gap-2 font-semibold">
+                    <RefreshCw className="w-4 h-4 animate-spin text-teal-600" />
+                    <span>Loading practice providers from database...</span>
+                  </div>
+                ) : providers.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {providers.map(p => (
+                      <div
+                        key={p.id}
+                        onClick={() => setFormData({ ...formData, providerId: p.id })}
+                        className={`p-4 rounded-2xl border cursor-pointer transition flex items-start gap-3 ${
+                          formData.providerId === p.id
+                            ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <Building2 className={`w-5 h-5 mt-0.5 ${formData.providerId === p.id ? 'text-teal-600' : 'text-slate-400'}`} />
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">{p.name}</div>
+                          <div className="text-[11px] text-slate-500 font-medium">{p.businessName || p.serviceCategory || 'Specialized Practice Center'}</div>
+                          <div className="text-[10px] text-teal-700 font-medium mt-1">
+                            Rendering: <span className="font-bold text-slate-800">{p.renderingProvider?.name || 'Dr. Attending Physician'}</span> • Category: <span className="font-bold text-slate-900">{p.serviceCategory || 'Pain Management'}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center text-xs text-slate-500 font-medium">
+                    No active doctors or practice providers found in database.
+                  </div>
+                )}
               </div>
 
               {/* Service Cards */}

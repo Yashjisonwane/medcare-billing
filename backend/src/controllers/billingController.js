@@ -965,8 +965,15 @@ export const getPaymentsList = async (req, res) => {
  * Comprehensive reports data including provider billing, monthly trend, sessions, and claims status
  */
 export const getPracticeReports = async (req, res) => {
+  const { providerId } = req.query;
   try {
+    const where = {};
+    if (providerId && providerId !== 'ALL') {
+      where.providerId = providerId;
+    }
+
     const bills = await prisma.bill.findMany({
+      where,
       include: {
         provider: true,
         serviceLines: true,
@@ -1126,5 +1133,103 @@ export const getPracticeReports = async (req, res) => {
   } catch (error) {
     console.error('Error generating practice reports:', error);
     return res.status(500).json({ error: 'Failed to generate practice reports.' });
+  }
+};
+
+/**
+ * PUT /api/billing/bills/:id
+ * Edit bill charges, service lines, or total amounts
+ */
+export const updateBill = async (req, res) => {
+  const { id } = req.params;
+  const { totalCharges, lineItems, status } = req.body;
+
+  try {
+    const existing = await prisma.bill.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Bill not found' });
+    }
+
+    if (Array.isArray(lineItems) && lineItems.length > 0) {
+      await prisma.serviceLine.deleteMany({ where: { billId: id } });
+      for (const line of lineItems) {
+        await prisma.serviceLine.create({
+          data: {
+            id: `line-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            billId: id,
+            dos: line.dos || line.dateOfService || new Date().toISOString().split('T')[0],
+            cptCode: line.cptCode || '99204',
+            description: line.description || 'Medical Modality Service',
+            units: Number(line.units) || 1,
+            charge: Number(line.charge) || 0,
+            insurancePayment: Number(line.payments?.insurance) || 0,
+            patientPayment: Number(line.payments?.patient) || 0,
+            otherPayment: Number(line.payments?.other) || 0,
+            adjustments: Number(line.adjustments) || 0,
+            balance: Number(line.charge) || 0,
+            lineBalance: Number(line.charge) || 0
+          }
+        });
+      }
+    } else if (totalCharges !== undefined && Number(totalCharges) > 0) {
+      const firstLine = await prisma.serviceLine.findFirst({ where: { billId: id } });
+      if (firstLine) {
+        await prisma.serviceLine.update({
+          where: { id: firstLine.id },
+          data: {
+            charge: Number(totalCharges),
+            balance: Number(totalCharges),
+            lineBalance: Number(totalCharges)
+          }
+        });
+      }
+    }
+
+    await recalculateBillTotals(id);
+
+    if (status) {
+      await prisma.bill.update({
+        where: { id },
+        data: { status }
+      });
+    }
+
+    const updatedBill = await prisma.bill.findUnique({
+      where: { id },
+      include: {
+        provider: true,
+        case: { include: { patient: true } },
+        serviceLines: true
+      }
+    });
+
+    return res.status(200).json(formatBill(updatedBill));
+  } catch (error) {
+    console.error('Error updating bill charges:', error);
+    return res.status(500).json({ error: 'Failed to update bill charges.' });
+  }
+};
+
+/**
+ * DELETE /api/billing/bills/:id
+ * Delete a bill statement and its service lines cleanly
+ */
+export const deleteBill = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existing = await prisma.bill.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Bill not found' });
+    }
+
+    await prisma.$transaction([
+      prisma.serviceLine.deleteMany({ where: { billId: id } }),
+      prisma.bill.delete({ where: { id } })
+    ]);
+
+    return res.status(200).json({ success: true, message: 'Bill statement deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting bill:', error);
+    return res.status(500).json({ error: 'Failed to delete bill.' });
   }
 };

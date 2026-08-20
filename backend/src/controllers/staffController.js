@@ -46,7 +46,7 @@ export const createStaff = async (req, res) => {
 
   try {
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash('password123', salt);
+    const passwordHash = await bcrypt.hash(data.password || 'password123', salt);
 
     const newStaff = await prisma.user.create({
       data: {
@@ -58,7 +58,7 @@ export const createStaff = async (req, res) => {
         role: data.role,
         title: data.title || 'Staff Specialist',
         avatar: data.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120',
-        status: 'ACTIVE'
+        status: data.status || 'ACTIVE'
       }
     });
 
@@ -77,16 +77,23 @@ export const updateStaff = async (req, res) => {
   const data = req.body;
 
   try {
+    const updateData = {
+      ...(data.name ? { name: data.name, fullName: data.name } : {}),
+      ...(data.email ? { email: data.email } : {}),
+      ...(data.role ? { role: data.role } : {}),
+      ...(data.title ? { title: data.title } : {}),
+      ...(data.avatar !== undefined ? { avatar: data.avatar } : {}),
+      ...(data.status ? { status: data.status } : {})
+    };
+
+    if (data.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.passwordHash = await bcrypt.hash(data.password, salt);
+    }
+
     const updated = await prisma.user.update({
       where: { id },
-      data: {
-        ...(data.name ? { name: data.name, fullName: data.name } : {}),
-        ...(data.email ? { email: data.email } : {}),
-        ...(data.role ? { role: data.role } : {}),
-        ...(data.title ? { title: data.title } : {}),
-        ...(data.avatar !== undefined ? { avatar: data.avatar } : {}),
-        ...(data.status ? { status: data.status } : {})
-      }
+      data: updateData
     });
 
     return res.status(200).json(formatStaff(updated));

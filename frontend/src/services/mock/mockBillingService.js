@@ -90,13 +90,13 @@ export const mockBillingService = {
       if (!res.ok) throw new Error('Failed to retrieve aging summaries.');
       return await res.json();
     } catch (error) {
-      console.warn('[mockBillingService] API Error, returning fallback aging data:', error);
+      console.warn('[mockBillingService] API Error:', error);
       return {
-        grandTotal: 58004,
-        current: 27090,
-        past30: 1644,
-        past60: 530,
-        past90: 28790
+        grandTotal: 0,
+        current: 0,
+        past30: 0,
+        past60: 0,
+        past90: 0
       };
     }
   },
@@ -108,14 +108,9 @@ export const mockBillingService = {
       return await res.json();
     } catch {
       return {
-        kpis: { totalBilled: 58054, amountCollected: 0, totalAdjustments: 50, outstandingBalance: 58004, past90Overdue: 28790 },
-        agingBuckets: { current: 27090, past30: 1644, past60: 530, past90: 28790, grandTotal: 58004 },
-        providers: [
-          { name: 'JOSMIC Wellness Center', specialty: 'Pain Management', total: 4428, paid: 0, balance: 4428, status: 'Finalised', color: 'teal' },
-          { name: "DAV'S Anatomy", specialty: 'Shockwave (ESWT)', total: 17870, paid: 0, balance: 17870, status: 'Issued', color: 'blue' },
-          { name: 'ANIK Laser Therapy', specialty: 'Laser Therapy', total: 33526, paid: 0, balance: 33476, status: 'Issued', color: 'violet' },
-          { name: 'Counselor Practice', specialty: 'Counseling & Mental Health', total: 1140, paid: 0, balance: 1140, status: 'Issued', color: 'amber' }
-        ]
+        kpis: { totalBilled: 0, amountCollected: 0, totalAdjustments: 0, outstandingBalance: 0, past90Overdue: 0 },
+        agingBuckets: { current: 0, past30: 0, past60: 0, past90: 0, grandTotal: 0 },
+        providers: []
       };
     }
   },

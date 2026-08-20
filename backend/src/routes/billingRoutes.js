@@ -2,7 +2,7 @@ import express from 'express';
 import { 
   getFourBillsByCase, getBillById, createBill, addServiceLine, 
   postPayment, postAdjustment, finaliseBill, getAgingSummary,
-  getOverviewStats, getPaymentsList, getPracticeReports
+  getOverviewStats, getPaymentsList, getPracticeReports, updateBill, deleteBill
 } from '../controllers/billingController.js';
 
 const router = express.Router();
@@ -17,6 +17,8 @@ router.get('/case-bills', getFourBillsByCase);
 router.get('/aging', getAgingSummary);
 router.get('/bills/:id', getBillById);
 router.post('/bills', createBill);
+router.put('/bills/:id', updateBill);
+router.delete('/bills/:id', deleteBill);
 router.post('/bills/:id/service-lines', addServiceLine); // Matches addServiceLine form submit
 router.post('/bills/:id/payments', postPayment);
 router.post('/bills/:id/adjustments', postAdjustment);

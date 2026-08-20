@@ -35,5 +35,13 @@ export const apiPatientService = {
     });
     if (!res.ok) throw new Error('Failed to update patient profile');
     return res.json();
+  },
+
+  async deletePatient(id) {
+    const res = await fetch(`${API_BASE}/patients/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete patient profile');
+    return res.json();
   }
 };

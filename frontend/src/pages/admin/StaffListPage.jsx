@@ -1,4 +1,4 @@
-﻿// src/pages/admin/StaffListPage.jsx
+// src/pages/admin/StaffListPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { mockStaffService } from '../../services/mock/mockStaffService';
 import { Shield, PlusCircle, User, Plus, X, Save, Mail, UserCheck, Edit2, Trash2, Upload, Camera, Check } from 'lucide-react';
@@ -29,6 +29,7 @@ export const StaffListPage = () => {
     role: 'Billing Staff',
     title: 'Billing Specialist',
     email: '',
+    password: '',
     status: 'ACTIVE',
     avatar: PRESET_AVATARS[0]
   });
@@ -70,6 +71,7 @@ export const StaffListPage = () => {
       role: 'Billing Staff',
       title: 'Billing Specialist',
       email: '',
+      password: '',
       status: 'ACTIVE',
       avatar: PRESET_AVATARS[0]
     });
@@ -83,6 +85,7 @@ export const StaffListPage = () => {
       role: member.role || 'Billing Staff',
       title: member.title || '',
       email: member.email || '',
+      password: '',
       status: member.status || 'ACTIVE',
       avatar: member.avatar || PRESET_AVATARS[0]
     });
@@ -300,6 +303,18 @@ export const StaffListPage = () => {
                   placeholder="e.g. jwatson@clinic.test"
                   value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })}
+                  className={inputCls}
+                />
+              </div>
+
+              <div>
+                <label className={labelCls}>Password {editingStaff ? '(Leave blank to keep current)' : '*'}</label>
+                <input
+                  type="password"
+                  required={!editingStaff}
+                  placeholder={editingStaff ? "••••••••" : "Enter account password"}
+                  value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
                   className={inputCls}
                 />
               </div>

@@ -3,53 +3,6 @@ import { API_BASE_URL } from '../../config/api';
 const API_BASE = API_BASE_URL;
 
 
-const FALLBACK_ATTORNEYS = [
-  {
-    id: 'atty-1',
-    name: 'OJ Lawal, Esq.',
-    firm: 'OJ Law Firm & Associates LLC',
-    phone: '713-555-0188',
-    email: 'attorney@ojlawfirm.com',
-    address: '11711 Bedford St. Suite 01, Houston TX 77031',
-    caseManager: 'Maria Gonzalez (713-555-0300)',
-    lienAgreementType: 'LETTER_OF_PROTECTION',
-    status: 'ACTIVE'
-  },
-  {
-    id: 'atty-2',
-    name: 'Marcus Vance, Esq.',
-    firm: 'Law Offices of Marcus Vance',
-    phone: '713-555-0219',
-    email: 'mvance@vancelaw.com',
-    address: '2400 Richmond Ave Suite 300, Houston TX 77098',
-    caseManager: 'David Chen (713-555-0220)',
-    lienAgreementType: 'LETTER_OF_PROTECTION',
-    status: 'ACTIVE'
-  },
-  {
-    id: 'atty-3',
-    name: 'Robert Cole, Attorney',
-    firm: 'Cole & Partners Injury Law',
-    phone: '713-555-0442',
-    email: 'rcole@colelaw.com',
-    address: '5000 Westheimer Rd Suite 450, Houston TX 77056',
-    caseManager: 'Jessica Taylor (713-555-0443)',
-    lienAgreementType: 'LETTER_OF_PROTECTION',
-    status: 'ACTIVE'
-  },
-  {
-    id: 'atty-4',
-    name: 'Sarah Jenkins, Esq.',
-    firm: 'Davis & Associates Injury Law Group',
-    phone: '713-555-0300',
-    email: 'sjenkins@davisinjury.com',
-    address: '1001 Fannin St Suite 1200, Houston TX 77002',
-    caseManager: 'Carlos Ramos (713-555-0301)',
-    lienAgreementType: 'LETTER_OF_PROTECTION',
-    status: 'ACTIVE'
-  }
-];
-
 export const mockAttorneyService = {
   async getAttorneys(search = '') {
     try {
@@ -58,7 +11,7 @@ export const mockAttorneyService = {
       if (!res.ok) throw new Error('API Error');
       return await res.json();
     } catch {
-      return FALLBACK_ATTORNEYS;
+      return [];
     }
   },
 

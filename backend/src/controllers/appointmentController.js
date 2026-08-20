@@ -416,6 +416,11 @@ export const autoBookAppointment = async (req, res) => {
     const generatedId = `apt-auto-${Date.now()}`;
     const bookingRef = `SELF-${Math.floor(100000 + Math.random() * 900000)}`;
 
+    const attorneySuffix = (data.hasAttorney && data.attorneyName)
+      ? ` | Legal Rep: ${data.attorneyName}${data.attorneyPhone ? ` (${data.attorneyPhone})` : ''}`
+      : '';
+    const fullReason = (data.reasonForVisit || 'Patient Self-Scheduled Visit') + attorneySuffix;
+
     const newApt = await prisma.appointment.create({
       data: {
         id: generatedId,
@@ -429,7 +434,7 @@ export const autoBookAppointment = async (req, res) => {
         bookingChannel: 'Patient Online Self-Booking Portal',
         reminderStatus: data.patientEmail ? 'Automated Email & SMS Dispatched' : 'Automated SMS Dispatched',
         reminderPreference: data.patientEmail ? 'EMAIL' : 'SMS',
-        reasonForVisit: data.reasonForVisit || 'Patient Self-Scheduled Visit',
+        reasonForVisit: fullReason,
         appointmentType: data.appointmentType || 'Consultation',
         cptCode: data.cptCode || '99204',
         location: 'Suite 774 - Main Clinic'
