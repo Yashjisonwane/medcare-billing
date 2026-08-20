@@ -7,7 +7,7 @@ import { COMMON_CPT_CODES, COMMON_MODIFIERS, createDefaultServiceLine } from '..
 /**
  * High-End Portal Modifier Dropdown:
  * Renders directly onto document.body using createPortal with calculated fixed positioning.
- * Guaranteed 100% visible â€” NEVER clipped by table overflow, modal borders, or scroll containers!
+ * Guaranteed 100% visible - NEVER clipped by table overflow, modal borders, or scroll containers!
  */
 const ModifierPortalDropdown = ({ value, onChange, placeholder = "--", title = "Modifier" }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -327,7 +327,7 @@ export const MultiLineCptTable = ({ lines = [], onChange, title = "Appointment C
                     >
                       {COMMON_CPT_CODES.map(c => (
                         <option key={c.code} value={c.code}>
-                          {c.code} â€” {c.description.substring(0, 22)}...
+                          {c.code} - {c.description.substring(0, 22)}...
                         </option>
                       ))}
                       {!COMMON_CPT_CODES.some(c => c.code === line.cptCode) && (
@@ -430,7 +430,7 @@ export const MultiLineCptTable = ({ lines = [], onChange, title = "Appointment C
       <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50/80 rounded-xl border border-slate-200 text-xs">
         <div className="flex items-center gap-1.5 text-slate-600 text-[11px]">
           <Info className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-          <span>Click any <strong>[ Mod âˆ¨ ]</strong> pill to search, type, or pick modifiers with instant descriptions.</span>
+          <span>Click any <strong>[ Mod v ]</strong> pill to search, type, or pick modifiers with instant descriptions.</span>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto font-bold text-xs">
