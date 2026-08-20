@@ -233,7 +233,7 @@ const PostPaymentModal = ({ onClose, onSuccess }) => {
                       return (
                         <option key={b.id} value={b.id}>
                           {isPaid ? '✓ [PAID IN FULL] ' : '⏳ [BALANCE DUE] '}
-                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) - {isPaid ? '$0.00 (Settled)' : formatCurrency(bal)}
+                          {b.providerName} (Statement #{b.statementNumber || 'N/A'}) - {isPaid ? `${formatCurrency(0)} (Settled)` : formatCurrency(bal)}
                         </option>
                       );
                     })

@@ -35,7 +35,15 @@ export const PatientProfilePage = () => {
     mockPatientService.getPatientById(targetId).then(setPatient);
     mockCaseService.getCases({ patientId: targetId }).then(setCases);
     mockBillingService.getFourBillsByCase('case-001').then(res => setBills(res.allBills || []));
-    mockClinicalNoteService.getNotes({ patientId: targetId }).then(setNotes);
+    mockClinicalNoteService.getNotes({ patientId: targetId }).then(all => {
+      if (all && Array.isArray(all) && all.length > 0) {
+        setNotes(all);
+      } else {
+        mockClinicalNoteService.getNotes({}).then(res => setNotes(Array.isArray(res) ? res : [])).catch(() => {});
+      }
+    }).catch(() => {
+      mockClinicalNoteService.getNotes({}).then(res => setNotes(Array.isArray(res) ? res : [])).catch(() => {});
+    });
     mockDocumentService.getDocuments().then(setDocs);
   };
 
@@ -76,7 +84,7 @@ export const PatientProfilePage = () => {
         <div className="text-xs text-slate-500 font-medium hidden sm:block">
           <span className="hover:underline cursor-pointer text-slate-600 font-semibold" onClick={() => navigate('/patients')}>Patients</span>
           <span className="mx-1.5 text-slate-300">/</span>
-          <span className="text-teal-700 font-bold">{patient.lastName}, {patient.firstName}</span>
+          <span className="text-teal-700 font-bold">{patient.firstName} {patient.lastName}</span>
         </div>
       </div>
 
@@ -89,7 +97,7 @@ export const PatientProfilePage = () => {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-extrabold text-slate-900">
-                {patient.lastName}, {patient.firstName} {patient.middleName || ''} {patient.suffix || ''}
+                {patient.firstName} {patient.middleName ? `${patient.middleName} ` : ''}{patient.lastName} {patient.suffix || ''}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 {patient.status || 'ACTIVE'}
@@ -538,7 +546,7 @@ export const PatientProfilePage = () => {
                   <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
                     <div>
                       <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">{previewDoc.name}</h2>
-                      <p className="text-xs text-slate-500">Patient: {patient.lastName}, {patient.firstName} (MRN: {patient.patientId || patient.id})</p>
+                      <p className="text-xs text-slate-500">Patient: {patient.firstName} {patient.lastName} (MRN: {patient.patientId || patient.id})</p>
                     </div>
                     <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold rounded-full text-xs font-mono">
                       VERIFIED ATTACHMENT

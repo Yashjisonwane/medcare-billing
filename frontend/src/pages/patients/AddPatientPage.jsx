@@ -347,10 +347,10 @@ export const AddPatientPage = () => {
   };
 
   const stepsList = [
-    { id: 1, name: '1. Demographics', short: 'Demographics' },
-    { id: 2, name: '2. Contact & Insurance', short: 'Contact & Ins.' },
-    { id: 3, name: '3. Practice Providers', short: 'Providers & Lien' },
-    { id: 4, name: '4. Medical & Allergies', short: 'Medical & Summary' },
+    { id: 1, name: 'Demographics', short: 'Demographics' },
+    { id: 2, name: 'Contact & Insurance', short: 'Contact & Ins.' },
+    { id: 3, name: 'Practice Providers', short: 'Providers & Lien' },
+    { id: 4, name: 'Medical & Allergies', short: 'Medical & Summary' },
   ];
 
   return (
@@ -1025,7 +1025,7 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.referringProvider}
-                    onChange={e => set('referringProvider', e.target.value)}
+                    onChange={e => set('referringProvider', e.target.value.replace(/[^a-zA-Z\s.-]/g, ''))}
                     placeholder="Dr. Anthony Nguyen"
                   />
                 </div>
@@ -1035,7 +1035,7 @@ export const AddPatientPage = () => {
                     className={inputCls()}
                     maxLength={10}
                     value={formData.referringProviderNpi}
-                    onChange={e => set('referringProviderNpi', e.target.value)}
+                    onChange={e => set('referringProviderNpi', e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="1982736451"
                   />
                 </div>
@@ -1044,7 +1044,7 @@ export const AddPatientPage = () => {
                   <input
                     className={inputCls()}
                     value={formData.primaryCareProvider}
-                    onChange={e => set('primaryCareProvider', e.target.value)}
+                    onChange={e => set('primaryCareProvider', e.target.value.replace(/[^a-zA-Z\s.-]/g, ''))}
                     placeholder="Dr. Sarah Mitchell"
                   />
                 </div>

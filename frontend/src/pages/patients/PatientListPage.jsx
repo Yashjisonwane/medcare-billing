@@ -2,18 +2,31 @@
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
 import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';
 import { PatientDetailsModal } from '../../components/modals/PatientDetailsModal';
 
 export const PatientListPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [patients, setPatients] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    return queryParams.get('search') || '';
+  });
   const [statusFilter, setStatusFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const q = queryParams.get('search');
+    if (q !== null) {
+      setSearch(q);
+    }
+  }, [location.search]);
 
   const loadPatients = () => {
     setIsLoading(true);
@@ -100,7 +113,7 @@ export const PatientListPage = () => {
                         onClick={() => navigate(`/patients/${pat.id}/profile`)}
                         className="font-extrabold text-slate-900 text-sm hover:text-teal-700 cursor-pointer"
                       >
-                        {pat.lastName}, {pat.firstName} {pat.middleName || ''}
+                        {pat.firstName} {pat.middleName ? `${pat.middleName} ` : ''}{pat.lastName}
                       </h3>
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">
                         ID: {pat.patientId || pat.id} • DOB: {pat.dob} ({pat.sex})
@@ -171,7 +184,7 @@ export const PatientListPage = () => {
                           className="font-bold text-teal-700 hover:underline cursor-pointer"
                           onClick={() => setSelectedPatient(pat)}
                         >
-                          {pat.lastName}, {pat.firstName} {pat.middleName || ''}
+                          {pat.firstName} {pat.middleName ? `${pat.middleName} ` : ''}{pat.lastName}
                         </p>
                         <p className="text-[10px] text-slate-400">{pat.address?.city || 'Houston'}, {pat.address?.state || 'TX'}</p>
                       </td>

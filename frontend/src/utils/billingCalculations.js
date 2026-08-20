@@ -43,6 +43,22 @@ export const calculateBillLedgerTotals = (serviceLines = []) => {
   };
 };
 
+export const getCurrencySymbol = () => {
+  try {
+    const settings = getCachedSettings();
+    const code = settings?.currency || 'USD';
+    return code === 'CAD' ? 'C$' : '$';
+  } catch (e) {
+    return '$';
+  }
+};
+
+export const formatFeeString = (feeStr) => {
+  if (feeStr === null || feeStr === undefined) return '';
+  const symbol = getCurrencySymbol();
+  return String(feeStr).replace(/\$/g, symbol);
+};
+
 export const formatCurrency = (amount) => {
   let currencyCode = 'USD';
   try {
@@ -61,11 +77,9 @@ export const formatCurrency = (amount) => {
   });
 
   const prefix = num < 0 ? '-' : '';
+  const symbol = currencyCode === 'CAD' ? 'C$' : '$';
 
-  if (currencyCode === 'CAD') {
-    return `${prefix}C$${formattedNum}`;
-  }
-  return `${prefix}$${formattedNum}`;
+  return `${prefix}${symbol}${formattedNum}`;
 };
 
 export const formatDateTime = (dateInput, options = {}) => {

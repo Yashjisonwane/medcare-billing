@@ -30,8 +30,19 @@ export const mockPatientService = {
       return await res.json();
     } catch (err) {
       console.warn('[mockPatientService] API fetch failed, checking local fixtures fallback:', err.message);
-      // Fallback
-      const localPts = JSON.parse(localStorage.getItem('medcare_patients_cache') || '[]');
+      // Fallback with search filtering
+      let localPts = JSON.parse(localStorage.getItem('medcare_patients_cache') || '[]');
+      if (filters.search) {
+        const q = filters.search.toLowerCase().trim();
+        localPts = localPts.filter(p => {
+          const pId = String(p.patientId || '').toLowerCase();
+          const idStr = String(p.id || '').toLowerCase();
+          const nameStr = `${p.firstName || ''} ${p.middleName || ''} ${p.lastName || ''}`.toLowerCase();
+          const ph = String(p.phone || '').toLowerCase();
+          const em = String(p.email || '').toLowerCase();
+          return pId.includes(q) || idStr.includes(q) || nameStr.includes(q) || ph.includes(q) || em.includes(q);
+        });
+      }
       return localPts;
     }
   },

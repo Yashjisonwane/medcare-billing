@@ -198,7 +198,7 @@ export const CounselorDashboard = () => {
             >
               <div>
                 <strong className="text-slate-900">Itemized Billing Statement (#1024-C)</strong>
-                <p className="text-slate-500">Total Charges: $1,140.00 | Balance Due: $1,140.00</p>
+                <p className="text-slate-500">Total Charges: {formatCurrency(1140)} | Balance Due: {formatCurrency(1140)}</p>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-400" />
             </div>
