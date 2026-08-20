@@ -89,5 +89,23 @@ export const apiBillingService = {
     const res = await fetch(`${API_BASE}/billing/reports`);
     if (!res.ok) throw new Error('Failed to retrieve practice reports.');
     return res.json();
+  },
+
+  async updateBill(billId, payload) {
+    const res = await fetch(`${API_BASE}/billing/bills/${encodeURIComponent(billId)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed to update bill charges');
+    return res.json();
+  },
+
+  async deleteBill(billId) {
+    const res = await fetch(`${API_BASE}/billing/bills/${encodeURIComponent(billId)}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete bill statement');
+    return res.json();
   }
 };

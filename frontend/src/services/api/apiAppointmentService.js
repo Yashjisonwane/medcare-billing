@@ -113,6 +113,60 @@ export const apiAppointmentService = {
       console.error('Error cancelling appointment:', error);
       throw error;
     }
+  },
+
+  getAvailableSlots: async (providerId, dateStr) => {
+    try {
+      const res = await fetch(`${API_URL}/appointments/available-slots?providerId=${providerId}&date=${dateStr}`);
+      if (!res.ok) throw new Error('Failed to retrieve available slots.');
+      return await res.json();
+    } catch (error) {
+      console.error('Error fetching available slots:', error);
+      throw error;
+    }
+  },
+
+  autoBookAppointment: async (bookingData) => {
+    try {
+      const res = await fetch(`${API_URL}/appointments/auto-book`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to self-book appointment.');
+      }
+      return await res.json();
+    } catch (error) {
+      console.error('Error auto-booking appointment:', error);
+      throw error;
+    }
+  },
+
+  searchPatientBookings: async (queryStr) => {
+    try {
+      if (!queryStr || !queryStr.trim()) return [];
+      const q = queryStr.trim().toLowerCase();
+      
+      const res = await fetch(`${API_URL}/appointments`);
+      if (!res.ok) {
+        throw new Error('Failed to retrieve appointments list.');
+      }
+      const apts = await res.json();
+      
+      return apts.filter(a => {
+        const patientFullName = a.patient ? `${a.patient.firstName || ''} ${a.patient.lastName || ''}`.trim().toLowerCase() : '';
+        const matchPhone = (a.patientPhone || a.patient?.phone || '').replaceAll('-', '').includes(q.replaceAll('-', ''));
+        const matchEmail = (a.patientEmail || a.patient?.email || '').toLowerCase().includes(q);
+        const matchRef = (a.bookingRef || a.id || '').toLowerCase().includes(q);
+        const matchName = (a.patientName || patientFullName).toLowerCase().includes(q);
+        return matchPhone || matchEmail || matchRef || matchName;
+      });
+    } catch (error) {
+      console.error('Error searching patient bookings:', error);
+      throw error;
+    }
   }
 };
 

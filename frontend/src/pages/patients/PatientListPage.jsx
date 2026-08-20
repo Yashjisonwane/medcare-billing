@@ -1,7 +1,9 @@
 // src/pages/patients/PatientListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { mockPatientService } from '../../services/mock/mockPatientService';
-import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin } from 'lucide-react';
+import { apiPatientService } from '../../services/api/apiPatientService';
+import { useUIStore } from '../../store/uiStore';
+import { Search, PlusCircle, User, Phone, Mail, ChevronRight, Filter, Eye, MapPin, Trash2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';
 import { PatientDetailsModal } from '../../components/modals/PatientDetailsModal';
@@ -9,6 +11,7 @@ import { PatientDetailsModal } from '../../components/modals/PatientDetailsModal
 export const PatientListPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToast } = useUIStore();
 
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState(() => {
@@ -36,6 +39,38 @@ export const PatientListPage = () => {
     }).catch(() => {
       setIsLoading(false);
     });
+  };
+
+  const formatDobDDMMYYYY = (dobStr) => {
+    if (!dobStr) return 'N/A';
+    const clean = dobStr.trim();
+    // YYYY-MM-DD format (e.g. 1988-08-15)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+      const [yyyy, mm, dd] = clean.split('-');
+      return `${dd}-${mm}-${yyyy}`;
+    }
+    // MM/DD/YYYY format (e.g. 08/15/1988)
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(clean)) {
+      const [mm, dd, yyyy] = clean.split('/');
+      const paddedMm = mm.padStart(2, '0');
+      const paddedDd = dd.padStart(2, '0');
+      return `${paddedDd}-${paddedMm}-${yyyy}`;
+    }
+    return clean;
+  };
+
+  const handleDeletePatient = async (pat) => {
+    const confirmText = `Are you sure you want to delete patient "${pat.firstName} ${pat.lastName}" (MRN: ${pat.patientId || pat.id})?\n\nThis will safely remove the patient profile and all associated cases, appointments, notes and files from the database cleanly.`;
+    if (!window.confirm(confirmText)) return;
+
+    try {
+      await apiPatientService.deletePatient(pat.id);
+      addToast(`Patient ${pat.firstName} ${pat.lastName} deleted successfully!`, 'success');
+      loadPatients();
+    } catch (err) {
+      console.error('Failed to delete patient:', err);
+      addToast('Failed to delete patient. Please try again.', 'error');
+    }
   };
 
   useEffect(() => {
@@ -116,7 +151,7 @@ export const PatientListPage = () => {
                         {pat.firstName} {pat.middleName ? `${pat.middleName} ` : ''}{pat.lastName}
                       </h3>
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                        ID: {pat.patientId || pat.id} • DOB: {pat.dob} ({pat.sex})
+                        ID: {pat.patientId || pat.id} • DOB: {formatDobDDMMYYYY(pat.dob)} ({pat.sex})
                       </p>
                     </div>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
@@ -156,6 +191,13 @@ export const PatientListPage = () => {
                     >
                       Open Chart <ChevronRight className="w-3.5 h-3.5" />
                     </button>
+                    <button
+                      onClick={() => handleDeletePatient(pat)}
+                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
+                      title="Delete Patient Record"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -168,7 +210,7 @@ export const PatientListPage = () => {
                   <tr>
                     <th className="p-3.5">Patient ID</th>
                     <th className="p-3.5">Patient Name</th>
-                    <th className="p-3.5">DOB / Sex</th>
+                    <th className="p-3.5">DOB (DD-MM-YYYY) / Sex</th>
                     <th className="p-3.5">Contact Info</th>
                     <th className="p-3.5">Assigned Providers</th>
                     <th className="p-3.5">Status</th>
@@ -188,7 +230,7 @@ export const PatientListPage = () => {
                         </p>
                         <p className="text-[10px] text-slate-400">{pat.address?.city || 'Houston'}, {pat.address?.state || 'TX'}</p>
                       </td>
-                      <td className="p-3.5 text-slate-900 font-tabular">{pat.dob} ({pat.sex})</td>
+                      <td className="p-3.5 text-slate-900 font-tabular font-semibold">{formatDobDDMMYYYY(pat.dob)} ({pat.sex})</td>
                       <td className="p-3.5 text-slate-600 space-y-0.5">
                         <p className="flex items-center gap-1"><Phone className="w-3 h-3 text-slate-400" /> {pat.phone}</p>
                         <p className="flex items-center gap-1"><Mail className="w-3 h-3 text-slate-400" /> {pat.email}</p>
@@ -220,6 +262,13 @@ export const PatientListPage = () => {
                             className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1 transition cursor-pointer shadow-xs"
                           >
                             Open Chart <ChevronRight className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => handleDeletePatient(pat)}
+                            className="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition cursor-pointer border border-rose-200"
+                            title="Delete Patient Record"
+                          >
+                            <Trash2 className="w-3 h-3 text-rose-600" /> Delete
                           </button>
                         </div>
                       </td>

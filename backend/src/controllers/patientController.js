@@ -217,3 +217,30 @@ export const updatePatient = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update patient profile.' });
   }
 };
+
+/**
+ * DELETE /api/patients/:id
+ * Cascades deletion across cases, appointments, notes, and documents without foreign key conflicts
+ */
+export const deletePatient = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existing = await prisma.patient.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    await prisma.$transaction([
+      prisma.clinicalNote.deleteMany({ where: { patientId: id } }),
+      prisma.document.deleteMany({ where: { patientId: id } }),
+      prisma.appointment.deleteMany({ where: { patientId: id } }),
+      prisma.case.deleteMany({ where: { patientId: id } }),
+      prisma.patient.delete({ where: { id } })
+    ]);
+
+    return res.status(200).json({ success: true, message: 'Patient and all associated records deleted cleanly.' });
+  } catch (error) {
+    console.error('Error deleting patient record:', error);
+    return res.status(500).json({ error: 'Failed to delete patient record.' });
+  }
+};

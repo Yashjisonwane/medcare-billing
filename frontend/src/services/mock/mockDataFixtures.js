@@ -1,4 +1,4 @@
-﻿// src/services/mock/mockDataFixtures.js
+// src/services/mock/mockDataFixtures.js
 
 export const INITIAL_PATIENTS = [
   {

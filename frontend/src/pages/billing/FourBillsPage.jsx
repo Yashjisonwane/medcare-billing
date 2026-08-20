@@ -6,7 +6,8 @@ import { apiCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { formatCurrency } from '../../utils/billingCalculations';
 import { formatStatus } from '../../utils/formatters';
-import { Receipt, PlusCircle, AlertTriangle, ChevronRight, User, Shield, FileText, Lock, ArrowLeft, Building, Stethoscope, DollarSign, Calendar, Layers } from 'lucide-react';
+import { useUIStore } from '../../store/uiStore';
+import { Receipt, PlusCircle, AlertTriangle, ChevronRight, User, Shield, FileText, Lock, ArrowLeft, Building, Stethoscope, DollarSign, Calendar, Layers, Edit3, Trash2 } from 'lucide-react';
 import { CreateBillModal } from '../../components/modals/CreateBillModal';
 
 export const FourBillsPage = () => {
@@ -17,6 +18,9 @@ export const FourBillsPage = () => {
   const [bills, setBills] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateBillModal, setShowCreateBillModal] = useState(false);
+  const [editingBill, setEditingBill] = useState(null);
+  const [editChargesAmount, setEditChargesAmount] = useState('');
+  const { addToast } = useUIStore();
   const navigate = useNavigate();
 
   // 1. Initial Load: Fetch all cases from backend
@@ -74,6 +78,47 @@ export const FourBillsPage = () => {
     const localMatch = casesList.find(c => c.id === newCaseId || c.caseId === newCaseId);
     if (localMatch) {
       setCaseData(localMatch);
+    }
+  };
+
+  const handleDeleteBill = async (bill) => {
+    const confirmMsg = `Are you sure you want to delete ${bill.providerName} statement (#${bill.statementNumber})?\n\nThis will remove the provider bill and its service lines from the database.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      await apiBillingService.deleteBill(bill.id);
+      addToast(`Bill statement for ${bill.providerName} deleted successfully!`, 'success');
+      loadBills(selectedCaseId);
+    } catch (err) {
+      console.error('Error deleting bill:', err);
+      addToast('Failed to delete bill statement', 'error');
+    }
+  };
+
+  const handleOpenEditModal = (bill) => {
+    setEditingBill(bill);
+    setEditChargesAmount(bill.totals?.totalCharges || '');
+  };
+
+  const handleSaveEditCharges = async (e) => {
+    e.preventDefault();
+    if (!editingBill) return;
+    const newCharge = Number(editChargesAmount);
+    if (isNaN(newCharge) || newCharge <= 0) {
+      addToast('Please enter a valid positive charge amount', 'warning');
+      return;
+    }
+
+    try {
+      await apiBillingService.updateBill(editingBill.id, {
+        totalCharges: newCharge
+      });
+      addToast(`Updated charges for ${editingBill.providerName} to $${newCharge.toLocaleString()}!`, 'success');
+      setEditingBill(null);
+      loadBills(selectedCaseId);
+    } catch (err) {
+      console.error('Error updating bill charges:', err);
+      addToast('Failed to update bill charges', 'error');
     }
   };
 
@@ -229,13 +274,22 @@ export const FourBillsPage = () => {
               <div>
                 <div className="flex items-center justify-between mb-2 gap-1">
                   <span className="text-[11px] font-extrabold text-teal-700 truncate">{bill.serviceCategory || 'Clinical Practice Modality'}</span>
-                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full shrink-0 ${
-                    bill.status === 'FINALISED_DEMO' || bill.status === 'FINALIZED' ? 'bg-slate-100 text-slate-700 border border-slate-200' :
-                    bill.status === 'CONFIGURATION_PENDING' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                    'bg-teal-50 text-teal-700 border border-teal-200'
-                  }`}>
-                    {formatStatus(bill.status || 'ISSUED')}
-                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                      bill.status === 'FINALISED_DEMO' || bill.status === 'FINALIZED' ? 'bg-slate-100 text-slate-700 border border-slate-200' :
+                      bill.status === 'CONFIGURATION_PENDING' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                      'bg-teal-50 text-teal-700 border border-teal-200'
+                    }`}>
+                      {formatStatus(bill.status || 'ISSUED')}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteBill(bill)}
+                      className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                      title="Delete Provider Bill Statement"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <h3 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">{bill.providerName}</h3>
@@ -261,7 +315,7 @@ export const FourBillsPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100">
                 <button
                   onClick={() => navigate(`/billing/bills/${bill.id}`)}
                   className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-xs transition text-center cursor-pointer"
@@ -270,9 +324,16 @@ export const FourBillsPage = () => {
                 </button>
                 <button
                   onClick={() => navigate(`/cms-1500/${bill.id}/preview`)}
-                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-xs font-bold rounded-xl transition text-center cursor-pointer"
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-xs font-bold rounded-xl transition text-center cursor-pointer border border-slate-200"
                 >
                   CMS-1500
+                </button>
+                <button
+                  onClick={() => handleOpenEditModal(bill)}
+                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer border border-slate-200"
+                  title="Edit Billed Charges"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-teal-600" /> Edit
                 </button>
               </div>
             </div>
@@ -287,6 +348,50 @@ export const FourBillsPage = () => {
         selectedCaseId={selectedCaseId}
         onBillCreated={() => loadBills(selectedCaseId)}
       />
+
+      {/* -- Interactive Edit Bill Charges Modal -- */}
+      {editingBill && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={handleSaveEditCharges} className="bg-white p-6 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 space-y-4">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-teal-600" /> Edit Statement Charges
+              </h3>
+              <p className="text-xs text-slate-500">{editingBill.providerName} • Statement #{editingBill.statementNumber}</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-900 mb-1">Total Charges Amount ($) *</label>
+              <input
+                type="number"
+                step="0.01"
+                required
+                placeholder="e.g. 1500.00"
+                value={editChargesAmount}
+                onChange={(e) => setEditChargesAmount(e.target.value)}
+                className="w-full px-3 py-2.5 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 outline-none"
+              />
+              <p className="text-[11px] text-slate-400 mt-1">Increasing charges will update statement balance due in real-time in the MySQL database.</p>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setEditingBill(null)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
+              >
+                Save Updated Charges
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
