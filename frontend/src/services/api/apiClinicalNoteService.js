@@ -61,5 +61,14 @@ export const apiClinicalNoteService = {
     });
     if (!res.ok) throw new Error('Failed to generate AI draft');
     return res.json();
+  },
+
+  async deleteNote(id) {
+    const res = await fetch(`${API_BASE}/clinical-notes/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete clinical note');
+    return res.json();
   }
 };
+

@@ -30,6 +30,16 @@ import { JosmicPainManagementReport } from './josmic/JosmicPainManagementReport'
 import { CounselorCoverPage } from './counselor/CounselorCoverPage';
 import { CounselorAssessmentForm } from './counselor/CounselorAssessmentForm';
 
+// TPI Components
+import { TpiCoverPage } from './tpi/TpiCoverPage';
+import { TpiAssessmentForm } from './tpi/TpiAssessmentForm';
+import { TpiProcedureForm } from './tpi/TpiProcedureForm';
+
+// TECAR Components
+import { TecarCoverPage } from './tecar/TecarCoverPage';
+import { TecarAssessmentForm } from './tecar/TecarAssessmentForm';
+import { TecarProcedureForm } from './tecar/TecarProcedureForm';
+
 import { 
   Printer, Download, Eye, Edit3, Lock, Unlock, ZoomIn, ZoomOut, 
   Maximize2, ChevronLeft, ChevronRight, FileCheck, AlertCircle, Sparkles, FileText, RotateCcw
@@ -159,6 +169,16 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
     // Counselor Components
     if (key === 'CounselorCoverPage') return <CounselorCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
     if (key === 'CounselorAssessmentForm') return <CounselorAssessmentForm blankMode={blankPracticeMode} packetData={selectedCase} />;
+
+    // TPI Components
+    if (key === 'TpiCoverPage') return <TpiCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'TpiAssessmentForm') return <TpiAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} serviceLines={bill ? bill.serviceLines : []} />;
+    if (key === 'TpiProcedureForm') return <TpiProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} serviceLines={bill ? bill.serviceLines : []} />;
+
+    // TECAR Components
+    if (key === 'TecarCoverPage') return <TecarCoverPage blankMode={blankPracticeMode} packetData={selectedCase} />;
+    if (key === 'TecarAssessmentForm') return <TecarAssessmentForm readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} serviceLines={bill ? bill.serviceLines : []} />;
+    if (key === 'TecarProcedureForm') return <TecarProcedureForm dos={blankPracticeMode ? '' : pageDef.dos} readOnly={isLocked} blankMode={blankPracticeMode} packetData={selectedCase} serviceLines={bill ? bill.serviceLines : []} />;
 
     return <div className="p-12 text-center text-xs text-slate-400">Component {key} placeholder</div>;
   };

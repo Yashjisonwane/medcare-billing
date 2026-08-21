@@ -1,4 +1,4 @@
-﻿// src/constants/providerConfigs.js
+// src/constants/providerConfigs.js
 
 export const INITIAL_PROVIDER_CONFIGS = {
   josmic: {
@@ -275,6 +275,142 @@ export const INITIAL_PROVIDER_CONFIGS = {
         billingDescription: 'Behavioral Health Progress Note',
         placeOfService: '11',
         clinicalTemplate: 'Behavioral Health Progress Note',
+        configurationStatus: 'COMPLETE'
+      }
+    ]
+  },
+  tpi: {
+    id: 'prov-tpi',
+    name: 'Trigger Point Injection Clinic',
+    businessName: 'TPI Specialist LLC',
+    serviceCategory: 'Pain Management & Injections',
+    status: 'ACTIVE',
+    isPlaceholder: false,
+    cptCode: '20552',
+    fee: '$350.00',
+    address: {
+      street: '10101 Harwin Dr.',
+      suite: 'Suite 200',
+      city: 'Houston',
+      state: 'TX',
+      zipCode: '77036'
+    },
+    contact: {
+      phone: '713-555-0199',
+      cell: '',
+      fax: '832-555-0199',
+      email: 'tpi@example.com'
+    },
+    identifiers: {
+      taxId: '123456789',
+      npi: '1982736451',
+      ssnOrEin: 'EIN'
+    },
+    renderingProvider: {
+      name: 'Smith, John',
+      credentials: 'MD',
+      npi: '1982736451'
+    },
+    serviceFacility: {
+      name: 'Trigger Point Injection Clinic',
+      address: '10101 Harwin Dr, Suite 200, Houston, TX 77036',
+      npi: '1982736451'
+    },
+    billingProvider: {
+      name: 'TPI Specialist LLC',
+      address: '10101 Harwin Dr, Suite 200, Houston, TX 77036',
+      phone: '713-555-0199'
+    },
+    defaultPlaceOfService: '11',
+    availableServices: [
+      { code: '20552', description: 'Trigger Point Injection (1-2 muscles)', defaultCharge: 350.00, category: 'Procedure' },
+      { code: '20553', description: 'Trigger Point Injection (3+ muscles)', defaultCharge: 450.00, category: 'Procedure' }
+    ],
+    availableDiagnoses: [
+      { code: 'M79.1', description: 'Myalgia' },
+      { code: 'M54.50', description: 'Low back pain' }
+    ],
+    providerServices: [
+      {
+        providerId: 'prov-tpi',
+        serviceId: 'srv-tpi',
+        enabled: true,
+        cptCode: '20552',
+        cptStatus: 'CONFIRMED',
+        price: 350.00,
+        priceStatus: 'CONFIRMED',
+        duration: '30 min',
+        billingDescription: 'Trigger Point Injection',
+        placeOfService: '11',
+        clinicalTemplate: 'Trigger Point Procedure',
+        configurationStatus: 'COMPLETE'
+      }
+    ]
+  },
+  tecar: {
+    id: 'prov-tecar',
+    name: 'TECAR Therapy Clinic',
+    businessName: 'TECAR Advanced Physio LLC',
+    serviceCategory: 'Deep Tissue Radiofrequency Therapy',
+    status: 'ACTIVE',
+    isPlaceholder: false,
+    cptCode: '97024',
+    fee: '$250.00',
+    address: {
+      street: '10101 Harwin Dr.',
+      suite: 'Suite 210',
+      city: 'Houston',
+      state: 'TX',
+      zipCode: '77036'
+    },
+    contact: {
+      phone: '713-555-0210',
+      cell: '',
+      fax: '832-555-0210',
+      email: 'info@tecarphysio.com'
+    },
+    identifiers: {
+      taxId: '987654321',
+      npi: '1982736452',
+      ssnOrEin: 'EIN'
+    },
+    renderingProvider: {
+      name: 'Davis, Emily',
+      credentials: 'PT, DPT',
+      npi: '1982736452'
+    },
+    serviceFacility: {
+      name: 'TECAR Therapy Clinic',
+      address: '10101 Harwin Dr, Suite 210, Houston, TX 77036',
+      npi: '1982736452'
+    },
+    billingProvider: {
+      name: 'TECAR Advanced Physio LLC',
+      address: '10101 Harwin Dr, Suite 210, Houston, TX 77036',
+      phone: '713-555-0210'
+    },
+    defaultPlaceOfService: '11',
+    availableServices: [
+      { code: '97024', description: 'Diathermy (e.g., microwave)', defaultCharge: 250.00, category: 'Therapy' },
+      { code: '97039', description: 'Unlisted modality (TECAR)', defaultCharge: 300.00, category: 'Therapy' }
+    ],
+    availableDiagnoses: [
+      { code: 'M54.50', description: 'Low back pain' },
+      { code: 'M25.511', description: 'Pain in right shoulder' }
+    ],
+    providerServices: [
+      {
+        providerId: 'prov-tecar',
+        serviceId: 'srv-tecar',
+        enabled: true,
+        cptCode: '97024',
+        cptStatus: 'CONFIRMED',
+        price: 250.00,
+        priceStatus: 'CONFIRMED',
+        duration: '45 min',
+        billingDescription: 'TECAR Diathermy Therapy',
+        placeOfService: '11',
+        clinicalTemplate: 'TECAR Therapy Record',
         configurationStatus: 'COMPLETE'
       }
     ]

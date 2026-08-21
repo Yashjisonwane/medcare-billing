@@ -79,7 +79,7 @@ export const AssessmentsAndFormsPage = () => {
             activeTab === 'TPI' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          Trigger Point Injection (Pending)
+          Trigger Point Injection
         </button>
         <button
           onClick={() => setActiveTab('TECAR')}
@@ -87,7 +87,7 @@ export const AssessmentsAndFormsPage = () => {
             activeTab === 'TECAR' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          TECAR Therapy (Pending)
+          TECAR Therapy
         </button>
         <button
           onClick={() => setActiveTab('COUNSELOR')}
@@ -117,23 +117,11 @@ export const AssessmentsAndFormsPage = () => {
       )}
 
       {activeTab === 'TPI' && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-8 text-center space-y-3">
-          <Clock className="w-10 h-10 text-amber-600 mx-auto" />
-          <h3 className="text-base font-bold text-amber-900">Trigger Point Injection - Configuration Pending</h3>
-          <p className="text-xs text-amber-800 max-w-lg mx-auto leading-relaxed">
-            Clinical Form Pending. Trigger Point Injection form templates and clinical session workflows will be available once provider-service configuration is completed.
-          </p>
-        </div>
+        <UnifiedPacketViewer providerId="prov-tpi" selectedCase={selectedCase} />
       )}
 
       {activeTab === 'TECAR' && (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-8 text-center space-y-3">
-          <Clock className="w-10 h-10 text-rose-600 mx-auto" />
-          <h3 className="text-base font-bold text-rose-900">TECAR Therapy - Configuration Pending</h3>
-          <p className="text-xs text-rose-800 max-w-lg mx-auto leading-relaxed">
-            Clinical Form Pending. Radiofrequency Energy Transfer (TECAR Therapy) procedure forms will be enabled upon provider assignment.
-          </p>
-        </div>
+        <UnifiedPacketViewer providerId="prov-tecar" selectedCase={selectedCase} />
       )}
     </div>
   );

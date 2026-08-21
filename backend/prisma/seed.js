@@ -372,7 +372,7 @@ async function main() {
       ]
     },
     {
-      id: 'srv-trigger-point',
+      id: 'prov-tpi',
       name: 'Trigger Point Injection Practice',
       businessName: 'Trigger Point Injection Practice LLC',
       serviceCategory: 'Trigger Point Injection (TPI)',
@@ -392,7 +392,7 @@ async function main() {
       ],
       providerServices: [
         {
-          providerId: 'srv-trigger-point',
+          providerId: 'prov-tpi',
           serviceId: 'srv-trigger-point-proc',
           enabled: true,
           cptCode: '20552',
@@ -406,7 +406,7 @@ async function main() {
       ]
     },
     {
-      id: 'srv-tecar-therapy',
+      id: 'prov-tecar',
       name: 'TECAR Radiofrequency Practice',
       businessName: 'TECAR Radiofrequency LLC',
       serviceCategory: 'TECAR Radiofrequency Therapy',
@@ -419,18 +419,18 @@ async function main() {
       billingProvider: { name: 'TECAR Practice', address: '10101 Harwin Dr, Suite 320, Houston, TX 77036', phone: '713-485-5712' },
       defaultPlaceOfService: '11',
       availableServices: [
-        { code: '97014', description: 'TECAR Radiofrequency Therapy Session', defaultCharge: 350.00, category: 'Therapy' }
+        { code: '97024', description: 'Diathermy (e.g., microwave)', defaultCharge: 250.00, category: 'Therapy' }
       ],
       availableDiagnoses: [
         { code: 'M54.50', description: 'Low back pain' }
       ],
       providerServices: [
         {
-          providerId: 'srv-tecar-therapy',
+          providerId: 'prov-tecar',
           serviceId: 'srv-tecar-therapy-proc',
           enabled: true,
-          cptCode: '97014',
-          price: 350.00,
+          cptCode: '97024',
+          price: 250.00,
           duration: '30 min',
           billingDescription: 'TECAR Radiofrequency Session',
           placeOfService: '11',
@@ -593,54 +593,8 @@ async function main() {
   }
   console.log(`💼 Seeded ${casesData.length} patient accident cases.`);
 
-  // 7. Seed Appointments (3 appointments)
-  const appointmentsData = [
-    {
-      id: 'apt-001',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-josmic',
-      appointmentType: 'Pain Consult',
-      cptCode: '99204',
-      date: '2026-08-17',
-      startTime: '09:00 AM',
-      endTime: '10:00 AM',
-      location: 'Suite 274',
-      status: 'CHECKED_IN',
-      reminderStatus: 'Delivered - Confirmed',
-      reminderPreference: 'SMS'
-    },
-    {
-      id: 'apt-002',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-davs',
-      appointmentType: 'Initial Visit II',
-      cptCode: '99204',
-      date: '2026-08-17',
-      startTime: '10:30 AM',
-      endTime: '11:00 AM',
-      location: 'Suite 320',
-      status: 'SCHEDULED',
-      reminderStatus: 'Sent - SMS Queued',
-      reminderPreference: 'SMS'
-    },
-    {
-      id: 'apt-003',
-      patientId: 'pat-002',
-      caseId: 'case-002',
-      providerId: 'prov-anik',
-      appointmentType: 'Laser Session 1',
-      cptCode: '97039',
-      date: '2026-08-18',
-      startTime: '01:30 PM',
-      endTime: '02:00 PM',
-      location: 'Suite 274',
-      status: 'SCHEDULED',
-      reminderStatus: 'Not Sent - Configured',
-      reminderPreference: 'EMAIL'
-    }
-  ];
+  // 7. Seed Appointments
+  const appointmentsData = [];
 
   for (const apt of appointmentsData) {
     await prisma.appointment.create({ data: apt });
@@ -648,81 +602,7 @@ async function main() {
   console.log(`📅 Seeded ${appointmentsData.length} appointments.`);
 
   // 8. Seed Clinical Notes
-  const notesData = [
-    {
-      id: 'note-001',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-josmic',
-      noteType: 'JOSMIC_PAIN',
-      title: 'Pain Management Report',
-      date: '12/30/2025',
-      status: 'SIGNED_LOCKED',
-      author: 'Adeoye, Segun',
-      signatureUrl: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=200',
-      content: {
-        chiefComplaint: 'Motor vehicle collision resulting in severe neck and lower back pain',
-        painDescription: ['Sharp', 'Throbbing', 'Radiating'],
-        painLocations: ['Neck', 'L.Back', 'L.Ankle'],
-        painScale: { current: 7, worst: 8, best: 4 },
-        diagnoses: ['S13.4 - Cervical sprain', 'S33.5 - Lumbar strain', 'M54.50 - Low back pain'],
-        plan: 'Ordered MRI cervical/lumbar. Recommend ESWT and Laser therapy 3x weekly.'
-      }
-    },
-    {
-      id: 'note-002',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-davs',
-      noteType: 'DAVS_ESWT',
-      title: 'ESWT Radial Device Procedure Form (Session 1-3)',
-      date: '01/06/2026',
-      status: 'SIGNED_LOCKED',
-      author: 'Alex Rivera',
-      content: {
-        vitals: { bp: '120/80 mmHg', hr: '100 bpm' },
-        treatmentAreas: ['Low back', 'Neck', 'Left ankle'],
-        barSetting: '3.0',
-        hzSetting: '10 Hz',
-        dose: '1000x3',
-        totalWaves: 3000,
-        bltCream: 'YES'
-      }
-    },
-    {
-      id: 'note-003',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-anik',
-      noteType: 'ANIK_LASER',
-      title: 'Laser Therapy Procedure Form (Session 1-3)',
-      date: '01/22/2026',
-      status: 'SIGNED_LOCKED',
-      author: 'Alex Rivera',
-      content: {
-        vitals: { bp: '115/70 mmHg', hr: '90 bpm' },
-        treatmentAreas: ['Low back', 'Neck', 'Left ankle'],
-        wavelength: '800nm',
-        totalMins: '900s',
-        dose: '10.5W',
-        totalEnergy: '236,250 Joules'
-      }
-    },
-    {
-      id: 'note-004',
-      patientId: 'pat-001',
-      caseId: 'case-001',
-      providerId: 'prov-counselor',
-      noteType: 'COUNSELOR_GENERIC',
-      title: 'Counseling Intake Assessment (Placeholder)',
-      date: '02/01/2026',
-      status: 'DRAFT',
-      author: 'Jordan Miller',
-      content: {
-        summary: 'Initial psychological consultation for post-accident stress. Final template pending configuration.'
-      }
-    }
-  ];
+  const notesData = [];
 
   for (const note of notesData) {
     await prisma.clinicalNote.create({ data: note });
@@ -781,7 +661,32 @@ async function main() {
       billToAddress: '11711 Bedford St. Suite 01, Houston TX 77031',
       status: 'ACTIVE_DEMO',
       totals: { totalCharges: 1140.00, totalPayments: 0, totalAdjustments: 0, balanceDue: 1140.00 },
-      aging: { current: 180.00, past30: 430.00, past60: 530.00, past90: 0 }
+    },
+    {
+      id: 'bill-tpi-001',
+      caseId: 'case-001',
+      providerId: 'prov-tpi',
+      invoiceNumber: 'INV-TPI-105',
+      statementNumber: '1025-T',
+      statementDate: '01/26/2026',
+      billToName: 'OJ LAW FIRM & ASSOCIATES',
+      billToAddress: '11711 Bedford St. Suite 01, Houston TX 77031',
+      status: 'ACTIVE_DEMO',
+      totals: { totalCharges: 700.00, totalPayments: 0, totalAdjustments: 0, balanceDue: 700.00 },
+      aging: { current: 350.00, past30: 350.00, past60: 0, past90: 0 }
+    },
+    {
+      id: 'bill-tecar-001',
+      caseId: 'case-001',
+      providerId: 'prov-tecar',
+      invoiceNumber: 'INV-TEC-106',
+      statementNumber: '1026-C',
+      statementDate: '01/26/2026',
+      billToName: 'OJ LAW FIRM & ASSOCIATES',
+      billToAddress: '11711 Bedford St. Suite 01, Houston TX 77031',
+      status: 'ACTIVE_DEMO',
+      totals: { totalCharges: 500.00, totalPayments: 0, totalAdjustments: 0, balanceDue: 500.00 },
+      aging: { current: 250.00, past30: 250.00, past60: 0, past90: 0 }
     }
   ];
 
@@ -831,7 +736,13 @@ async function main() {
     { id: 'srv-l-22', billId: 'bill-anik-001', dos: '01/24/2026', dateOfService: '01/24/2026', cptCode: '97039', description: 'LASER THERAPY', units: 1, charge: 2000.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 2000.00, lineBalance: 2000.00 },
     // Counselor lines
     { id: 'srv-l-23', billId: 'bill-counselor-001', dos: '01/05/2026', dateOfService: '01/05/2026', cptCode: '90791', description: 'PSYCHIATRIC DIAGNOSTIC EVALUATION', units: 1, charge: 350.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 350.00, lineBalance: 350.00 },
-    { id: 'srv-l-24', billId: 'bill-counselor-001', dos: '01/12/2026', dateOfService: '01/12/2026', cptCode: '90834', description: 'PSYCHOTHERAPY 45 MIN (POST-TRAUMA)', units: 1, charge: 180.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 180.00, lineBalance: 180.00 }
+    { id: 'srv-l-24', billId: 'bill-counselor-001', dos: '01/12/2026', dateOfService: '01/12/2026', cptCode: '90834', description: 'PSYCHOTHERAPY 45 MIN (POST-TRAUMA)', units: 1, charge: 180.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 180.00, lineBalance: 180.00 },
+    // TPI lines
+    { id: 'srv-l-25', billId: 'bill-tpi-001', dos: '01/15/2026', dateOfService: '01/15/2026', cptCode: '20552', description: 'Trigger Point Injection (1-2 muscles)', units: 1, charge: 350.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 350.00, lineBalance: 350.00 },
+    { id: 'srv-l-26', billId: 'bill-tpi-001', dos: '01/20/2026', dateOfService: '01/20/2026', cptCode: '20552', description: 'Trigger Point Injection (1-2 muscles)', units: 1, charge: 350.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 350.00, lineBalance: 350.00 },
+    // TECAR lines
+    { id: 'srv-l-27', billId: 'bill-tecar-001', dos: '01/20/2026', dateOfService: '01/20/2026', cptCode: '97024', description: 'Diathermy (e.g., microwave)', units: 1, charge: 250.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 250.00, lineBalance: 250.00 },
+    { id: 'srv-l-28', billId: 'bill-tecar-001', dos: '01/25/2026', dateOfService: '01/25/2026', cptCode: '97024', description: 'Diathermy (e.g., microwave)', units: 1, charge: 250.00, payments: { insurance: 0, patient: 0, other: 0 }, adjustments: 0.00, balance: 250.00, lineBalance: 250.00 }
   ];
 
   for (const line of serviceLinesData) {

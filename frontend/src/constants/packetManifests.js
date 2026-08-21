@@ -79,6 +79,32 @@ export const PACKET_MANIFESTS = {
       { pageNumber: 3, id: 'counselor-bill-1', type: 'BILLING', title: 'Provider Billing Statement (#1024-C)', componentKey: 'PrintableBillingStatement', pageIndex: 0 },
       { pageNumber: 4, id: 'counselor-cms-1', type: 'CMS-1500', title: 'CMS-1500 Claim (01/05/2026)', componentKey: 'CmsRedGridForm', claimIndex: 0 },
     ]
+  },
+
+  'prov-tpi': {
+    providerId: 'prov-tpi',
+    providerName: 'Trigger Point Injection Clinic',
+    totalPages: 5,
+    pages: [
+      { pageNumber: 1, id: 'tpi-cover', type: 'COVER', title: 'Patient & Case Cover Page', componentKey: 'TpiCoverPage' },
+      { pageNumber: 2, id: 'tpi-bill-1', type: 'BILLING', title: 'Provider Billing Statement', componentKey: 'PrintableBillingStatement', pageIndex: 0 },
+      { pageNumber: 3, id: 'tpi-cms-1', type: 'CMS-1500', title: 'CMS-1500 Claim', componentKey: 'CmsRedGridForm', claimIndex: 0 },
+      { pageNumber: 4, id: 'tpi-assess', type: 'ASSESSMENT', title: 'Trigger Point Assessment', componentKey: 'TpiAssessmentForm' },
+      { pageNumber: 5, id: 'tpi-proc-1', type: 'PROCEDURE', title: 'Trigger Point Procedure', componentKey: 'TpiProcedureForm', dos: '01/15/2026' }
+    ]
+  },
+
+  'prov-tecar': {
+    providerId: 'prov-tecar',
+    providerName: 'TECAR Therapy Clinic',
+    totalPages: 5,
+    pages: [
+      { pageNumber: 1, id: 'tecar-cover', type: 'COVER', title: 'Patient & Case Cover Page', componentKey: 'TecarCoverPage' },
+      { pageNumber: 2, id: 'tecar-bill-1', type: 'BILLING', title: 'Provider Billing Statement', componentKey: 'PrintableBillingStatement', pageIndex: 0 },
+      { pageNumber: 3, id: 'tecar-cms-1', type: 'CMS-1500', title: 'CMS-1500 Claim', componentKey: 'CmsRedGridForm', claimIndex: 0 },
+      { pageNumber: 4, id: 'tecar-assess', type: 'ASSESSMENT', title: 'TECAR Therapy Assessment', componentKey: 'TecarAssessmentForm' },
+      { pageNumber: 5, id: 'tecar-proc-1', type: 'PROCEDURE', title: 'TECAR Procedure Log', componentKey: 'TecarProcedureForm', dos: '01/20/2026' }
+    ]
   }
 };
 

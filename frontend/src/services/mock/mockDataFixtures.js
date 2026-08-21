@@ -75,56 +75,7 @@ export const INITIAL_CASES = [
   }
 ];
 
-export const INITIAL_APPOINTMENTS = [
-  {
-    id: 'apt-001',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-josmic',
-    providerName: 'JOSMIC Wellness Center',
-    appointmentType: 'Pain Consult',
-    date: '2026-08-04',
-    startTime: '09:00 AM',
-    endTime: '10:00 AM',
-    location: 'Suite 274',
-    status: 'CHECKED_IN',
-    reminderStatus: 'Delivered - Confirmed',
-    reminderPreference: 'SMS'
-  },
-  {
-    id: 'apt-002',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-davs',
-    providerName: "DAV'S Anatomy",
-    appointmentType: 'ESWT Session 1',
-    date: '2026-08-04',
-    startTime: '10:30 AM',
-    endTime: '11:15 AM',
-    location: 'Suite 320',
-    status: 'SCHEDULED',
-    reminderStatus: 'Sent - Demo',
-    reminderPreference: 'SMS'
-  },
-  {
-    id: 'apt-003',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-anik',
-    providerName: 'ANIK Laser Therapy',
-    appointmentType: 'Laser Session 1',
-    date: '2026-08-05',
-    startTime: '02:00 PM',
-    endTime: '02:45 PM',
-    location: 'Suite 274',
-    status: 'SCHEDULED',
-    reminderStatus: 'Queued',
-    reminderPreference: 'EMAIL'
-  }
-];
+export const INITIAL_APPOINTMENTS = [];
 
 export const INITIAL_BILLS = [
   {
@@ -264,89 +215,7 @@ export const INITIAL_BILLS = [
   }
 ];
 
-export const INITIAL_CLINICAL_NOTES = [
-  {
-    id: 'note-001',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-josmic',
-    providerName: 'JOSMIC Wellness Center',
-    type: 'JOSMIC_PAIN',
-    title: 'Pain Management Report',
-    date: '12/30/2025',
-    status: 'SIGNED_LOCKED',
-    author: 'Adeoye, Segun',
-    signatureUrl: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=200',
-    content: {
-      chiefComplaint: 'Motor vehicle collision resulting in severe neck and lower back pain',
-      painDescription: ['Sharp', 'Throbbing', 'Radiating'],
-      painLocations: ['Neck', 'L.Back', 'L.Ankle'],
-      painScale: { current: 7, worst: 8, best: 4 },
-      diagnoses: ['S13.4 - Cervical sprain', 'S33.5 - Lumbar strain', 'M54.50 - Low back pain'],
-      plan: 'Ordered MRI cervical/lumbar. Recommend ESWT and Laser therapy 3x weekly.'
-    }
-  },
-  {
-    id: 'note-002',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-davs',
-    providerName: "DAV'S Anatomy",
-    type: 'DAVS_ESWT',
-    title: 'ESWT Radial Device Procedure Form (Session 1-3)',
-    date: '01/06/2026',
-    status: 'SIGNED_LOCKED',
-    author: 'Alex Rivera',
-    content: {
-      vitals: { bp: '120/80 mmHg', hr: '100 bpm' },
-      treatmentAreas: ['Low back', 'Neck', 'Left ankle'],
-      barSetting: '3.0',
-      hzSetting: '10 Hz',
-      dose: '1000x3',
-      totalWaves: 3000,
-      bltCream: 'YES'
-    }
-  },
-  {
-    id: 'note-003',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-anik',
-    providerName: 'ANIK Laser Therapy',
-    type: 'ANIK_LASER',
-    title: 'Laser Therapy Procedure Form (Session 1-3)',
-    date: '01/22/2026',
-    status: 'SIGNED_LOCKED',
-    author: 'Alex Rivera',
-    content: {
-      vitals: { bp: '115/70 mmHg', hr: '90 bpm' },
-      treatmentAreas: ['Low back', 'Neck', 'Left ankle'],
-      wavelength: '800nm',
-      totalMins: '900s',
-      dose: '10.5W',
-      totalEnergy: '236,250 Joules'
-    }
-  },
-  {
-    id: 'note-004',
-    patientId: 'pat-001',
-    patientName: 'Demo Patient 001',
-    caseId: 'case-001',
-    providerId: 'prov-counselor',
-    providerName: 'Counselor Practice',
-    type: 'COUNSELOR_GENERIC',
-    title: 'Counseling Intake Assessment (Placeholder)',
-    date: '02/01/2026',
-    status: 'DRAFT',
-    author: 'Jordan Miller',
-    content: {
-      summary: 'Initial psychological consultation for post-accident stress. Final template pending configuration.'
-    }
-  }
-];
+export const INITIAL_CLINICAL_NOTES = [];
 
 export const INITIAL_DOCUMENTS = [
   {
