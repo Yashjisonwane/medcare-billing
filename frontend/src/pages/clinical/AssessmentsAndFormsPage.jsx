@@ -1,4 +1,4 @@
-﻿// src/pages/clinical/AssessmentsAndFormsPage.jsx
+// src/pages/clinical/AssessmentsAndFormsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { UnifiedPacketViewer } from '../../components/packets/UnifiedPacketViewer';
 import { apiCaseService } from '../../services/api/apiCaseService';

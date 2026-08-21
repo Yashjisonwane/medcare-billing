@@ -7,6 +7,8 @@ import { AddCaseModal } from '../../components/modals/AddCaseModal';
 import { CaseDetailsModal } from '../../components/modals/CaseDetailsModal';
 import { AddAttorneyModal } from '../../components/modals/AddAttorneyModal';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
+import { ROLES } from '../../constants/rolePermissions';
 
 export const CaseListPage = () => {
   const { addToast } = useUIStore();

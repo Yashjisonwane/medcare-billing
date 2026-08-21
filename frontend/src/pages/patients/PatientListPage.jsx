@@ -13,6 +13,9 @@ export const PatientListPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToast, activeProviderFilter } = useUIStore();
+  const { currentUser } = useAuthStore();
+
+  const canTogglePatientStatus = [ROLES.SUPER_ADMIN, ROLES.BILLING_STAFF, ROLES.RECEPTIONIST].includes(currentUser?.role);
 
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState(() => {

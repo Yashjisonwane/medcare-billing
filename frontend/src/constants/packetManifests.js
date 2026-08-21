@@ -1,4 +1,4 @@
-﻿// src/constants/packetManifests.js
+// src/constants/packetManifests.js
 
 /**
  * Provider-Specific Page Manifests
