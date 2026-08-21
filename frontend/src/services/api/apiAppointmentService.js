@@ -167,6 +167,21 @@ export const apiAppointmentService = {
       console.error('Error searching patient bookings:', error);
       throw error;
     }
+  },
+
+  deleteAppointment: async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete appointment');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      throw error;
+    }
   }
 };
 

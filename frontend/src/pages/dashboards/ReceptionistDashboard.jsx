@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiAppointmentService } from '../../services/api/apiAppointmentService';
 import { mockReminderService } from '../../services/mock/mockReminderService';
-import { Users, Calendar, Bell, PlusCircle, CheckCircle2, Clock, Sparkles, Edit3, Eye, ArrowRight } from 'lucide-react';
+import { Users, Calendar, Bell, PlusCircle, CheckCircle2, Clock, Sparkles, Edit3, Eye, ArrowRight, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';
 import { ScheduleAppointmentModal } from '../../components/modals/ScheduleAppointmentModal';
@@ -32,6 +32,18 @@ export const ReceptionistDashboard = () => {
       loadData();
     } catch (err) {
       console.error("Error checking in:", err);
+    }
+  };
+
+  const handleDelete = async (aptId) => {
+    if (window.confirm("Are you sure you want to permanently delete this appointment?")) {
+      try {
+        await apiAppointmentService.deleteAppointment(aptId);
+        loadData();
+      } catch (err) {
+        console.error("Error deleting appointment:", err);
+        alert("Failed to delete appointment. Please try again.");
+      }
     }
   };
 
@@ -169,6 +181,13 @@ export const ReceptionistDashboard = () => {
                         title="Edit Appointment / Modifiers"
                       >
                         <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(apt.id)}
+                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer border border-transparent hover:border-red-200"
+                        title="Delete Appointment"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
