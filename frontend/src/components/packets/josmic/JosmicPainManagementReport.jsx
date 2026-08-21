@@ -23,7 +23,7 @@ const SectionHeader = ({ children }) => (
   <h2 className="font-bold text-slate-900 text-[12px] uppercase mt-5 mb-2 border-b border-slate-300 pb-1">{children}</h2>
 );
 
-const PageHeader = ({ page, packetData }) => (
+const PageHeader = ({ page, blankMode, packetData }) => (
   <div className="flex items-center justify-between border-b-2 border-slate-700 pb-3 mb-4">
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-full bg-teal-700 flex items-center justify-center flex-shrink-0">
@@ -45,7 +45,7 @@ const PageHeader = ({ page, packetData }) => (
     </div>
     <div className="text-right font-mono text-[10px] text-slate-600 border border-slate-300 p-2 bg-slate-50">
       <p className="font-bold">PAGE {page} OF 4</p>
-      <p>DOS: {packetData ? (packetData.initialDate || '12/30/2025') : '12/30/2025'}</p>
+      <p>DOS: {blankMode ? '' : (packetData ? (packetData.initialDate || '12/30/2025') : '12/30/2025')}</p>
     </div>
   </div>
 );
@@ -498,7 +498,7 @@ export const JosmicPainManagementReport = ({ reportPage = 1, blankMode = false, 
 
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '40px 56px', paddingBottom: '60px' }}>
-      <PageHeader page={reportPage} packetData={packetData} />
+      <PageHeader page={reportPage} blankMode={blankMode} packetData={packetData} />
       <PatientInfoBar blankMode={blankMode} packetData={packetData} />
       <PageContent blankMode={blankMode} packetData={packetData} />
 

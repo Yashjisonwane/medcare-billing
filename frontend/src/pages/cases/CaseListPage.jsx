@@ -1,6 +1,6 @@
 // src/pages/cases/CaseListPage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
 import { FileText, PlusCircle, Search, ChevronRight, Eye, FileSpreadsheet, Scale, Calendar, Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AddCaseModal } from '../../components/modals/AddCaseModal';

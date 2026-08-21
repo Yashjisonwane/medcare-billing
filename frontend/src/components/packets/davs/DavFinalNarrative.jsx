@@ -1,4 +1,4 @@
-﻿// src/components/packets/davs/DavFinalNarrative.jsx
+// src/components/packets/davs/DavFinalNarrative.jsx
 import React from 'react';
 
 export const DavFinalNarrative = ({ reportPage = 1, blankMode = false, packetData = null }) => {
@@ -16,8 +16,8 @@ export const DavFinalNarrative = ({ reportPage = 1, blankMode = false, packetDat
       </div>
 
       <div className="bg-slate-50 p-4 border border-slate-200 text-xs font-mono grid grid-cols-2 gap-2">
-        <div>PATIENT: <strong>{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
-        <div>TOTAL ESWT SESSIONS: <strong>3 COMPLETED ($9,870 TOTAL)</strong></div>
+        <div>PATIENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{!packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong>}</div>
+        <div>TOTAL ESWT SESSIONS: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>3 COMPLETED ($9,870 TOTAL)</strong>}</div>
       </div>
 
       <div className="space-y-4 text-xs leading-relaxed text-slate-800 flex flex-col justify-between h-[750px]">

@@ -1,6 +1,6 @@
-﻿import React, { useEffect, useState } from 'react';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import React, { useEffect, useState } from 'react';
+import { apiAppointmentService as mockAppointmentService } from '../../services/api/apiAppointmentService';
+import { apiClinicalNoteService as mockClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { Calendar, FileCheck, Users, Receipt, PlusCircle, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AddPatientModal } from '../../components/modals/AddPatientModal';

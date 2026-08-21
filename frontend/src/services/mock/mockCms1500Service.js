@@ -1,16 +1,16 @@
-﻿import { mockBillingService } from './mockBillingService';
+import { apiBillingService } from '../api/apiBillingService';
 import { mapBillToCms1500Claims } from '../../utils/cmsMapper';
 
 export const mockCms1500Service = {
   async getClaimsByBillId(billId) {
-    const bill = await mockBillingService.getBillById(billId);
+    const bill = await apiBillingService.getBillById(billId);
     if (!bill) return [];
     return mapBillToCms1500Claims(bill, null, { id: bill.providerId, identifiers: { taxId: bill.identifiers?.taxId || '993723387' } });
   },
 
   async getClaimById(claimId) {
     try {
-      const res = await mockBillingService.getFourBillsByCase();
+      const res = await apiBillingService.getFourBillsByCase();
       const allBills = res.allBills || [];
       for (const bill of allBills) {
         const claims = await mockCms1500Service.getClaimsByBillId(bill.id);

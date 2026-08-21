@@ -117,15 +117,89 @@ button, a {
 /* ─────────────────────────────────────────────────────────────────
    Print Styles for Dashboards
    ───────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────
+   Print Styles for Clinical Packets & Official Forms
+   ───────────────────────────────────────────────────────────────── */
 @media print {
-  html, body, #root, .app-shell {
+  @page {
+    size: letter portrait;
+    margin: 0 !important;
+  }
+
+  /* Hide entire body elements by default */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Make printable packet container and children visible */
+  #printable-packet,
+  #printable-packet * {
+    visibility: visible !important;
+  }
+
+  /* Force container to absolute top-left of physical page */
+  #printable-packet {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    display: block !important;
+  }
+
+  html, body, #root, .app-shell, main {
+    position: static !important;
+    overflow: visible !important;
     height: auto !important;
     min-height: auto !important;
-    overflow: visible !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
     color: black !important;
   }
-  
+
+  .print\:hidden,
+  header,
+  nav,
+  aside,
+  button,
+  .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .print-page-sheet-wrapper {
+    transform: none !important;
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .print-page-sheet {
+    transform: none !important;
+    margin-bottom: 0 !important;
+    break-after: page !important;
+    page-break-after: always !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 850px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .print-page-item {
+    break-after: page !important;
+    page-break-after: always !important;
+    display: block !important;
+  }
+
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

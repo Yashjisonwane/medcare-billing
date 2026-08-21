@@ -1,7 +1,7 @@
-﻿// src/components/modals/UploadDocumentModal.jsx
+// src/components/modals/UploadDocumentModal.jsx
 import React, { useState } from 'react';
 import { Modal } from './Modal';
-import { mockDocumentService } from '../../services/mock/mockDocumentService';
+import { apiDocumentService as mockDocumentService } from '../../services/api/apiDocumentService';
 import { useUIStore } from '../../store/uiStore';
 import { UploadCloud, FileText, CheckCircle2, Save, X, Paperclip } from 'lucide-react';
 

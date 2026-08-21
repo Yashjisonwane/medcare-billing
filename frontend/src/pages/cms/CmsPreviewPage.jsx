@@ -1,8 +1,7 @@
 // src/pages/cms/CmsPreviewPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockCms1500Service } from '../../services/mock/mockCms1500Service';
-import { mockBillingService } from '../../services/mock/mockBillingService';
+import { apiBillingService as mockBillingService } from '../../services/api/apiBillingService';
 import { CmsRedGridForm } from '../../components/cms/CmsRedGridForm';
 import { useUIStore } from '../../store/uiStore';
 import { 

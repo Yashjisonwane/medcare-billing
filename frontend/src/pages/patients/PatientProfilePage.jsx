@@ -1,10 +1,10 @@
 // src/pages/patients/PatientProfilePage.jsx
 import React, { useEffect, useState } from 'react';
-import { mockPatientService } from '../../services/mock/mockPatientService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
-import { mockDocumentService } from '../../services/mock/mockDocumentService';
+import { apiPatientService as mockPatientService } from '../../services/api/apiPatientService';
+import { apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
+import { apiBillingService as mockBillingService } from '../../services/api/apiBillingService';
+import { apiClinicalNoteService as mockClinicalNoteService } from '../../services/api/apiClinicalNoteService';
+import { apiDocumentService as mockDocumentService } from '../../services/api/apiDocumentService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   User, Phone, Mail, MapPin, Calendar, FileText, Receipt, 

@@ -1,7 +1,7 @@
-﻿// src/pages/cases/AddCasePage.jsx
+// src/pages/cases/AddCasePage.jsx
 import React, { useState, useEffect } from 'react';
-import { mockCaseService } from '../../services/mock/mockCaseService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
+import { apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
+import { apiPatientService as mockPatientService } from '../../services/api/apiPatientService';
 import { DynamicDiagnosisPicker } from '../../components/common/DynamicDiagnosisPicker';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate, useSearchParams } from 'react-router-dom';

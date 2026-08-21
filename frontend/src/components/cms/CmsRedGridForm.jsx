@@ -1,13 +1,34 @@
-// src/components/cms/CmsRedGridForm.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const FieldInput = ({ defaultValue = '', placeholder = '', className = '', readOnly = false }) => {
+  const [val, setVal] = useState(defaultValue);
+
+  useEffect(() => {
+    setVal(defaultValue);
+  }, [defaultValue]);
+
+  if (readOnly) {
+    return <span className={className}>{val}</span>;
+  }
+
+  return (
+    <input
+      type="text"
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      placeholder={placeholder}
+      className={`w-full bg-transparent hover:bg-amber-100/70 focus:bg-amber-100 focus:ring-1 focus:ring-amber-600 rounded px-0.5 outline-none text-slate-900 font-mono font-bold uppercase transition cursor-text border-b border-transparent focus:border-amber-500 ${className}`}
+    />
+  );
+};
 
 /**
  * Authentic NUCC 02/12 Standard CMS-1500 (HCFA-1500) Red-Grid Claim Form Component
  * Form Approved OMB-0938-1197 FORM CMS-1500 (02/12)
  * Includes all 33 official boxes, 6 line items with Modifiers (1-4), Box 21 A-L pointers, and Appointment DOS linking
  */
-export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) => {
-  const claim = rawClaim || {
+export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false, readOnly = false }) => {
+  const baseClaim = rawClaim || {
     box1: 'OTHER',
     box1a: '906684061',
     box2: 'aa jj',
@@ -76,10 +97,25 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
     carrierHeader: 'PATIENT SELF-PAY / DIRECT BILLING\n10101 Harwin Dr., Houston'
   };
 
+  const claim = blankMode ? {
+    box1: '', box1a: '', box2: '', box3Dob: { mm: '', dd: '', yy: '' }, box3Sex: '',
+    box4: '', box5Address: '', box5City: '', box5State: '', box5Zip: '',
+    box6Relation: '', box7Address: '', box7City: '', box7State: '', box7Zip: '',
+    box10State: '', box12Signature: '', box12Date: '', box13Signature: '',
+    box14IllnessDate: { mm: '', dd: '', yy: '' }, box17ReferringName: '',
+    box21Diagnoses: [], box24Lines: [], box25TaxId: '', box28TotalCharge: '',
+    box29AmountPaid: '', box30BalanceDue: '', box31ProviderSignature: '',
+    box32Facility: '', box33BillingProvider: '', box33Phone: '', box33Npi: ''
+  } : baseClaim;
+
   const cleanAmount = (val) => {
+    if (blankMode) return '';
     if (!val) return '0.00';
     return String(val).replace('$', '').trim();
   };
+
+  const c = (v) => blankMode ? '' : (v || '');
+  const chk = (cond) => (!blankMode && cond) ? 'X' : '';
 
   const padLines = (lines = [], targetLen = 6) => {
     const res = [...lines];
@@ -106,7 +142,7 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
     return res;
   };
 
-  const serviceRows = padLines(claim.box24Lines || [], 6);
+  const serviceRows = padLines(blankMode ? [] : (claim.box24Lines || []), 6);
 
   return (
     <div
@@ -140,7 +176,7 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
             <span>PICA</span>
           </div>
           <div className="font-bold text-slate-900 whitespace-pre-line uppercase text-[10px]">
-            {claim.carrierHeader || 'OJ LAW FIRM & ATTORNEY LIEN\n11711 BEDFORD ST. SUITE 01\nHOUSTON, TX 77031'}
+            <FieldInput defaultValue={c(claim.carrierHeader || 'OJ LAW FIRM & ATTORNEY LIEN\n11711 BEDFORD ST. SUITE 01\nHOUSTON, TX 77031')} readOnly={readOnly} />
           </div>
         </div>
       </div>
@@ -150,19 +186,21 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
         <div className="w-[490px] p-1 border-r-2 border-[#b91c1c]">
           <span>1. MEDICARE &nbsp; MEDICAID &nbsp; TRICARE &nbsp; CHAMPVA &nbsp; GROUP HEALTH &nbsp; FECA &nbsp; OTHER</span>
           <div className="flex items-center gap-3 mt-1 font-mono text-[9px] text-slate-900">
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'MEDICARE' ? 'X' : ''}</span><span className="text-[7px]">MEDICARE</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'MEDICAID' ? 'X' : ''}</span><span className="text-[7px]">MEDICAID</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'TRICARE' ? 'X' : ''}</span><span className="text-[7px]">TRICARE</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'CHAMPVA' ? 'X' : ''}</span><span className="text-[7px]">CHAMPVA</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'GROUP' ? 'X' : ''}</span><span className="text-[7px]">GROUP</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{claim.box1 === 'FECA' ? 'X' : ''}</span><span className="text-[7px]">FECA</span></div>
-            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold text-teal-900">X</span><span className="text-[7px]">OTHER (LIEN/AUTO)</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'MEDICARE')}</span><span className="text-[7px]">MEDICARE</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'MEDICAID')}</span><span className="text-[7px]">MEDICAID</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'TRICARE')}</span><span className="text-[7px]">TRICARE</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'CHAMPVA')}</span><span className="text-[7px]">CHAMPVA</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'GROUP')}</span><span className="text-[7px]">GROUP</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold">{chk(claim.box1 === 'FECA')}</span><span className="text-[7px]">FECA</span></div>
+            <div className="flex items-center gap-1"><span className="w-3.5 h-3.5 border border-[#b91c1c] flex items-center justify-center font-bold text-teal-900">{chk(true)}</span><span className="text-[7px]">OTHER (LIEN/AUTO)</span></div>
           </div>
         </div>
 
         <div className="flex-1 p-1">
           <span>1a. INSURED'S I.D. NUMBER (For Program in Item 1)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 tracking-widest mt-1 uppercase">{claim.box1a || 'PAT-141849159'}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={c(claim.box1a || 'PAT-141849159')} readOnly={readOnly} className="text-xs font-mono font-bold tracking-widest" />
+          </div>
         </div>
       </div>
 
@@ -170,23 +208,27 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[300px] p-1 border-r border-[#b91c1c]">
           <span>2. PATIENT'S NAME (Last Name, First Name, Middle Initial)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 uppercase mt-1">{claim.box2 || claim.patientName || 'SAMPLE TESTING'}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={c(claim.box2 || claim.patientName || 'SAMPLE TESTING')} readOnly={readOnly} className="text-xs font-mono font-bold" />
+          </div>
         </div>
 
         <div className="w-[190px] p-1 border-r-2 border-[#b91c1c]">
           <span>3. PATIENT'S BIRTH DATE &bull; SEX</span>
           <div className="flex justify-between items-center mt-1 font-mono text-xs text-slate-900">
-            <span>{claim.box3Dob?.mm || '05'} {claim.box3Dob?.dd || '15'} {claim.box3Dob?.yy || '1985'}</span>
+            <FieldInput defaultValue={blankMode ? '' : `${claim.box3Dob?.mm || '05'} ${claim.box3Dob?.dd || '15'} ${claim.box3Dob?.yy || '1985'}`} readOnly={readOnly} className="w-24 text-xs font-mono font-bold" />
             <div className="flex gap-2">
-              <span className="text-[8px]">M <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{claim.box3Sex === 'F' ? '' : 'X'}</span></span>
-              <span className="text-[8px]">F <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{claim.box3Sex === 'F' ? 'X' : ''}</span></span>
+              <span className="text-[8px]">M <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(claim.box3Sex !== 'F')}</span></span>
+              <span className="text-[8px]">F <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(claim.box3Sex === 'F')}</span></span>
             </div>
           </div>
         </div>
 
         <div className="flex-1 p-1">
           <span>4. INSURED'S NAME (Last Name, First Name, Middle Initial)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 uppercase mt-1">{claim.box4 || claim.box2 || 'SAMPLE TESTING'}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={c(claim.box4 || claim.box2 || 'SAMPLE TESTING')} readOnly={readOnly} className="text-xs font-mono font-bold" />
+          </div>
         </div>
       </div>
 
@@ -194,18 +236,20 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[300px] p-1 border-r border-[#b91c1c]">
           <span>5. PATIENT'S ADDRESS (No., Street)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 mt-0.5 uppercase">{claim.box5Address || '10101 Harwin Dr. Suite 774'}</p>
+          <div className="mt-0.5">
+            <FieldInput defaultValue={c(claim.box5Address || '10101 Harwin Dr. Suite 774')} readOnly={readOnly} className="text-xs font-mono font-bold" />
+          </div>
           <div className="flex justify-between font-mono text-xs text-slate-900 mt-1 uppercase">
-            <span>CITY: {claim.box5City || 'HOUSTON'}</span>
-            <span>STATE: {claim.box5State || 'TX'}</span>
-            <span>ZIP: {claim.box5Zip || '77036'}</span>
+            <span>CITY: <FieldInput defaultValue={c(claim.box5City || 'HOUSTON')} readOnly={readOnly} className="w-20 inline-block text-xs" /></span>
+            <span>STATE: <FieldInput defaultValue={c(claim.box5State || 'TX')} readOnly={readOnly} className="w-8 inline-block text-xs" /></span>
+            <span>ZIP: <FieldInput defaultValue={c(claim.box5Zip || '77036')} readOnly={readOnly} className="w-16 inline-block text-xs" /></span>
           </div>
         </div>
 
         <div className="w-[190px] p-1 border-r-2 border-[#b91c1c]">
           <span>6. PATIENT RELATIONSHIP TO INSURED</span>
           <div className="grid grid-cols-2 gap-1 mt-1 font-mono text-[9px] text-slate-900">
-            <div><span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">X</span> Self</div>
+            <div><span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(true)}</span> Self</div>
             <div><span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold"></span> Spouse</div>
             <div><span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold"></span> Child</div>
             <div><span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold"></span> Other</div>
@@ -214,11 +258,13 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
 
         <div className="flex-1 p-1">
           <span>7. INSURED'S ADDRESS (No., Street)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 mt-0.5 uppercase">{claim.box7Address || claim.box5Address || '10101 Harwin Dr. Suite 774'}</p>
+          <div className="mt-0.5">
+            <FieldInput defaultValue={c(claim.box7Address || claim.box5Address || '10101 Harwin Dr. Suite 774')} readOnly={readOnly} className="text-xs font-mono font-bold" />
+          </div>
           <div className="flex justify-between font-mono text-xs text-slate-900 mt-1 uppercase">
-            <span>CITY: {claim.box7City || claim.box5City || 'HOUSTON'}</span>
-            <span>STATE: {claim.box7State || claim.box5State || 'TX'}</span>
-            <span>ZIP: {claim.box7Zip || claim.box5Zip || '77036'}</span>
+            <span>CITY: <FieldInput defaultValue={c(claim.box7City || claim.box5City || 'HOUSTON')} readOnly={readOnly} className="w-20 inline-block text-xs" /></span>
+            <span>STATE: <FieldInput defaultValue={c(claim.box7State || claim.box5State || 'TX')} readOnly={readOnly} className="w-8 inline-block text-xs" /></span>
+            <span>ZIP: <FieldInput defaultValue={c(claim.box7Zip || claim.box5Zip || '77036')} readOnly={readOnly} className="w-16 inline-block text-xs" /></span>
           </div>
         </div>
       </div>
@@ -240,15 +286,15 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div className="space-y-1 mt-1 font-mono text-[9px] text-slate-900">
             <div className="flex justify-between">
               <span>a. EMPLOYMENT?</span>
-              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">X</span></span></div>
+              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(true)}</span></span></div>
             </div>
             <div className="flex justify-between">
               <span>b. AUTO ACCIDENT?</span>
-              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold text-teal-900">X</span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span className="ml-1 font-bold">STATE: {claim.box10State || 'TX'}</span></div>
+              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold text-teal-900">{chk(true)}</span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span className="ml-1 font-bold">STATE: {c(claim.box10State || 'TX')}</span></div>
             </div>
             <div className="flex justify-between">
               <span>c. OTHER ACCIDENT?</span>
-              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">X</span></span></div>
+              <div className="flex gap-2"><span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span><span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(true)}</span></span></div>
             </div>
           </div>
         </div>
@@ -261,11 +307,11 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div className="flex justify-between items-end mt-2 font-mono text-xs text-slate-900">
             <div>
               <span className="text-[8px] text-[#991b1b] block font-sans">SIGNED:</span>
-              <span className="font-bold border-b border-slate-400 pb-0.5">{claim.box12Signature || 'SIGNATURE ON FILE'}</span>
+              <span className="font-bold border-b border-slate-400 pb-0.5">{c(claim.box12Signature || 'SIGNATURE ON FILE')}</span>
             </div>
             <div>
               <span className="text-[8px] text-[#991b1b] block font-sans">DATE:</span>
-              <span className="font-bold">{claim.dos || claim.box12Date || '08/04/2026'}</span>
+              <span className="font-bold">{c(claim.dos || claim.box12Date || '08/04/2026')}</span>
             </div>
           </div>
         </div>
@@ -274,7 +320,7 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <span>13. INSURED'S OR AUTHORIZED PERSON'S SIGNATURE (Assignment of Benefits)</span>
           <div className="mt-2 font-mono text-xs text-slate-900">
             <span className="text-[8px] text-[#991b1b] block font-sans">SIGNED:</span>
-            <span className="font-bold border-b border-slate-400 pb-0.5">{claim.box13Signature || 'SIGNATURE ON FILE'}</span>
+            <span className="font-bold border-b border-slate-400 pb-0.5">{c(claim.box13Signature || 'SIGNATURE ON FILE')}</span>
           </div>
         </div>
       </div>
@@ -283,23 +329,23 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
       <div className="flex border-b border-[#b91c1c] text-[8px] font-bold text-[#991b1b]">
         <div className="w-[245px] p-1 border-r border-[#b91c1c]">
           <span>14. DATE OF CURRENT ILLNESS, INJURY (MVA Date)</span>
-          <p className="font-mono text-xs font-bold text-slate-900 mt-1">
-            {claim.box14IllnessDate?.mm || '12'} / {claim.box14IllnessDate?.dd || '27'} / {claim.box14IllnessDate?.yy || '2025'}
-          </p>
+          <div className="mt-1">
+            <FieldInput defaultValue={blankMode ? '' : `${claim.box14IllnessDate?.mm || '12'} / ${claim.box14IllnessDate?.dd || '27'} / ${claim.box14IllnessDate?.yy || '2025'}`} readOnly={readOnly} className="text-xs font-mono font-bold" />
+          </div>
         </div>
 
         <div className="w-[245px] p-1 border-r-2 border-[#b91c1c]">
           <span>17. NAME OF REFERRING PROVIDER OR OTHER SOURCE</span>
-          <p className="font-mono text-xs font-bold text-slate-900 uppercase mt-1">
-            {claim.box17ReferringName || 'Dr. Mohamed Siddiqui'}
-          </p>
+          <div className="mt-1">
+            <FieldInput defaultValue={c(claim.box17ReferringName || 'Dr. Segun Adeoye')} readOnly={readOnly} className="text-xs font-mono font-bold uppercase" />
+          </div>
         </div>
 
         <div className="flex-1 p-1">
           <span>20. OUTSIDE LAB? &bull; $ CHARGES</span>
           <div className="flex justify-between items-center mt-1 font-mono text-[9px] text-slate-900">
-            <span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">X</span></span>
-            <span className="font-mono font-bold">$ 0.00</span>
+            <span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(true)}</span></span>
+            <FieldInput defaultValue={blankMode ? '' : '$ 0.00'} readOnly={readOnly} className="w-16 text-right font-mono font-bold" />
           </div>
         </div>
       </div>
@@ -316,15 +362,15 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5">
               <span className="text-[#991b1b] font-bold">A.</span>
-              <span className="font-bold">{claim.box21Diagnoses?.[0] || 'M54.50'}</span>
+              <FieldInput defaultValue={c(claim.box21Diagnoses?.[0] || 'M54.50')} readOnly={readOnly} className="font-bold" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">B.</span>
-              <span className="font-bold">{claim.box21Diagnoses?.[1] || 'M54.2'}</span>
+              <FieldInput defaultValue={c(claim.box21Diagnoses?.[1] || 'M54.2')} readOnly={readOnly} className="font-bold" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">C.</span>
-              <span className="font-bold">{claim.box21Diagnoses?.[2] || 'S13.4XXA'}</span>
+              <FieldInput defaultValue={c(claim.box21Diagnoses?.[2] || 'S13.4XXA')} readOnly={readOnly} className="font-bold" />
             </div>
           </div>
 
@@ -332,15 +378,15 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5">
               <span className="text-[#991b1b] font-bold">D.</span>
-              <span className="font-bold">{claim.box21Diagnoses?.[3] || 'S39.012A'}</span>
+              <FieldInput defaultValue={c(claim.box21Diagnoses?.[3] || 'S39.012A')} readOnly={readOnly} className="font-bold" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">E.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">F.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
           </div>
 
@@ -348,15 +394,15 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5">
               <span className="text-[#991b1b] font-bold">G.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">H.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">I.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
           </div>
 
@@ -364,15 +410,15 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
           <div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5">
               <span className="text-[#991b1b] font-bold">J.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">K.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
             <div className="flex items-center gap-1 border-b border-[#b91c1c]/40 pb-0.5 mt-1">
               <span className="text-[#991b1b] font-bold">L.</span>
-              <span className="text-slate-400">________</span>
+              <FieldInput defaultValue="" readOnly={readOnly} placeholder="________" className="text-slate-400" />
             </div>
           </div>
         </div>
@@ -417,54 +463,49 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
             return (
               <div key={idx} className="p-1 min-h-[36px] flex flex-col justify-center">
                 {line.note && (
-                  <div className="text-[8px] font-bold text-slate-500 uppercase tracking-tight">
+                  <div contentEditable={!readOnly} suppressContentEditableWarning className="text-[8px] font-bold text-slate-500 uppercase tracking-tight focus:bg-amber-100 focus:ring-1 focus:ring-amber-500 rounded px-0.5 outline-none cursor-text hover:bg-slate-100/80">
                     {line.note}
                   </div>
                 )}
                 <div className="grid grid-cols-12 text-center items-center font-bold">
                   {/* 24.A Dates of Service */}
                   <div className="col-span-3 text-[9px] border-r border-[#b91c1c]/20">
-                    {hasData ? `${line.fromDos || claim.dos || '08/04/26'} - ${line.toDos || claim.dos || '08/04/26'}` : ''}
+                    <FieldInput defaultValue={hasData ? `${line.fromDos || claim.dos || '08/04/26'} - ${line.toDos || claim.dos || '08/04/26'}` : ''} readOnly={readOnly} className="text-[9px]" />
                   </div>
                   
                   {/* 24.B Place of Service */}
                   <div className="col-span-1 border-r border-[#b91c1c]/20">
-                    {hasData ? (line.pos || '11') : ''}
+                    <FieldInput defaultValue={hasData ? (line.pos || '11') : ''} readOnly={readOnly} className="text-center" />
                   </div>
 
                   {/* 24.C EMG */}
                   <div className="col-span-1 border-r border-[#b91c1c]/20">
-                    {hasData ? (line.emg || 'N') : ''}
+                    <FieldInput defaultValue={hasData ? (line.emg || 'N') : ''} readOnly={readOnly} className="text-center" />
                   </div>
 
                   {/* 24.D CPT & Modifiers */}
                   <div className="col-span-3 border-r border-[#b91c1c]/20 flex items-center justify-center gap-1 text-[10px]">
-                    <span className="font-mono font-black text-slate-950">{line.cpt}</span>
-                    {(line.mod1 || line.mod || line.modifier1) && (
-                      <span className="text-[9px] font-bold text-teal-800">
-                        {[line.mod1 || line.mod || line.modifier1, line.mod2 || line.modifier2, line.mod3 || line.modifier3, line.mod4 || line.modifier4].filter(Boolean).join(' ')}
-                      </span>
-                    )}
+                    <FieldInput defaultValue={line.cpt || ''} readOnly={readOnly} className="font-mono font-black text-slate-950 text-center" />
                   </div>
 
                   {/* 24.E Diagnosis Pointer (e.g. A, B, AB) */}
                   <div className="col-span-1 border-r border-[#b91c1c]/20 font-black">
-                    {line.diagPtr || (hasData ? (idx === 0 ? 'A' : 'B') : '')}
+                    <FieldInput defaultValue={line.diagPtr || (hasData ? (idx === 0 ? 'A' : 'B') : '')} readOnly={readOnly} className="text-center" />
                   </div>
 
                   {/* 24.F Charges */}
                   <div className="col-span-1 border-r border-[#b91c1c]/20 text-right pr-1 font-black">
-                    {hasData ? cleanAmount(line.charge) : ''}
+                    <FieldInput defaultValue={hasData ? cleanAmount(line.charge) : ''} readOnly={readOnly} className="text-right" />
                   </div>
 
                   {/* 24.G Units */}
                   <div className="col-span-1 border-r border-[#b91c1c]/20 font-bold">
-                    {hasData ? (line.units || '1') : ''}
+                    <FieldInput defaultValue={hasData ? (line.units || '1') : ''} readOnly={readOnly} className="text-center" />
                   </div>
 
                   {/* 24.J Rendering NPI */}
                   <div className="col-span-1 text-[9px] font-mono">
-                    {hasData ? (line.renderingId || '1234567890') : ''}
+                    <FieldInput defaultValue={hasData ? (line.renderingId || '1234567890') : ''} readOnly={readOnly} className="text-center text-[8px]" />
                   </div>
                 </div>
               </div>
@@ -478,32 +519,38 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
         <div className="col-span-3 p-1 border-r border-[#b91c1c]">
           <span>25. FEDERAL TAX I.D. NUMBER</span>
           <div className="flex items-center gap-2 mt-1 font-mono text-xs text-slate-900">
-            <span className="font-bold">{claim.box25TaxId || '75-1234567'}</span>
-            <span className="text-[8px]">EIN <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">X</span></span>
+            <FieldInput defaultValue={c(claim.box25TaxId || '75-1234567')} readOnly={readOnly} className="font-bold" />
+            <span className="text-[8px]">EIN <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold">{chk(true)}</span></span>
           </div>
         </div>
 
         <div className="col-span-3 p-1 border-r border-[#b91c1c]">
           <span>27. ACCEPT ASSIGNMENT?</span>
           <div className="flex gap-3 mt-1 font-mono text-[9px] text-slate-900">
-            <span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold text-teal-900">X</span></span>
+            <span>YES <span className="inline-block w-3 h-3 border border-[#b91c1c] text-center font-bold text-teal-900">{chk(true)}</span></span>
             <span>NO <span className="inline-block w-3 h-3 border border-[#b91c1c]"></span></span>
           </div>
         </div>
 
         <div className="col-span-2 p-1 border-r border-[#b91c1c] text-right">
           <span>28. TOTAL CHARGE</span>
-          <p className="font-mono text-xs font-black text-slate-900 mt-1">${cleanAmount(claim.box28TotalCharge)}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={blankMode ? '' : `$${cleanAmount(claim.box28TotalCharge)}`} readOnly={readOnly} className="font-mono text-xs font-black text-right" />
+          </div>
         </div>
 
         <div className="col-span-2 p-1 border-r border-[#b91c1c] text-right">
           <span>29. AMOUNT PAID</span>
-          <p className="font-mono text-xs font-bold text-slate-900 mt-1">${cleanAmount(claim.box29AmountPaid)}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={blankMode ? '' : `$${cleanAmount(claim.box29AmountPaid)}`} readOnly={readOnly} className="font-mono text-xs font-bold text-right" />
+          </div>
         </div>
 
         <div className="col-span-2 p-1 text-right">
           <span>30. BALANCE DUE</span>
-          <p className="font-mono text-xs font-black text-slate-900 mt-1">${cleanAmount(claim.box30BalanceDue)}</p>
+          <div className="mt-1">
+            <FieldInput defaultValue={blankMode ? '' : `$${cleanAmount(claim.box30BalanceDue)}`} readOnly={readOnly} className="font-mono text-xs font-black text-right" />
+          </div>
         </div>
       </div>
 
@@ -511,20 +558,20 @@ export const CmsRedGridForm = ({ claim: rawClaim = null, blankMode = false }) =>
       <div className="grid grid-cols-12 text-[8px] font-bold text-[#991b1b] p-1 font-mono">
         <div className="col-span-4 border-r border-[#b91c1c] pr-2">
           <span>31. SIGNATURE OF PHYSICIAN OR SUPPLIER</span>
-          <p className="font-bold text-xs text-slate-900 mt-1 uppercase">{claim.box31ProviderSignature || 'Mohamed Siddiqui, MD'}</p>
-          <p className="text-[9px] text-slate-600 mt-1">SIGNED {claim.dos || claim.box31Date || '08/04/2026'} DATE</p>
+          <FieldInput defaultValue={c(claim.box31ProviderSignature || 'Adeoye, Segun, MD')} readOnly={readOnly} className="font-bold text-xs mt-1" />
+          <FieldInput defaultValue={blankMode ? '' : `SIGNED ${claim.dos || claim.box31Date || '08/04/2026'} DATE`} readOnly={readOnly} className="text-[9px] text-slate-600 mt-1" />
         </div>
 
         <div className="col-span-4 border-r border-[#b91c1c] px-2">
           <span>32. SERVICE FACILITY LOCATION INFORMATION</span>
-          <p className="font-bold text-[10px] text-slate-900 uppercase whitespace-pre-line mt-0.5">{claim.box32Facility || `${claim.providerName || 'JOSMIC Wellness Center'}\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036`}</p>
+          <FieldInput defaultValue={c(claim.box32Facility || `${claim.providerName || 'ANIK Laser Therapy'}\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036`)} readOnly={readOnly} className="font-bold text-[10px] mt-0.5" />
         </div>
 
         <div className="col-span-4 pl-2">
           <span>33. BILLING PROVIDER INFO &amp; PH #</span>
-          <p className="font-bold text-[10px] text-slate-900 uppercase whitespace-pre-line mt-0.5">{claim.box33BillingProvider || `${claim.providerName || 'JOSMIC Wellness Center'}\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036`}</p>
-          <p className="font-bold text-[10px] text-slate-900 mt-0.5">PH# {claim.box33Phone || '(713) 555-0100'}</p>
-          <p className="text-[9px] text-slate-800 font-bold">NPI: {claim.box33Npi || '1234567890'}</p>
+          <FieldInput defaultValue={c(claim.box33BillingProvider || `${claim.providerName || 'ANIK Laser Therapy'}\n10101 HARWIN DR, SUITE 774\nHOUSTON, TX 77036`)} readOnly={readOnly} className="font-bold text-[10px] mt-0.5" />
+          <FieldInput defaultValue={blankMode ? '' : `PH# ${claim.box33Phone || '(713) 555-0100'}`} readOnly={readOnly} className="font-bold text-[10px] mt-0.5" />
+          <FieldInput defaultValue={blankMode ? '' : `NPI: ${claim.box33Npi || '1234567890'}`} readOnly={readOnly} className="text-[9px] text-slate-800 font-bold" />
         </div>
       </div>
 

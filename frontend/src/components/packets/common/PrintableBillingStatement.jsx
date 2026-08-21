@@ -5,10 +5,22 @@ import { useSettings } from '../../../utils/settingsCache';
 
 export const PrintableBillingStatement = ({ bill, pageIndex = 0 }) => {
   const settings = useSettings();
-  if (!bill) return null;
+  const b = bill || {
+    providerName: '',
+    providerAddress: '',
+    providerPhone: '',
+    statementNumber: '',
+    statementDate: '',
+    patientName: '',
+    patientSystemId: '',
+    patientAddress: '',
+    billToName: '',
+    billToAddress: '',
+    lineItems: [],
+    totals: { totalCharges: 0, totalPayments: 0, totalAdjustments: 0, balanceDue: 0 }
+  };
 
-  const lineItems = bill.lineItems || [];
-  // For ANIK & DAV'S, split service lines across 2 pages if more than 8 lines
+  const lineItems = b.lineItems || [];
   const displayItems = lineItems.length > 8
     ? (pageIndex === 0 ? lineItems.slice(0, 8) : lineItems.slice(8))
     : lineItems;
@@ -21,14 +33,14 @@ export const PrintableBillingStatement = ({ bill, pageIndex = 0 }) => {
       {/* Statement Top Header */}
       <div className="flex justify-between items-start border-b border-slate-800 pb-4">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight uppercase">{bill.providerName}</h1>
-          <p className="text-xs text-slate-600 mt-1">{bill.providerAddress}</p>
-          <p className="text-xs text-slate-600">TEL / CELL: {bill.providerPhone} | FAX: 832-416-1502</p>
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight uppercase">{b.providerName}</h1>
+          <p className="text-xs text-slate-600 mt-1">{b.providerAddress}</p>
+          <p className="text-xs text-slate-600">TEL / CELL: {b.providerPhone} | FAX: 832-416-1502</p>
         </div>
         <div className="text-right font-mono">
           <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Billing Statement</h2>
-          <p className="text-xs font-bold text-slate-700 mt-1">Statement No: <span className="text-slate-900">{bill.statementNumber}</span></p>
-          <p className="text-xs font-semibold text-slate-600">Statement Date: {bill.statementDate}</p>
+          <p className="text-xs font-bold text-slate-700 mt-1">Statement No: <span className="text-slate-900">{b.statementNumber}</span></p>
+          <p className="text-xs font-semibold text-slate-600">Statement Date: {b.statementDate}</p>
           <p className="text-[10px] text-slate-500 font-bold mt-1">PAGE {pageIndex + 1} OF {lineItems.length > 8 ? 2 : 1}</p>
         </div>
       </div>
@@ -36,23 +48,23 @@ export const PrintableBillingStatement = ({ bill, pageIndex = 0 }) => {
       {/* Bill To Box */}
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full sm:w-1/2">
         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Bill To:</p>
-        <h3 className="text-sm font-bold text-slate-900 mt-0.5">{bill.billToName}</h3>
-        <p className="text-xs text-slate-700 whitespace-pre-line">{bill.billToAddress}</p>
+        <h3 className="text-sm font-bold text-slate-900 mt-0.5">{b.billToName}</h3>
+        <p className="text-xs text-slate-700 whitespace-pre-line">{b.billToAddress}</p>
       </div>
 
       {/* Patient Details Banner */}
       <div className="grid grid-cols-3 gap-4 p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs">
         <div>
           <span className="text-[10px] font-bold text-slate-500 block">Patient Name:</span>
-          <strong className="text-slate-900 font-bold">{bill.patientName}</strong>
+          <strong className="text-slate-900 font-bold">{b.patientName}</strong>
         </div>
         <div>
           <span className="text-[10px] font-bold text-slate-500 block">Patient Address:</span>
-          <span className="text-slate-800 truncate block">{bill.patientAddress}</span>
+          <span className="text-slate-800 truncate block">{b.patientAddress}</span>
         </div>
         <div>
           <span className="text-[10px] font-bold text-slate-500 block">Patient ID / Case:</span>
-          <span className="font-mono font-bold text-slate-900">{bill.patientSystemId} ({bill.caseId})</span>
+          <span className="font-mono font-bold text-slate-900">{b.patientSystemId} ({b.caseId})</span>
         </div>
       </div>
 
@@ -104,11 +116,11 @@ export const PrintableBillingStatement = ({ bill, pageIndex = 0 }) => {
               </thead>
               <tbody>
                 <tr className="font-bold text-slate-900">
-                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(bill.aging?.current || 0)}</td>
-                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(bill.aging?.past30 || 0)}</td>
-                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(bill.aging?.past60 || 0)}</td>
-                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(bill.aging?.past90 || 0)}</td>
-                  <td className="p-2.5 bg-slate-100 text-slate-900 font-black text-sm">{formatCurrency(bill.totals?.balanceDue || 0)}</td>
+                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(b.aging?.current || 0)}</td>
+                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(b.aging?.past30 || 0)}</td>
+                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(b.aging?.past60 || 0)}</td>
+                  <td className="p-2.5 border-r border-slate-300">{formatCurrency(b.aging?.past90 || 0)}</td>
+                  <td className="p-2.5 bg-slate-100 text-slate-900 font-black text-sm">{formatCurrency(b.totals?.balanceDue || 0)}</td>
                 </tr>
               </tbody>
             </table>

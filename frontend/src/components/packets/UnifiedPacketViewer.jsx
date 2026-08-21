@@ -59,8 +59,6 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
   const [bill, setBill] = useState(null);
   const [cmsClaims, setCmsClaims] = useState([]);
   
-  const [viewMode, setViewMode] = useState('FULL_PACKET'); // 'FULL_PACKET' or 'SINGLE_FORM'
-  const [activePageIndex, setActivePageIndex] = useState(0);
   const [activeTabFilter, setActiveTabFilter] = useState('ALL');
   const [zoomLevel, setZoomLevel] = useState(getInitialZoom);
   const [isLocked, setIsLocked] = useState(false);
@@ -73,7 +71,9 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
     'prov-anik': 'bill-anik-001', 
     'prov-davs': 'bill-davs-001', 
     'prov-josmic': 'bill-josmic-001',
-    'prov-counselor': 'bill-counselor-001'
+    'prov-counselor': 'bill-counselor-001',
+    'prov-tpi': 'bill-tpi-001',
+    'prov-tecar': 'bill-tecar-001'
   };
   const targetBillId = billMap[providerId] || 'bill-anik-001';
 
@@ -130,7 +130,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
   const toggleBlankPracticeMode = () => {
     setBlankPracticeMode(!blankPracticeMode);
     addToast(
-      !blankPracticeMode ? 'Switched to Blank Practice Form (All fields empty for custom typing).' : 'Restored Demo Patient Case Data.',
+      !blankPracticeMode ? 'Switched to Blank Practice Form (All fields empty for custom typing/printing).' : `Loaded Real Database Case Data (${selectedCase ? selectedCase.patientName : 'DB Case'}).`,
       'info'
     );
   };
@@ -146,7 +146,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
     }
     if (key === 'CmsRedGridForm') {
       const claim = cmsClaims[pageDef.claimIndex || 0] || cmsClaims[0] || null;
-      return <CmsRedGridForm claim={claim} blankMode={blankPracticeMode} />;
+      return <CmsRedGridForm claim={claim} blankMode={blankPracticeMode} readOnly={isLocked} />;
     }
     
     // ANIK Components
@@ -202,7 +202,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
               <span className="truncate">{manifest.providerName}</span>
             </h2>
             <p className="text-[11px] text-slate-400 truncate mt-0.5">
-              {manifest.totalPages} Pages | {blankPracticeMode ? <span className="text-amber-400 font-bold">UNFILLED BLANK PRACTICE FORM</span> : <span>Patient: <strong className="text-white">{selectedCase ? selectedCase.patientName : 'SELECT A CASE'}</strong></span>}
+              {manifest.totalPages} Pages | {blankPracticeMode ? <span className="text-amber-400 font-bold">UNFILLED BLANK PRACTICE FORM</span> : <span>Case DB: <strong className="text-teal-300 font-bold">{selectedCase ? selectedCase.patientName : 'SELECT A CASE'}</strong></span>}
             </p>
           </div>
 
@@ -215,8 +215,8 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
               }`}
             >
               {blankPracticeMode ? <RotateCcw className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5 text-amber-400" />}
-              <span className="hidden sm:inline">{blankPracticeMode ? 'Fill Demo Data' : 'Clear All to Unfilled Blank Form'}</span>
-              <span className="sm:hidden">{blankPracticeMode ? 'Fill Data' : 'Blank Form'}</span>
+              <span className="hidden sm:inline">{blankPracticeMode ? `Load Patient Case Data (${selectedCase?.patientName || 'DB'})` : 'Clear to Unfilled Blank Form'}</span>
+              <span className="sm:hidden">{blankPracticeMode ? 'Load Case Data' : 'Blank Form'}</span>
             </button>
 
             <button
@@ -244,32 +244,8 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
         <div className="flex flex-col gap-2.5 border-t border-slate-800 pt-3">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            {/* Mode Switcher */}
-            <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 self-start sm:self-auto">
-              <button
-                onClick={() => setViewMode('FULL_PACKET')}
-                className={`px-2.5 py-1 text-xs font-bold rounded-md transition flex items-center gap-1 ${
-                  viewMode === 'FULL_PACKET' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Full Packet (Continuous Scroll)</span>
-                <span className="sm:hidden">Full Packet</span>
-              </button>
-              <button
-                onClick={() => setViewMode('SINGLE_FORM')}
-                className={`px-2.5 py-1 text-xs font-bold rounded-md transition flex items-center gap-1 ${
-                  viewMode === 'SINGLE_FORM' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Edit3 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Single Form Edit Mode</span>
-                <span className="sm:hidden">Single Form</span>
-              </button>
-            </div>
-
-            {/* Zoom Controls */}
-            <div className="flex items-center justify-between sm:justify-end gap-2 text-xs font-mono text-slate-300">
+            {/* Zoom & Fit Controls */}
+            <div className="flex items-center justify-between sm:justify-end gap-2 text-xs font-mono text-slate-300 w-full sm:w-auto">
               <div className="flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-lg border border-slate-700">
                 <button onClick={() => setZoomLevel(prev => Math.max(prev - 0.05, 0.25))} className="p-0.5 hover:text-white" title="Zoom Out"><ZoomOut className="w-3.5 h-3.5" /></button>
                 <span className="w-10 text-center font-bold text-teal-300 text-[11px]">{Math.round(zoomLevel * 100)}%</span>
@@ -277,7 +253,7 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
               </div>
               <button
                 onClick={handleFitScreen}
-                className="px-2 py-1 bg-teal-600 hover:bg-teal-700 rounded-lg text-xs font-bold text-white flex items-center gap-1"
+                className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 rounded-lg text-xs font-bold text-white flex items-center gap-1"
                 title="Fit sheet to screen width"
               >
                 <Maximize2 className="w-3 h-3" /> Fit
@@ -314,76 +290,34 @@ export const UnifiedPacketViewer = ({ providerId = 'prov-anik', initialBlank = f
       {/* CANVAS RENDERING CONTAINER - Fully Responsive Wrapper */}
       <div className="overflow-x-auto p-2 sm:p-6 bg-slate-950 rounded-2xl border border-slate-800 flex justify-center print:bg-white print:p-0 print:border-none min-h-[450px]">
         
-        {/* MODE 1: FULL PACKET CONTINUOUS SCROLL */}
-        {viewMode === 'FULL_PACKET' && (
-          <div
-            className="w-full flex flex-col items-center space-y-6 print:space-y-0"
-          >
-            {filteredPages.map((pageDef) => (
-              <div key={pageDef.id} className="relative group w-full flex flex-col items-center">
-                <div className="text-[10px] font-mono text-slate-400 font-bold mb-1 print:hidden self-center">
-                  PAGE {pageDef.pageNumber} OF {manifest.totalPages} - {pageDef.title}
-                </div>
-                
-                {/* Scaled Sheet Container */}
-                <div
-                  className="w-full flex justify-center overflow-x-auto"
-                  style={{ minHeight: `${1100 * zoomLevel + 20}px` }}
-                >
-                  <div
-                    style={{
-                      transform: `scale(${zoomLevel})`,
-                      transformOrigin: 'top center',
-                      transition: 'transform 0.2s ease',
-                      marginBottom: `${(1 - zoomLevel) * -1100}px`
-                    }}
-                  >
-                    {renderPageComponent(pageDef)}
-                  </div>
-                </div>
+        {/* FULL PACKET CONTINUOUS SCROLL FOR SELECTED TAB */}
+        <div id="printable-packet" className="w-full flex flex-col items-center space-y-6 print:space-y-0 print:m-0 print:p-0 print:block">
+          {filteredPages.map((pageDef) => (
+            <div key={pageDef.id} className="relative group w-full flex flex-col items-center print-page-item">
+              <div className="text-[10px] font-mono text-slate-400 font-bold mb-1 print:hidden self-center">
+                PAGE {pageDef.pageNumber} OF {manifest.totalPages} - {pageDef.title}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* MODE 2: SINGLE FORM EDIT VIEW */}
-        {viewMode === 'SINGLE_FORM' && (
-          <div className="w-full flex flex-col items-center space-y-4">
-            <div className="w-full max-w-2xl flex items-center justify-between bg-slate-800 p-2.5 rounded-xl text-white text-xs font-mono print:hidden">
-              <button
-                disabled={activePageIndex === 0}
-                onClick={() => setActivePageIndex(prev => prev - 1)}
-                className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 rounded-lg flex items-center gap-1"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Previous</span>
-              </button>
-              <span className="text-[11px] truncate px-2">Page {activePageIndex + 1} / {manifest.totalPages}: <strong>{manifest.pages[activePageIndex]?.title}</strong></span>
-              <button
-                disabled={activePageIndex === manifest.pages.length - 1}
-                onClick={() => setActivePageIndex(prev => prev + 1)}
-                className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 rounded-lg flex items-center gap-1"
-              >
-                <span className="hidden sm:inline">Next</span> <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div
-              className="w-full flex justify-center overflow-x-auto"
-              style={{ minHeight: `${1100 * zoomLevel + 20}px` }}
-            >
+              
+              {/* Scaled Sheet Container */}
               <div
-                style={{
-                  transform: `scale(${zoomLevel})`,
-                  transformOrigin: 'top center',
-                  transition: 'transform 0.2s ease',
-                  marginBottom: `${(1 - zoomLevel) * -1100}px`
-                }}
+                className="w-full flex justify-center overflow-x-auto print-page-sheet-wrapper"
+                style={{ minHeight: `${1100 * zoomLevel + 20}px` }}
               >
-                {renderPageComponent(manifest.pages[activePageIndex] || manifest.pages[0])}
+                <div
+                  className="print-page-sheet"
+                  style={{
+                    transform: `scale(${zoomLevel})`,
+                    transformOrigin: 'top center',
+                    transition: 'transform 0.2s ease',
+                    marginBottom: `${(1 - zoomLevel) * -1100}px`
+                  }}
+                >
+                  {renderPageComponent(pageDef)}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
 
       </div>
 

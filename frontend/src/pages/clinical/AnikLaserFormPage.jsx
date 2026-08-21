@@ -1,6 +1,6 @@
-﻿// src/pages/clinical/AnikLaserFormPage.jsx
+// src/pages/clinical/AnikLaserFormPage.jsx
 import React, { useState } from 'react';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiClinicalNoteService as mockClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { useUIStore } from '../../store/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Award } from 'lucide-react';

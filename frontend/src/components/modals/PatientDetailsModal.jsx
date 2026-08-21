@@ -7,8 +7,8 @@ import {
   Stethoscope, Clock, DollarSign, Brain, HeartPulse, CheckCircle2 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { mockBillingService } from '../../services/mock/mockBillingService';
-import { mockClinicalNoteService } from '../../services/mock/mockClinicalNoteService';
+import { apiBillingService as mockBillingService } from '../../services/api/apiBillingService';
+import { apiClinicalNoteService as mockClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { formatCurrency } from '../../utils/billingCalculations';
 
 export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {

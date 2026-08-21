@@ -80,13 +80,20 @@ export const AnikTherapyAssessmentForm = ({ readOnly = false, blankMode = false,
         </div>
         <div className="flex gap-2">
           <span>DIAGNOSIS:</span>
-          {blankMode || !packetData ? (
+          {blankMode ? (
             <div className="border-b border-slate-400 mt-1 w-64">&nbsp;</div>
           ) : (
-            <span className="text-slate-900">
-              {packetData.diagnosisCodes && packetData.diagnosisCodes.length > 0 
-                ? packetData.diagnosisCodes.map(d => d.description || d.code).join(', ') 
-                : 'NECK, LOW BACK, LEFT ANKLE'}
+            <span className="text-slate-900 font-mono font-bold">
+              {(() => {
+                if (packetData && Array.isArray(packetData.diagnosisCodes) && packetData.diagnosisCodes.length > 0) {
+                  const cleaned = packetData.diagnosisCodes
+                    .map(d => (typeof d === 'string' ? d : (d.description || d.code || d.icdCode || '')).trim())
+                    .filter(Boolean);
+                  if (cleaned.length > 0) return cleaned.join(', ');
+                }
+                if (packetData?.diagnosis) return packetData.diagnosis;
+                return 'NECK, LOW BACK, LEFT ANKLE';
+              })()}
             </span>
           )}
         </div>

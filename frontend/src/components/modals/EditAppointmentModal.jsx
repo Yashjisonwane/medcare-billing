@@ -1,7 +1,7 @@
 // src/components/modals/EditAppointmentModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
+import { apiAppointmentService as mockAppointmentService } from '../../services/api/apiAppointmentService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { COMMON_CPT_CODES } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../common/MultiLineCptTable';

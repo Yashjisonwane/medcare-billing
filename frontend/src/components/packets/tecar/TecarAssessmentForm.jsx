@@ -7,7 +7,8 @@ export const TecarAssessmentForm = ({ readOnly = false, blankMode = false, packe
   const serviceDates = serviceLines && serviceLines.length > 0
     ? [...new Set(serviceLines.map(l => l.dos || l.dateOfService).filter(Boolean))]
     : [];
-  const activeDos = !blankMode && serviceDates.length > 0 ? serviceDates[0] : (packetData?.initialDate || '01/20/2026');
+  const activeDos = blankMode ? '' : (serviceDates.length > 0 ? serviceDates[0] : (packetData?.initialDate || '01/20/2026'));
+  const patientNameVal = blankMode ? '' : (packetData ? packetData.patientName : 'SAMPLE PATIENT');
   
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '48px 56px' }}>
@@ -21,11 +22,11 @@ export const TecarAssessmentForm = ({ readOnly = false, blankMode = false, packe
       <div className="grid grid-cols-2 gap-4 text-xs font-mono mb-6">
         <div className="flex border-b border-slate-300 pb-1">
           <span className="font-bold w-24">Patient Name:</span>
-          <span className="flex-1 text-slate-700">{packetData ? packetData.patientName : val('SAMPLE PATIENT')}</span>
+          <span className="flex-1 text-slate-700">{patientNameVal}&nbsp;</span>
         </div>
         <div className="flex border-b border-slate-300 pb-1">
           <span className="font-bold w-24">Date of Eval:</span>
-          <span className="flex-1 text-slate-700">{val(activeDos)}</span>
+          <span className="flex-1 text-slate-700">{activeDos}&nbsp;</span>
         </div>
       </div>
 

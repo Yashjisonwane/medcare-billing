@@ -1,8 +1,25 @@
-﻿// src/components/packets/counselor/CounselorCoverPage.jsx
+// src/components/packets/counselor/CounselorCoverPage.jsx
 import React from 'react';
 
 export const CounselorCoverPage = ({ blankMode = false, packetData = null }) => {
-  const val = (v) => blankMode ? '' : v;
+  const getField = (field, fallback = '') => {
+    if (blankMode) return '';
+    if (!packetData) return fallback;
+    if (field === 'patientName') return packetData.patientName || fallback;
+    if (field === 'dob') return packetData.patient?.dob || packetData.patientDob || fallback;
+    if (field === 'accidentDate') return packetData.accidentDate || fallback;
+    if (field === 'initialDate') return packetData.initialDate || fallback;
+    if (field === 'dx') {
+      if (Array.isArray(packetData.diagnosisCodes)) {
+        const cleaned = packetData.diagnosisCodes
+          .map(d => (typeof d === 'string' ? d : (d.code || d.description || '')).trim())
+          .filter(Boolean);
+        if (cleaned.length > 0) return cleaned.join(', ');
+      }
+      return packetData.diagnosisCodes || packetData.diagnosis || fallback;
+    }
+    return fallback;
+  };
 
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '48px 56px' }}>
@@ -28,23 +45,23 @@ export const CounselorCoverPage = ({ blankMode = false, packetData = null }) => 
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">NAME:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{packetData ? packetData.patientName : val('')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{getField('patientName', '')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Birth:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{packetData ? (packetData.patient?.dob || 'N/A') : val('')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{getField('dob', '')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Accident:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.accidentDate || 'N/A') : val('')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{getField('accidentDate', '')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Initial Evaluation:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.initialDate || 'N/A') : val('')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{getField('initialDate', '')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Diagnostic Codes:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900 font-bold">{packetData ? (packetData.diagnosisCodes?.join(', ') || 'N/A') : val('')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900 font-bold">{getField('dx', '')}&nbsp;</div>
           </div>
         </div>
       </div>

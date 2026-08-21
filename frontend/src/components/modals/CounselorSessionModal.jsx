@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { apiClinicalNoteService } from '../../services/api/apiClinicalNoteService';
-import { apiCaseService } from '../../services/api/apiCaseService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiCaseService, apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
 import { apiProviderService } from '../../services/api/apiProviderService';
 import { useUIStore } from '../../store/uiStore';
 import { Brain, Save, CheckCircle2, Stethoscope, Tag, Clock } from 'lucide-react';

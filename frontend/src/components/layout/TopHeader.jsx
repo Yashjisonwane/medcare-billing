@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
-import { mockProviderService } from '../../services/mock/mockProviderService';
+import { apiProviderService as mockProviderService } from '../../services/api/apiProviderService';
 import { apiNotificationService } from '../../services/api/apiNotificationService';
 import { 
   Search, Bell, Shield, LogOut, ChevronDown, User, Activity, 

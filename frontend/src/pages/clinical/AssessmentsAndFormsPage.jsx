@@ -79,7 +79,7 @@ export const AssessmentsAndFormsPage = () => {
             activeTab === 'TPI' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          Trigger Point Injection
+          Trigger Point Injection (TPI Form)
         </button>
         <button
           onClick={() => setActiveTab('TECAR')}
@@ -87,7 +87,7 @@ export const AssessmentsAndFormsPage = () => {
             activeTab === 'TECAR' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          TECAR Therapy
+          TECAR Therapy (TECAR Form)
         </button>
         <button
           onClick={() => setActiveTab('COUNSELOR')}

@@ -34,22 +34,26 @@ const formatBill = (b) => {
     };
   });
 
+  const pt = b.case?.patient;
+  const patientFullName = pt ? `${pt.firstName || ''} ${pt.lastName || ''}`.trim() : (b.patientName || '');
+  const ptAddr = pt ? `${pt.street || pt.addressLine1 || ''}, ${pt.city || ''} ${pt.state || ''}`.trim() : (b.patientAddress || '');
+
   return {
     id: b.id,
     caseId: b.caseId,
     providerId: b.providerId,
-    providerName: b.provider?.name || 'JOSMIC Wellness Center',
-    providerAddress: b.provider?.address ? `${b.provider.address.street}, ${b.provider.address.city}` : '10101 Harwin Dr, Houston TX',
-    providerPhone: b.provider?.contact?.phone || '713-485-5712',
-    serviceCategory: b.provider?.serviceCategory || 'Pain Management Consultation',
-    patientId: b.case?.patientId || b.patientId || 'pat-001',
-    patientName: b.case?.patient ? `${b.case.patient.firstName} ${b.case.patient.lastName}`.trim() : 'SAMPLE TESTING',
-    patientAddress: b.case?.patient?.street ? `${b.case.patient.street}, ${b.case.patient.city} ${b.case.patient.state}` : '17650 Carnation Glen Dr, Richmond TX',
-    patientSystemId: b.case?.patient?.patientId || '141849159',
+    providerName: b.provider?.name || '',
+    providerAddress: b.provider?.address ? `${b.provider.address.street || ''}, ${b.provider.address.city || ''}` : '',
+    providerPhone: b.provider?.contact?.phone || '',
+    serviceCategory: b.provider?.serviceCategory || '',
+    patientId: pt?.id || b.case?.patientId || b.patientId || '',
+    patientName: patientFullName,
+    patientAddress: ptAddr,
+    patientSystemId: pt?.patientId || '',
     statementNumber: b.statementNumber || '',
     statementDate: b.statementDate || '',
-    billToName: b.billToName || 'OJ LAW FIRM & ASSOCIATES',
-    billToAddress: b.billToAddress || '11711 Bedford St. Suite 01, Houston TX',
+    billToName: b.billToName || (b.case?.attorneyName ? `${b.case.attorneyName}` : ''),
+    billToAddress: b.billToAddress || b.case?.lawFirmAddress || '',
     status: b.status,
     lineItems: formattedLines,
     totals: typeof b.totals === 'string' ? JSON.parse(b.totals) : b.totals || { totalCharges: 0, totalPayments: 0, totalAdjustments: 0, balanceDue: 0 },
@@ -193,6 +197,32 @@ const getDefaultServiceLinesForProvider = (providerId, accidentDateStr) => {
         }
       ];
 
+    case 'prov-tpi':
+      return [
+        {
+          cptCode: '20552',
+          description: 'Trigger Point Injection - 1 or 2 Muscle Groups (Spinal & Cervical Paravertebral)',
+          modifier1: '59',
+          modifier2: '',
+          units: 1,
+          charge: 450.00,
+          dos
+        }
+      ];
+
+    case 'prov-tecar':
+      return [
+        {
+          cptCode: '97039',
+          description: 'Targeted Radiofrequency TECAR Therapy Session & Deep Thermal Bio-Modulation',
+          modifier1: 'GP',
+          modifier2: '',
+          units: 1,
+          charge: 1500.00,
+          dos
+        }
+      ];
+
     default:
       return [
         {
@@ -234,7 +264,7 @@ export const getFourBillsByCase = async (req, res) => {
       });
     }
 
-    const standardProviders = ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor'];
+    const standardProviders = ['prov-josmic', 'prov-davs', 'prov-anik', 'prov-counselor', 'prov-tpi', 'prov-tecar'];
 
     for (const provId of standardProviders) {
       const billId = `bill-${provId.replace('prov-', '')}-${targetCase.id}`;

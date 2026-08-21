@@ -1,5 +1,20 @@
-// src/components/packets/anik/AnikLaserProcedureForm.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const InlineInput = ({ defaultValue = '', readOnly = false, className = '' }) => {
+  const [val, setVal] = useState(defaultValue);
+  useEffect(() => { setVal(defaultValue); }, [defaultValue]);
+
+  if (readOnly) return <span className={className}>{val}</span>;
+
+  return (
+    <input
+      type="text"
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      className={`bg-transparent hover:bg-amber-100/60 focus:bg-amber-100 focus:ring-1 focus:ring-teal-600 rounded px-1 outline-none text-slate-900 font-mono font-bold cursor-text transition ${className}`}
+    />
+  );
+};
 
 /**
  * ANIK Laser Therapy Procedure Form (Radial Device) - Sample PDF Pages 8, 9, 10
@@ -23,10 +38,10 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
 
       {/* Demographics Row */}
       <div className="grid grid-cols-4 gap-2 text-xs font-mono border-b border-slate-300 pb-2">
-        <div><span>Name:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'SAMPLE TESTING' : packetData.patientName}</strong></div>
-        <div><span>DOB:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? '1988-06-20' : (packetData.patientDob || packetData.patient?.dob || '1988-06-20')}</strong></div>
-        <div><span>SEX:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode || !packetData ? 'M' : (packetData.patientSex || packetData.patient?.sex || 'M')}</strong></div>
-        <div><span>DATE:</span> <strong className="text-slate-900 border-b border-slate-400 px-1">{blankMode ? '' : (dos || packetData.accidentDate)}</strong></div>
+        <div><span>Name:</span> <InlineInput defaultValue={blankMode ? '' : (packetData ? packetData.patientName : 'aa jj')} readOnly={readOnly} className="w-28" /></div>
+        <div><span>DOB:</span> <InlineInput defaultValue={blankMode ? '' : (packetData ? (packetData.patientDob || packetData.patient?.dob || '1988-06-20') : '1988-06-20')} readOnly={readOnly} className="w-24" /></div>
+        <div><span>SEX:</span> <InlineInput defaultValue={blankMode ? '' : (packetData ? (packetData.patientSex || packetData.patient?.sex || 'M') : 'M')} readOnly={readOnly} className="w-8" /></div>
+        <div><span>DATE:</span> <InlineInput defaultValue={blankMode ? '' : (dos || packetData?.accidentDate || '01/22/2026')} readOnly={readOnly} className="w-24" /></div>
       </div>
 
       {/* Intro Consent & Vitals */}
@@ -36,10 +51,10 @@ export const AnikLaserProcedureForm = ({ dos = '01/22/2026', readOnly = false, b
         </p>
 
         <div className="flex justify-between items-center text-xs py-1 border-b border-slate-300">
-          <div><strong>ALLERGIES:</strong> <span className="underline ml-1">NONE</span></div>
-          <div><strong>BP:</strong> <span className="underline ml-1">115/70 mmHg</span></div>
-          <div><strong>HR:</strong> <span className="underline ml-1">90 bpm</span></div>
-          <div><strong>SESSIONS:</strong> <span className="border border-slate-800 px-2 py-0.5 ml-1 font-bold">3</span></div>
+          <div><strong>ALLERGIES:</strong> <InlineInput defaultValue="NONE" readOnly={readOnly} className="w-20" /></div>
+          <div><strong>BP:</strong> <InlineInput defaultValue="115/70 mmHg" readOnly={readOnly} className="w-24" /></div>
+          <div><strong>HR:</strong> <InlineInput defaultValue="90 bpm" readOnly={readOnly} className="w-16" /></div>
+          <div><strong>SESSIONS:</strong> <InlineInput defaultValue="3" readOnly={readOnly} className="w-8 border border-slate-800 px-1 text-center font-bold" /></div>
         </div>
 
         {/* -- 3-COLUMN FINDINGS & ANATOMICAL BODY DIAGRAM (Exact match to sample PDF) -- */}

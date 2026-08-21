@@ -20,7 +20,16 @@ export const AnikNarrativeReport = ({ reportPage = 1, blankMode = false, packetD
         <div>PATIENT: {blankMode || !packetData ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{packetData.patientName}</strong>}</div>
         <div>DOB: {blankMode ? <span className="border-b border-slate-400 inline-block w-28">&nbsp;</span> : <strong>{!packetData ? '10/08/1974 (42 Y/O MALE)' : (packetData.patient?.dob || 'N/A')}</strong>}</div>
         <div>DATE OF ACCIDENT: {blankMode ? <span className="border-b border-slate-400 inline-block w-24">&nbsp;</span> : <strong>{!packetData ? '12/27/2025' : packetData.accidentDate}</strong>}</div>
-        <div>DIAGNOSIS: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>{!packetData ? 'M54.50, M54.2, M25.572' : (packetData.diagnosisCodes ? (Array.isArray(packetData.diagnosisCodes) ? packetData.diagnosisCodes.map(d => d.code || d).join(', ') : packetData.diagnosisCodes) : 'N/A')}</strong>}</div>
+        <div>DIAGNOSIS: {blankMode ? <span className="border-b border-slate-400 inline-block w-32">&nbsp;</span> : <strong>{(() => {
+          if (packetData && Array.isArray(packetData.diagnosisCodes) && packetData.diagnosisCodes.length > 0) {
+            const cleaned = packetData.diagnosisCodes
+              .map(d => (typeof d === 'string' ? d : (d.code || d.description || d.icdCode || '')).trim())
+              .filter(Boolean);
+            if (cleaned.length > 0) return cleaned.join(', ');
+          }
+          if (packetData?.diagnosis) return packetData.diagnosis;
+          return 'M54.50, M54.2, M25.572';
+        })()}</strong>}</div>
       </div>
 
       {reportPage === 1 && (

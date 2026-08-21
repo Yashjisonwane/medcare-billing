@@ -1,4 +1,4 @@
-﻿// src/components/modals/CaseDetailsModal.jsx
+// src/components/modals/CaseDetailsModal.jsx
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { 
@@ -6,7 +6,7 @@ import {
   Stethoscope, Receipt, User, Clock, AlertTriangle, FileText, CheckCircle2, ChevronRight, Edit3, Save, X 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
 import { useUIStore } from '../../store/uiStore';
 import { formatCurrency } from '../../utils/billingCalculations';
 

@@ -7,7 +7,8 @@ export const TpiAssessmentForm = ({ readOnly = false, blankMode = false, packetD
   const serviceDates = serviceLines && serviceLines.length > 0
     ? [...new Set(serviceLines.map(l => l.dos || l.dateOfService).filter(Boolean))]
     : [];
-  const activeDos = !blankMode && serviceDates.length > 0 ? serviceDates[0] : (packetData?.initialDate || '01/15/2026');
+  const activeDos = blankMode ? '' : (serviceDates.length > 0 ? serviceDates[0] : (packetData?.initialDate || '01/15/2026'));
+  const patientNameVal = blankMode ? '' : (packetData ? packetData.patientName : 'SAMPLE PATIENT');
   
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '48px 56px' }}>
@@ -21,11 +22,11 @@ export const TpiAssessmentForm = ({ readOnly = false, blankMode = false, packetD
       <div className="grid grid-cols-2 gap-4 text-xs font-mono mb-6">
         <div className="flex border-b border-slate-300 pb-1">
           <span className="font-bold w-24">Patient Name:</span>
-          <span className="flex-1 text-slate-700">{packetData ? packetData.patientName : val('SAMPLE PATIENT')}</span>
+          <span className="flex-1 text-slate-700">{patientNameVal}&nbsp;</span>
         </div>
         <div className="flex border-b border-slate-300 pb-1">
           <span className="font-bold w-24">Date of Eval:</span>
-          <span className="flex-1 text-slate-700">{val(activeDos)}</span>
+          <span className="flex-1 text-slate-700">{activeDos}&nbsp;</span>
         </div>
       </div>
 
@@ -45,7 +46,11 @@ export const TpiAssessmentForm = ({ readOnly = false, blankMode = false, packetD
           </div>
           <div>
             <span className="font-bold block mb-1">Chief Complaint / Pain Description:</span>
-            <div className="border border-slate-300 p-2 min-h-[60px] text-slate-700 bg-slate-50">
+            <div
+              contentEditable={!readOnly}
+              suppressContentEditableWarning
+              className="border border-slate-300 p-2 min-h-[60px] text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+            >
               {val('Patient complains of severe, aching pain in the cervical and thoracic regions. Pain is exacerbated by movement and prolonged sitting.')}
             </div>
           </div>
@@ -67,7 +72,11 @@ export const TpiAssessmentForm = ({ readOnly = false, blankMode = false, packetD
           </div>
           <div>
             <span className="font-bold block mb-2">Palpation Findings:</span>
-            <p className="text-slate-700 border border-slate-300 p-2 min-h-[80px] bg-slate-50">
+            <p
+              contentEditable={!readOnly}
+              suppressContentEditableWarning
+              className="text-slate-700 border border-slate-300 p-2 min-h-[80px] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+            >
               {val('Palpable taut bands found in the bilateral upper trapezius. Positive jump sign elicited upon palpation of active trigger points.')}
             </p>
           </div>
@@ -78,8 +87,12 @@ export const TpiAssessmentForm = ({ readOnly = false, blankMode = false, packetD
       <div className="mb-6">
         <h2 className="text-sm font-bold bg-slate-100 p-2 border border-slate-300 mb-3 uppercase">3. Treatment Plan</h2>
         <div className="text-xs font-mono px-2">
-          <p className="text-slate-700 border border-slate-300 p-2 min-h-[60px] bg-slate-50">
-            {val('Proceed with Trigger Point Injections (TPI) to the identified active trigger points to break the pain spasm cycle. Patient consented to the procedure.')}
+          <p
+            contentEditable={!readOnly}
+            suppressContentEditableWarning
+            className="text-slate-700 border border-slate-300 p-2 min-h-[60px] bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+          >
+            {val('Trigger point injections using local anesthetic agent administered into active trigger points. Patient instructed on post-injection stretching and hydration.')}
           </p>
         </div>
       </div>

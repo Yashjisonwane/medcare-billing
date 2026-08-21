@@ -2,7 +2,16 @@
 import React from 'react';
 
 export const TecarCoverPage = ({ blankMode = false, packetData = null }) => {
-  const val = (v) => blankMode ? '' : v;
+  const getField = (field, fallback = '') => {
+    if (blankMode) return '';
+    if (!packetData) return fallback;
+    if (field === 'patientName') return packetData.patientName || fallback;
+    if (field === 'dob') return packetData.patient?.dob || packetData.patientDob || fallback;
+    if (field === 'accidentDate') return packetData.accidentDate || fallback;
+    if (field === 'initialDate') return packetData.initialDate || fallback;
+    if (field === 'dischargeDate') return packetData.dischargeDate || fallback;
+    return fallback;
+  };
 
   return (
     <div className="relative bg-white text-slate-900 font-sans shadow-2xl mx-auto border border-slate-300" style={{ width: '850px', minHeight: '1100px', padding: '48px 56px' }}>
@@ -28,19 +37,19 @@ export const TecarCoverPage = ({ blankMode = false, packetData = null }) => {
         <div className="grid grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">NAME:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{packetData ? packetData.patientName : val('SAMPLE PATIENT')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[120px] text-slate-900">{getField('patientName', 'SAMPLE PATIENT')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Birth:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{packetData ? (packetData.patient?.dob || 'N/A') : val('01/01/1980')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 min-w-[100px] text-slate-900">{getField('dob', '01/01/1980')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Date of Accident:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.accidentDate || 'N/A') : val('12/01/2025')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{getField('accidentDate', '12/01/2025')}&nbsp;</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700 whitespace-nowrap">Initial Date:</span>
-            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{packetData ? (packetData.initialDate || 'N/A') : val('01/20/2026')}&nbsp;</div>
+            <div className="flex-1 border-b border-slate-400 pb-0.5 text-slate-900">{getField('initialDate', '01/20/2026')}&nbsp;</div>
           </div>
         </div>
       </div>
@@ -53,7 +62,7 @@ export const TecarCoverPage = ({ blankMode = false, packetData = null }) => {
           <li>Provider Billing Statement</li>
           <li>CMS-1500 Claim Form</li>
           <li>TECAR Therapy Assessment Form</li>
-          <li>TECAR Procedure Log (DOS: {packetData ? (packetData.initialDate || '01/20/2026') : '01/20/2026'})</li>
+          <li>TECAR Procedure Log (DOS: {getField('initialDate', '01/20/2026')})</li>
         </ol>
       </div>
 
@@ -68,7 +77,7 @@ export const TecarCoverPage = ({ blankMode = false, packetData = null }) => {
             <p className="text-slate-600">Authorized Provider Signature</p>
           </div>
           <div>
-            <div className="border-b border-slate-400 pb-1 mb-1 min-h-[24px]">{packetData ? (packetData.dischargeDate || '01/20/2026') : val('01/20/2026')}&nbsp;</div>
+            <div className="border-b border-slate-400 pb-1 mb-1 min-h-[24px]">{getField('dischargeDate', '01/20/2026')}&nbsp;</div>
             <p className="text-slate-600">Date</p>
           </div>
         </div>

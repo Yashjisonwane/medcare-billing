@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { mockPatientService } from '../../services/mock/mockPatientService';
-import { apiPatientService } from '../../services/api/apiPatientService';
+import { apiPatientService as mockPatientService } from '../../services/api/apiPatientService';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { ROLES } from '../../constants/rolePermissions';

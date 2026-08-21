@@ -1,8 +1,8 @@
 // src/pages/appointments/ScheduleAppointmentPage.jsx
 import React, { useState, useEffect } from 'react';
-import { mockAppointmentService } from '../../services/mock/mockAppointmentService';
-import { mockPatientService } from '../../services/mock/mockPatientService';
-import { mockCaseService } from '../../services/mock/mockCaseService';
+import { apiAppointmentService as mockAppointmentService } from '../../services/api/apiAppointmentService';
+import { apiPatientService as mockPatientService } from '../../services/api/apiPatientService';
+import { apiCaseService as mockCaseService } from '../../services/api/apiCaseService';
 import { INITIAL_PROVIDER_CONFIGS } from '../../constants/providerConfigs';
 import { createDefaultServiceLine, COMMON_CPT_CODES } from '../../constants/servicesCatalog';
 import { MultiLineCptTable } from '../../components/common/MultiLineCptTable';
