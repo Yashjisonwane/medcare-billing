@@ -645,3 +645,19 @@ export const updateAppointment = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update appointment.' });
   }
 };
+
+/**
+ * Delete an appointment completely
+ */
+export const deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await prisma.appointment.delete({
+      where: { id }
+    });
+    return res.status(200).json(formatAppointment(deleted));
+  } catch (error) {
+    console.error('Error deleting appointment:', error);
+    return res.status(500).json({ error: 'Failed to delete appointment.' });
+  }
+};
