@@ -10,12 +10,17 @@ import { useNavigate } from 'react-router-dom';
 import { apiBillingService as mockBillingService } from '../../services/api/apiBillingService';
 import { apiClinicalNoteService as mockClinicalNoteService } from '../../services/api/apiClinicalNoteService';
 import { formatCurrency } from '../../utils/billingCalculations';
+import { useAuthStore } from '../../store/authStore';
+import { ROLES } from '../../constants/rolePermissions';
 
 export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [bills, setBills] = useState([]);
   const [notes, setNotes] = useState([]);
+
+  const canViewBilling = [ROLES.SUPER_ADMIN, ROLES.BILLING_STAFF, ROLES.COUNSELOR].includes(currentUser?.role);
 
   useEffect(() => {
     if (patient) {
@@ -232,12 +237,14 @@ export const PatientDetailsModal = ({ isOpen, onClose, patient }) => {
               <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-teal-600" /> Connected 4-Provider Bills Breakdown
               </h4>
-              <button
-                onClick={() => { onClose(); navigate('/billing/four-bills'); }}
-                className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
-              >
-                Open Full 4-Bills Page <ChevronRight className="w-3 h-3" />
-              </button>
+              {canViewBilling && (
+                <button
+                  onClick={() => { onClose(); navigate('/billing/four-bills'); }}
+                  className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+                >
+                  Open Full 4-Bills Page <ChevronRight className="w-3 h-3" />
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

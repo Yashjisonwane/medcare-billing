@@ -30,7 +30,8 @@ export const RoleGuard = ({ children }) => {
   }
 
   // Always allow the 403 page itself to render (prevents infinite redirect loop)
-  if (location.pathname === '/403') {
+  // Also always allow the root '/' so IndexRedirect can properly route the user
+  if (location.pathname === '/403' || location.pathname === '/') {
     return children;
   }
 

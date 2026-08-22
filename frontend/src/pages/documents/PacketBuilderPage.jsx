@@ -4,6 +4,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { apiDocumentService } from '../../services/api/apiDocumentService';
 import { apiCaseService } from '../../services/api/apiCaseService';
 import { useUIStore } from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
+import { ROLES } from '../../constants/rolePermissions';
 import { FolderOpen, CheckSquare, Download, Sparkles, ArrowLeft, FileText, CheckCircle2, DollarSign, User, Shield } from 'lucide-react';
 
 export const PacketBuilderPage = () => {
@@ -18,7 +20,10 @@ export const PacketBuilderPage = () => {
   const [isBuilding, setIsBuilding] = useState(false);
   const [packetResult, setPacketResult] = useState(null);
   const { addToast } = useUIStore();
+  const { currentUser } = useAuthStore();
   const navigate = useNavigate();
+
+  const canViewBilling = [ROLES.SUPER_ADMIN, ROLES.BILLING_STAFF, ROLES.COUNSELOR].includes(currentUser?.role);
 
   useEffect(() => {
     apiDocumentService.getDocuments().then(res => {
@@ -77,7 +82,7 @@ export const PacketBuilderPage = () => {
 
         {/* Quick Nav Links */}
         <div className="flex items-center gap-2">
-          {currentCase && (
+          {currentCase && canViewBilling && (
             <button
               onClick={() => navigate(`/billing/provider-bills?caseId=${currentCase.id || selectedCaseId}`)}
               className="px-3 py-1.5 bg-teal-50 border border-teal-200 text-teal-800 hover:bg-teal-100 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1"

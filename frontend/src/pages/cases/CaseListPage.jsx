@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { AddCaseModal } from '../../components/modals/AddCaseModal';
 import { CaseDetailsModal } from '../../components/modals/CaseDetailsModal';
 import { AddAttorneyModal } from '../../components/modals/AddAttorneyModal';
+import { Modal } from '../../components/modals/Modal';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { ROLES } from '../../constants/rolePermissions';
@@ -15,6 +16,7 @@ export const CaseListPage = () => {
   const { currentUser } = useAuthStore();
 
   const canToggleCaseStatus = [ROLES.SUPER_ADMIN, ROLES.BILLING_STAFF, ROLES.DOCTOR].includes(currentUser?.role);
+  const canViewBilling = [ROLES.SUPER_ADMIN, ROLES.BILLING_STAFF, ROLES.COUNSELOR].includes(currentUser?.role);
 
   const [cases, setCases] = useState([]);
   const [search, setSearch] = useState('');
@@ -29,6 +31,20 @@ export const CaseListPage = () => {
 
   const loadCases = () => {
     mockCaseService.getCases({ search }).then(res => setCases(res || [])).catch(() => {});
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await mockCaseService.deleteCase(caseToDelete.id || caseToDelete.caseId);
+      addToast('Accident Case deleted successfully', 'success');
+      loadCases();
+    } catch (err) {
+      addToast('Failed to delete case', 'error');
+    } finally {
+      setIsDeleting(false);
+      setCaseToDelete(null);
+    }
   };
 
   const handleToggleCaseStatus = async (c, newStatus) => {
@@ -180,12 +196,14 @@ export const CaseListPage = () => {
                     >
                       <Eye className="w-3.5 h-3.5 text-teal-600" /> View Case
                     </button>
-                    <button 
-                      onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
-                      className="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow-xs"
-                    >
-                      Bills Ledger <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
+                    {canViewBilling && (
+                      <button 
+                        onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
+                        className="flex-1 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow-xs"
+                      >
+                        Bills Ledger <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -282,12 +300,14 @@ export const CaseListPage = () => {
                           >
                             <Eye className="w-3 h-3 text-teal-600" /> View Case
                           </button>
-                          <button 
-                            onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
-                            className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer shadow-xs"
-                          >
-                            Bills Ledger <ChevronRight className="w-3 h-3" />
-                          </button>
+                          {canViewBilling && (
+                            <button 
+                              onClick={() => navigate(`/billing/provider-bills?caseId=${c.id || c.caseId}`)} 
+                              className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1 transition cursor-pointer shadow-xs"
+                            >
+                              Bills Ledger <ChevronRight className="w-3 h-3" />
+                            </button>
+                          )}
                           <button
                             onClick={() => setCaseToDelete(c)}
                             title="Delete Case"

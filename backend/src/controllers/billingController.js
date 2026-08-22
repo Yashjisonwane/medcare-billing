@@ -790,12 +790,7 @@ export const getAgingSummary = async (req, res) => {
     let past60 = 0;
     let past90 = 0;
 
-    const providerMap = {
-      'prov-josmic': { provider: 'JOSMIC Wellness Center', category: 'Pain Management', statement: '120197', current: 0, past30: 0, past60: 0, past90: 0, total: 0, status: 'Finalised', risk: 'low' },
-      'prov-davs': { provider: "DAV'S Anatomy", category: 'Shockwave Therapy (ESWT)', statement: '121559', current: 0, past30: 0, past60: 0, past90: 0, total: 0, status: 'Issued', risk: 'high' },
-      'prov-anik': { provider: 'ANIK Laser Therapy', category: 'Laser Therapy', statement: '121560', current: 0, past30: 0, past60: 0, past90: 0, total: 0, status: 'Issued', risk: 'high' },
-      'prov-counselor': { provider: 'Counselor Practice (Hope Behavioral)', category: 'Counseling & Mental Health', statement: '925748', current: 0, past30: 0, past60: 0, past90: 0, total: 0, status: 'Issued', risk: 'low' }
-    };
+    const providerMap = {};
 
     for (const b of bills) {
       const totals = typeof b.totals === 'string' ? JSON.parse(b.totals) : b.totals || {};
@@ -813,13 +808,30 @@ export const getAgingSummary = async (req, res) => {
       past60 += p60;
       past90 += p90;
 
-      if (providerMap[b.providerId]) {
-        providerMap[b.providerId].current += c;
-        providerMap[b.providerId].past30 += p30;
-        providerMap[b.providerId].past60 += p60;
-        providerMap[b.providerId].past90 += p90;
-        providerMap[b.providerId].total += bal;
-        if (b.statementNumber) providerMap[b.providerId].statement = b.statementNumber;
+      if (!providerMap[b.providerId]) {
+        providerMap[b.providerId] = {
+          provider: b.provider?.name || b.providerId,
+          category: b.provider?.serviceCategory || 'Medical Services',
+          statement: b.statementNumber || 'N/A',
+          current: 0,
+          past30: 0,
+          past60: 0,
+          past90: 0,
+          total: 0,
+          status: b.status === 'ISSUED' ? 'Issued' : 'Finalised',
+          risk: 'low'
+        };
+      }
+
+      providerMap[b.providerId].current += c;
+      providerMap[b.providerId].past30 += p30;
+      providerMap[b.providerId].past60 += p60;
+      providerMap[b.providerId].past90 += p90;
+      providerMap[b.providerId].total += bal;
+      if (b.statementNumber) providerMap[b.providerId].statement = b.statementNumber;
+      
+      if (providerMap[b.providerId].past90 > 0 || providerMap[b.providerId].past60 > 0) {
+        providerMap[b.providerId].risk = 'high';
       }
     }
 
@@ -840,10 +852,7 @@ export const getAgingSummary = async (req, res) => {
         casePast90 += Number(aging.past90 || 0);
       });
 
-      if (caseBal === 0) {
-        caseBal = 26960.00;
-        caseCurrent = 26960.00;
-      }
+      // Removed dummy default balances
 
       return {
         patientId: c.patient?.patientId || c.patientId || 'PAT-100',

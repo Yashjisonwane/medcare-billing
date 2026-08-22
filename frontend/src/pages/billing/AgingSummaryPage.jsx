@@ -6,72 +6,7 @@ import { useSettings } from '../../utils/settingsCache';
 import { ArrowLeft, TrendingUp, TrendingDown, Clock, AlertTriangle, CheckCircle, XCircle, BarChart2, FileText, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// Provider aging baseline breakdown
-const PROVIDER_AGING = [
-  {
-    provider: 'JOSMIC Wellness Center',
-    category: 'Pain Management',
-    statement: '120197',
-    current: 0,
-    past30: 1214.00,
-    past60: 0,
-    past90: 0,
-    total: 1214.00,
-    status: 'FINALISED_DEMO',
-    risk: 'low',
-  },
-  {
-    provider: "DAV'S Anatomy",
-    category: 'Shockwave Therapy (ESWT)',
-    statement: '121559',
-    current: 0,
-    past30: 0,
-    past60: 0,
-    past90: 9870.00,
-    total: 9870.00,
-    status: 'ISSUED_DEMO',
-    risk: 'high',
-  },
-  {
-    provider: 'ANIK Laser Therapy',
-    category: 'Laser Therapy',
-    statement: '121560',
-    current: 0,
-    past30: 0,
-    past60: 0,
-    past90: 18920.00,
-    total: 18920.00,
-    status: 'ISSUED_DEMO',
-    risk: 'high',
-  },
-  {
-    provider: 'Counselor Practice (Hope Behavioral)',
-    category: 'Counseling & Mental Health',
-    statement: '1024-C',
-    current: 0,
-    past30: 0,
-    past60: 0,
-    past90: 0,
-    total: 1140.00,
-    status: 'ISSUED_DEMO',
-    risk: 'none',
-  },
-];
-
-const PATIENT_AGING = [
-  { patientId: 'PAT-141849159', name: 'Demo Patient 001', caseId: 'CASE-2025-1227', attorney: 'OJ Law Firm', insurance: 'State Farm', current: 0, past30: 1214.00, past60: 0, past90: 28790.00, total: 30004.00 },
-  { patientId: 'PAT-293847561', name: 'Robert Johnson', caseId: 'CASE-2026-0210', attorney: 'Cole Law Firm', insurance: 'Workers Comp', current: 2400.00, past30: 1800.00, past60: 950.00, past90: 0, total: 5150.00 },
-  { patientId: 'PAT-384756293', name: 'Jane Smith', caseId: 'CASE-2026-0105', attorney: 'Vance & Associates', insurance: 'Geico', current: 0, past30: 3200.00, past60: 1400.00, past90: 5600.00, total: 10200.00 },
-  { patientId: 'PAT-476528394', name: 'aa jj', caseId: 'CASE-2026-507', attorney: 'Self-Represented (Direct)', insurance: 'Progressive', current: 1750.00, past30: 0, past60: 0, past90: 0, total: 1750.00 },
-];
-
-const RECENT_ACTIVITY = [
-  { date: '08/18/2026', type: 'Payment Posted', provider: 'JOSMIC Wellness Center', amount: 500.00, note: 'Attorney interim payment credited', icon: 'check' },
-  { date: '08/17/2026', type: 'Statement Issued', provider: "DAV'S Anatomy", amount: 8000.00, note: 'Bill #216743 issued to OJ Lawal — 90+ days aging', icon: 'doc' },
-  { date: '08/15/2026', type: 'Statement Issued', provider: 'ANIK Laser Therapy', amount: 14556.00, note: 'Laser therapy claim submitted to attorney lien', icon: 'doc' },
-  { date: '08/10/2026', type: 'Clinical Note Signed', provider: 'Counselor Practice', amount: 0, note: 'Psychotherapy intake (90834) signed & linked', icon: 'check' },
-  { date: '08/05/2026', type: 'Adjustment Applied', provider: 'ANIK Laser Therapy', amount: -50.00, note: 'Contractual write-off posted', icon: 'check' },
-];
+// Mock data removed. Component is fully integrated with database.
 
 const riskBadge = (risk) => {
   if (risk === 'high') return <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-red-100 text-red-700 border border-red-200">HIGH RISK</span>;
@@ -106,28 +41,43 @@ const ActivityIcon = ({ type }) => {
 
 export const AgingSummaryPage = () => {
   const settings = useSettings();
+  const [loading, setLoading] = useState(true);
   const [aging, setAging] = useState({
-    current: 109034,
-    past30: 430,
-    past60: 530,
-    past90: 28790,
-    grandTotal: 138784,
-    providerAgingBreakdown: PROVIDER_AGING,
-    patientAgingLedger: PATIENT_AGING
+    current: 0,
+    past30: 0,
+    past60: 0,
+    past90: 0,
+    grandTotal: 0,
+    providerAgingBreakdown: [],
+    patientAgingLedger: []
   });
+  const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    apiBillingService.getAgingSummary().then(res => {
-      if (res) {
-        setAging(prev => ({
-          ...prev,
-          ...res,
-          providerAgingBreakdown: res.providerAgingBreakdown && res.providerAgingBreakdown.length > 0 ? res.providerAgingBreakdown : PROVIDER_AGING,
-          patientAgingLedger: res.patientAgingLedger && res.patientAgingLedger.length > 0 ? res.patientAgingLedger : PATIENT_AGING
-        }));
+    Promise.all([
+      apiBillingService.getAgingSummary(),
+      apiBillingService.getPaymentsList()
+    ]).then(([agingRes, paymentsRes]) => {
+      if (agingRes) {
+        setAging({
+          current: agingRes.current || 0,
+          past30: agingRes.past30 || 0,
+          past60: agingRes.past60 || 0,
+          past90: agingRes.past90 || 0,
+          grandTotal: agingRes.grandTotal || 0,
+          providerAgingBreakdown: agingRes.providerAgingBreakdown || [],
+          patientAgingLedger: agingRes.patientAgingLedger || []
+        });
       }
-    }).catch(() => {});
+      if (paymentsRes && Array.isArray(paymentsRes)) {
+        setTransactions(paymentsRes);
+      }
+    }).catch(err => {
+      console.error('Failed to load aging data', err);
+    }).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   const total = aging.grandTotal || (aging.current + aging.past30 + aging.past60 + aging.past90) || 1;
@@ -137,8 +87,8 @@ export const AgingSummaryPage = () => {
     ? Math.round(((aging.grandTotal - aging.past90) / aging.grandTotal) * 100)
     : 0;
 
-  const providerAgingList = aging.providerAgingBreakdown || PROVIDER_AGING;
-  const patientAgingList = aging.patientAgingLedger || PATIENT_AGING;
+  const providerAgingList = aging.providerAgingBreakdown || [];
+  const patientAgingList = aging.patientAgingLedger || [];
 
   return (
     <div className="space-y-6">
@@ -153,14 +103,7 @@ export const AgingSummaryPage = () => {
           <h1 className="text-2xl font-bold text-on-surface">Accounts Receivable Aging Summary</h1>
           <p className="text-xs text-on-surface-variant">5-Bucket financial aging analysis across all 4 practice provider billing ledgers</p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5" /> As of Aug 05, 2026
-          </div>
-          <div className="px-3 py-1.5 bg-teal-50 rounded-xl text-xs font-bold text-teal-700 border border-teal-200 flex items-center gap-1.5">
-            <BarChart2 className="w-3.5 h-3.5" /> 1 Active Case
-          </div>
-        </div>
+
       </div>
 
       {/* 5-Bucket Summary Cards */}
@@ -311,27 +254,32 @@ export const AgingSummaryPage = () => {
           <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
             <Clock className="w-4 h-4 text-teal-600" />
             <h2 className="text-sm font-bold text-slate-900">Recent Billing Activity</h2>
-            <span className="ml-auto text-[10px] text-slate-400 font-semibold">{RECENT_ACTIVITY.length} EVENTS</span>
+            <span className="ml-auto text-[10px] text-slate-400 font-semibold">{transactions.length} EVENTS</span>
           </div>
           <div className="divide-y divide-slate-50">
-            {RECENT_ACTIVITY.map((ev, i) => (
+            {transactions.slice(0, 5).map((ev, i) => (
               <div key={i} className="px-5 py-3.5 flex items-start gap-3 hover:bg-slate-50 transition-colors">
-                <ActivityIcon type={ev.icon} />
+                <ActivityIcon type={ev.amount > 0 ? 'check' : 'doc'} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-bold text-slate-900 truncate">{ev.type}</p>
                     {ev.amount !== 0 && (
-                      <span className={`text-xs font-bold font-tabular flex-shrink-0 ${ev.amount > 0 ? 'text-teal-600' : 'text-red-500'}`}>
+                      <span className={`text-xs font-bold font-tabular flex-shrink-0 ${ev.amount > 0 ? 'text-teal-600' : 'text-amber-500'}`}>
                         {ev.amount > 0 ? '+' : ''}{formatCurrency(ev.amount)}
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-slate-500 truncate">{ev.provider}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{ev.note}</p>
+                  <p className="text-[10px] text-slate-500 truncate">{ev.provider} — Patient: {ev.patient}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{ev.ref}</p>
                 </div>
                 <span className="text-[9px] text-slate-300 font-mono flex-shrink-0 mt-0.5">{ev.date}</span>
               </div>
             ))}
+            {transactions.length === 0 && (
+              <div className="p-4 text-center text-xs text-slate-500">
+                No recent transactions found.
+              </div>
+            )}
           </div>
         </div>
       </div>
